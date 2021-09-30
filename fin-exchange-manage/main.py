@@ -1,17 +1,31 @@
-# This is a sample Python script.
+# main.py
 
-# Press Alt+Shift+X to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
+from infra import database
+
+app = Flask(__name__)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+Shift+B to toggle the breakpoint.
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+
+
+
+@app.route('/')
+def index():
+    # Create data
+
+
+    return 'ok'
+
+
+if __name__ == "__main__":
+    database.init_db()
+    app.run(debug=True)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
