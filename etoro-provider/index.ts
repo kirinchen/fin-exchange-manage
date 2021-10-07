@@ -5,3 +5,5 @@ export function showTotal(first: number, second: number): number {
   }
   
   showTotal(100, 200);
+
+  console.log(`aaaa`);
