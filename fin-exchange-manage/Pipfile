@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 pymysql = "*"
 flask-sqlalchemy = "*"
+binance-futures = "*"
+pytest = "*"
+python-dotenv = "*"
+python-dateutil = "*"
 
 [dev-packages]
 
