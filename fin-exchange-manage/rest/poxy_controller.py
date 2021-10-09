@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from enum import Enum
 import logging
+from typing import Any
 
 from flask import Flask, Response
 from flask import request
@@ -16,8 +17,7 @@ import importlib.util
 
 class PayloadReqKey(Enum):
     name = 'name'
-    apiKey = 'apiKey'
-    secret = 'secret'
+    exchange = 'exchange'
 
     @classmethod
     def values(cls):
@@ -28,6 +28,9 @@ class PayloadReqKey(Enum):
     def clean_default_keys(cls, payload: dict):
         for k in PayloadReqKey.values():
             del payload[k.value]
+
+    def get_val(self, payload: dict) -> Any:
+        return payload.get(self.value)
 
 
 app = Flask(__name__)
@@ -50,24 +53,24 @@ def log():
 @app.route('/test')
 def test():
     return {
-        "fin-measurement":config.env('fin-measurement')
+        "fin-measurement": config.env('fin-measurement')
     }
 
 
 @app.route('/proxy', methods=['POST'])
 def proxy():
     payload = request.json
-    client = _gen_request_client(payload)
+    # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
     spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{payload.get(PayloadReqKey.name.value)}.py")
     foo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(foo)
-    return Response(json.dumps(foo.run(client, payload)), mimetype='application/json')
+    return Response(json.dumps(foo.run(payload)), mimetype='application/json')
 
 
-def _gen_request_client(payload: dict) -> RequestClient:
-    return RequestClient(api_key=payload.get(PayloadReqKey.apiKey.value),
-                         secret_key=payload.get(PayloadReqKey.secret.value))
+# def _gen_request_client(payload: dict) -> RequestClient:
+#     return RequestClient(api_key=payload.get(PayloadReqKey.apiKey.value),
+#                          secret_key=payload.get(PayloadReqKey.secret.value))
 
 
 @contextmanager
