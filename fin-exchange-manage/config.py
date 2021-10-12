@@ -16,15 +16,15 @@ print(env_path)
 load_dotenv(dotenv_path=env_path, override=True)
 
 
-def env(s):
+def env(s) -> str:
     return os.getenv(s)
 
 
-def envInt(s):
+def env_int(s) -> int:
     return int(os.getenv(s))
 
 
-def envBool(s):
+def env_bool(s) -> bool:
     return env(s) == 'true'
 
 

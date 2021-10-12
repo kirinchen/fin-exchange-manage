@@ -14,6 +14,8 @@ from binance_f import RequestClient, SubscriptionClient
 
 import importlib.util
 
+from utils import comm_utils
+
 
 class PayloadReqKey(Enum):
     name = 'name'
@@ -62,10 +64,11 @@ def proxy():
     payload = request.json
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
-    spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{payload.get(PayloadReqKey.name.value)}.py")
+    spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{PayloadReqKey.name.get_val(payload)}.py")
     foo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(foo)
-    return Response(json.dumps(foo.run(payload)), mimetype='application/json')
+    out_dict: dict = comm_utils.to_dict(foo.run(payload))
+    return Response(json.dumps(out_dict), mimetype='application/json')
 
 
 # def _gen_request_client(payload: dict) -> RequestClient:

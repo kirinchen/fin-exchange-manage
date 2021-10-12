@@ -6,7 +6,7 @@ from datetime import datetime
 
 from infra import database
 
-from rest.poxy_controller import get_flask_app
+from rest.proxy_controller import get_flask_app
 
 app = get_flask_app()
 
