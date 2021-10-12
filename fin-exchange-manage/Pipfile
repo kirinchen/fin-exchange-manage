@@ -4,12 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pymysql = "*"
 flask-sqlalchemy = "*"
 binance-futures = "*"
 pytest = "*"
 python-dotenv = "*"
 python-dateutil = "*"
+psycopg2 = "*"
 
 [dev-packages]
 

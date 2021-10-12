@@ -2,10 +2,6 @@ from infra.database import Base
 from sqlalchemy import Column, Integer, String
 
 
-class Product(Base):
-    __tablename__ = 'product'
+class Exchange(Base):
+    __tablename__ = 'exchange'
     name = Column(String(50), primary_key=True, nullable=False)
-    symbol = Column(String(50), unique=True, nullable=False)
-
-
-

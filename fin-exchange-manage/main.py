@@ -11,7 +11,7 @@ from rest.proxy_controller import get_flask_app
 app = get_flask_app()
 
 if __name__ == "__main__":
-    # database.init_db()
+    database.init_db()
     app.run(host='0.0.0.0', debug=True, port=9282, threaded=True)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
