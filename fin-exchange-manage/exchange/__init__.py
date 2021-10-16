@@ -14,3 +14,6 @@ def load_function(exchange: str, name: str) -> object:
     foo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(foo)
     return foo.get_instance()
+
+
+def _load_service
