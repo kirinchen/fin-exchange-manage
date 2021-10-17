@@ -3,12 +3,12 @@ from abc import ABC
 from typing import List
 
 from dto.order_dto import OrderDto
-from service.base_service import BaseService
+from service.base_exchange_abc import BaseExchangeAbc
 from utils import order_utils
 from utils.order_utils import OrderFilter, OrdersInfo
 
 
-class OrderClientService(BaseService, ABC):
+class OrderClientService(BaseExchangeAbc, ABC):
 
     def __init__(self, exchange: str):
         super(OrderClientService, self).__init__(exchange=exchange)

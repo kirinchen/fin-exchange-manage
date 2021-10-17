@@ -2,7 +2,7 @@ import abc
 from abc import ABC
 
 
-class BaseService(ABC):
+class BaseExchangeAbc(ABC):
 
     def __init__(self, exchange: str):
         self.exchange = exchange

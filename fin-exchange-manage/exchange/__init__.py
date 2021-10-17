@@ -2,7 +2,7 @@ import importlib
 import os
 from typing import TypeVar, List, Dict
 
-from service.base_service import BaseService
+from service.base_exchange_abc import BaseExchangeAbc
 
 wd_path = os.path.dirname(__file__)
 
@@ -18,7 +18,7 @@ def load_function(exchange: str, name: str) -> object:
     return foo.get_instance()
 
 
-_service_map: Dict[str, Dict[object, BaseService]] = dict()
+_service_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
 
 
 def load_all_service():
@@ -33,19 +33,19 @@ def load_all_service():
 def _load_exchange_all_service(exchange_name: str, exchange_path: str):
     service_filenames: List[str] = next(os.walk(exchange_path), (None, None, []))[2]  # [] if no file
     for service_filename in service_filenames:
-        if not service_filename.endswith('_service.py'):
+        if not service_filename.endswith('_impl.py'):
             continue
         path = f'{exchange_path}/{service_filename}'
         spec = importlib.util.spec_from_file_location("action", path)
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
-        service_clazz: BaseService = foo.get_service_clazz()
-        service_instance: BaseService = service_clazz(exchange_name)
+        service_clazz: BaseExchangeAbc = foo.get_service_clazz()
+        service_instance: BaseExchangeAbc = service_clazz(exchange_name)
         this_dict = _service_map[exchange_name]
         this_dict[service_instance.get_abc_clazz()] = service_instance
 
 
-S = TypeVar("S", bound=BaseService)
+S = TypeVar("S", bound=BaseExchangeAbc)
 
 
 def get_service(exchange_name: str, clazz: S) -> S:
