@@ -33,6 +33,8 @@ def load_all_service():
 def _load_exchange_all_service(exchange_name: str, exchange_path: str):
     service_filenames: List[str] = next(os.walk(exchange_path), (None, None, []))[2]  # [] if no file
     for service_filename in service_filenames:
+        if not service_filename.endswith('_service.py'):
+            continue
         path = f'{exchange_path}/{service_filename}'
         spec = importlib.util.spec_from_file_location("action", path)
         foo = importlib.util.module_from_spec(spec)

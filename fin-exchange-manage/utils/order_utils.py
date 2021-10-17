@@ -98,7 +98,7 @@ def filter_order(oods: List[OrderDto], ft: OrderFilter) -> OrdersInfo:
             continue
         if ft.positionSide and ods.positionSide != ft.positionSide:
             continue
-        if ft.symbol and ft.get_symbole().gen_with_usdt() != ods.symbol:
+        if ft.symbol and ft.symbol != ods.symbol:
             continue
         if ft.status and ft.status != ods.status:
             continue
