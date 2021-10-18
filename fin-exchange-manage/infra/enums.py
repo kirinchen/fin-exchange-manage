@@ -6,7 +6,13 @@ class OrderStrategy(Enum):
     LIMIT = 'LIMIT'
 
 
-class PositionSide(Enum):
+class PositionSide:
     BOTH = "BOTH"
     LONG = "LONG"
     SHORT = "SHORT"
+    INVALID = None
+
+class OrderSide:
+    BUY = "BUY"
+    SELL = "SELL"
+    INVALID = None

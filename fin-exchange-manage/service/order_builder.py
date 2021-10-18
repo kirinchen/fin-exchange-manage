@@ -9,6 +9,7 @@ from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto
 from rest import account
 from service.base_exchange_abc import BaseExchangeAbc
+from utils import direction_utils
 
 
 class PriceQty:

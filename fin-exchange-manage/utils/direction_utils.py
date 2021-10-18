@@ -1,4 +1,4 @@
-from infra.enums import PositionSide
+from infra.enums import PositionSide, OrderSide
 
 
 def get_high_price(positionSide: str, a: float, b: float) -> float:
@@ -10,9 +10,9 @@ def get_high_price(positionSide: str, a: float, b: float) -> float:
         return b
     if b is None:
         return a
-    if positionSide == PositionSide.LONG.value:
+    if positionSide == PositionSide.LONG:
         return max(a, b)
-    elif positionSide == PositionSide.SHORT.value:
+    elif positionSide == PositionSide.SHORT:
         return min(a, b)
     raise NotImplementedError('not support ' + str(positionSide))
 
