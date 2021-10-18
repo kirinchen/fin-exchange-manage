@@ -1,14 +1,15 @@
-from abc import ABCMeta
-from typing import TypeVar
+from abc import ABCMeta, ABC
+from typing import TypeVar, Generic
 
 from dto.post_order_dto import BasePostOrderDto
+from service.base_exchange_abc import BaseExchangeAbc
 
 T = TypeVar('T', bound=BasePostOrderDto)
 
-class BaseOrderBuilder(Generic[T], metaclass=ABCMeta):
 
-    def __init__(self, client: RequestClient, dto: T):
-        self.client: RequestClient = client
+class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
+
+    def __init__(self,  dto: T):
         self.dto: T = dto
 
     def get_current_position(self) -> Position:

@@ -20,5 +20,5 @@ class BinanceOrderClientService(OrderClientService):
         return [binance_utils.convert_order_dto(o) for o in oods]
 
 
-def get_service_clazz() -> BinanceOrderClientService:
+def get_impl_clazz() -> BinanceOrderClientService:
     return BinanceOrderClientService

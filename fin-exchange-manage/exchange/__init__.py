@@ -18,15 +18,15 @@ def load_function(exchange: str, name: str) -> object:
     return foo.get_instance()
 
 
-_service_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
+_impl_obj_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
 
 
 def load_all_service():
     wd_path = os.path.dirname(__file__)
     ex_dirs: List[str] = next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
     for exchange_name in ex_dirs:
-        path = f'{wd_path}/{exchange_name}/__service/'
-        _service_map[exchange_name] = dict()
+        path = f'{wd_path}/{exchange_name}/__impl/'
+        _impl_obj_map[exchange_name] = dict()
         _load_exchange_all_service(exchange_name, path)
 
 
@@ -39,14 +39,14 @@ def _load_exchange_all_service(exchange_name: str, exchange_path: str):
         spec = importlib.util.spec_from_file_location("action", path)
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
-        service_clazz: BaseExchangeAbc = foo.get_service_clazz()
+        service_clazz: BaseExchangeAbc = foo.get_impl_clazz()
         service_instance: BaseExchangeAbc = service_clazz(exchange_name)
-        this_dict = _service_map[exchange_name]
+        this_dict = _impl_obj_map[exchange_name]
         this_dict[service_instance.get_abc_clazz()] = service_instance
 
 
 S = TypeVar("S", bound=BaseExchangeAbc)
 
 
-def get_service(exchange_name: str, clazz: S) -> S:
-    return _service_map[exchange_name][clazz]
+def get_impl_obj(exchange_name: str, clazz: S) -> S:
+    return _impl_obj_map[exchange_name][clazz]
