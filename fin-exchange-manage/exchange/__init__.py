@@ -3,6 +3,7 @@ import os
 from typing import TypeVar, List, Dict
 
 from service.base_exchange_abc import BaseExchangeAbc
+from utils import path_utils
 
 wd_path = os.path.dirname(__file__)
 
@@ -25,7 +26,7 @@ def load_all_service():
     wd_path = os.path.dirname(__file__)
     ex_dirs: List[str] = next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
     for exchange_name in ex_dirs:
-        path = f'{wd_path}/{exchange_name}/__impl/'
+        path = path_utils.get_exchange_impl_dir(wd_path, exchange_name)
         _impl_obj_map[exchange_name] = dict()
         _load_exchange_all_service(exchange_name, path)
 
@@ -33,7 +34,7 @@ def load_all_service():
 def _load_exchange_all_service(exchange_name: str, exchange_path: str):
     service_filenames: List[str] = next(os.walk(exchange_path), (None, None, []))[2]  # [] if no file
     for service_filename in service_filenames:
-        if not service_filename.endswith('_impl.py'):
+        if not service_filename.endswith(path_utils.EXCHANGE_IMPL_FILE_SUFFIX):
             continue
         path = f'{exchange_path}/{service_filename}'
         spec = importlib.util.spec_from_file_location("action", path)

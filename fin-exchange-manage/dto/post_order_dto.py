@@ -21,3 +21,10 @@ class BasePostOrderDto:
 
     def get_strategy(self) -> OrderStrategy:
         return comm_utils.value_of_enum(OrderStrategy, self.strategy)
+
+
+class PostLimitOrderDto(BasePostOrderDto):
+
+    def __init__(self, withdrawAmountRate: float, **kwargs):
+        super(PostLimitOrderDto, self).__init__(**kwargs)
+        self.withdrawAmountRate: float = withdrawAmountRate
