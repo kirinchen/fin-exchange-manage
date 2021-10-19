@@ -73,3 +73,30 @@ def gen_time_val_map(ts: TradeRange) -> Dict[str, float]:
     for t in ts.trades:
         ans[time_utils.to_time_utc_iso(t.time)] = t.price()
     return ans
+
+
+class TradeSet:
+    def __init__(self):
+        self.sell = TradeRange()
+        self.buy = TradeRange()
+        self.all = TradeRange()
+
+    def subtotal(self, time_maped: bool = False):
+        self.sell.subtotal(time_maped)
+        self.buy.subtotal(time_maped)
+        self.all.subtotal(time_maped)
+
+    def append(self, t: TradeDto):
+        if t.isBuyerMaker:
+            self.buy.trades.append(t)
+        else:
+            self.sell.trades.append(t)
+        self.all.trades.append(t)
+
+
+def gen_subtotal_result(ts: List[TradeDto], time_maped: bool = False) -> TradeSet:
+    ans = TradeSet()
+    for t in ts:
+        ans.append(t)
+    ans.subtotal(time_maped)
+    return ans
