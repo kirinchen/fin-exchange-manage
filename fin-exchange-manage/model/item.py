@@ -2,8 +2,8 @@ from infra.database import Base
 from sqlalchemy import Column, Integer, String
 
 
-class Product(Base):
-    __tablename__ = 'product'
+class Item(Base):
+    __tablename__ = 'item'
     name = Column(String(50), primary_key=True, nullable=False)
     symbol = Column(String(50), unique=True, nullable=False)
 

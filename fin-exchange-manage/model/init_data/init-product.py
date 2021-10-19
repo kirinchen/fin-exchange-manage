@@ -1,21 +1,21 @@
 from typing import List
 
-from model import Product
+from model import Item
 from model.init_data import DataInit, T
 
 
-class InitProduct(DataInit[Product]):
+class InitProduct(DataInit[Item]):
 
     def get_clazz(self) -> T:
-        return Product
+        return Item
 
-    def gen_data(self) -> List[Product]:
-        ans: List[Product] = list()
-        ans.append(Product(
+    def gen_data(self) -> List[Item]:
+        ans: List[Item] = list()
+        ans.append(Item(
             name='Bitcoin',
             symbol='BTC'
         ))
-        ans.append(Product(
+        ans.append(Item(
             name='Bitcoin Cash',
             symbol='BCH'
         ))

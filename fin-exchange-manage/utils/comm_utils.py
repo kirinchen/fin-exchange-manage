@@ -1,3 +1,4 @@
+import hashlib
 import random
 import string
 from datetime import datetime
@@ -115,3 +116,7 @@ def calc_proportional_first(sum: float, rate: float, n: int) -> float:
     sun = sum * (1 - rate)
     mom = 1 - pow(rate, n)
     return sun / mom
+
+
+def to_sh256_str(plain: str) -> str:
+    return hashlib.sha256(plain.encode('utf-8')).hexdigest()
