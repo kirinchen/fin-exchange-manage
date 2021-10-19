@@ -15,3 +15,10 @@ class PositionDto:
         self.marginType: str = marginType
         self.isolatedMargin: float = isolatedMargin
         self.positionSide: str = positionSide
+
+
+class PositionFilter:
+
+    def __init__(self, symbol: str = None, positionSide: str = None, **kwargs):
+        self.symbol = symbol
+        self.positionSide = positionSide

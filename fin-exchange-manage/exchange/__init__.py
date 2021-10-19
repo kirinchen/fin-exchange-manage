@@ -43,11 +43,12 @@ def _load_exchange_all_service(exchange_name: str, exchange_path: str):
         service_clazz: BaseExchangeAbc = foo.get_impl_clazz()
         service_instance: BaseExchangeAbc = service_clazz(exchange_name)
         this_dict = _impl_obj_map[exchange_name]
-        this_dict[service_instance.get_abc_clazz()] = service_instance
+        this_dict[service_instance.get_abc_clazz()] = service_clazz
 
 
 S = TypeVar("S", bound=BaseExchangeAbc)
 
 
-def get_impl_obj(exchange_name: str, clazz: S) -> S:
-    return _impl_obj_map[exchange_name][clazz]
+def gen_impl_obj(exchange_name: str, clazz: S) -> S:
+    service_clazz = _impl_obj_map[exchange_name][clazz]
+    return service_clazz(exchange_name)
