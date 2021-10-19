@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List, Dict
 
+from utils import time_utils
+
 
 class TradeDto:
 
@@ -36,16 +38,16 @@ class TradeRange:
                 sup += t.qty * t.price
             self.totalAmount = amt
             self.avgPrice = sup / self.totalAmount
-            hpe = self.clac_max('price')
+            hpe = self.calc_max('price')
             self.highPrice = hpe.price
             self.highPriceAt = hpe.time
-            lpe = self.clac_min('price')
+            lpe = self.calc_min('price')
             self.lowPrice = lpe.price
             self.lowPriceAt = lpe.time
-            hae = self.clac_max('qty')
+            hae = self.calc_max('qty')
             self.highAmount = hae.qty
             self.highAmountAt = hae.time()
-            le = self.clac_max('time')
+            le = self.calc_max('time')
             self.lastPrice = le.price
             self.lastAt = le.time
 
@@ -57,17 +59,17 @@ class TradeRange:
             print(e)
 
     def get_first(self) -> TradeDto:
-        return self.clac_min('time')
+        return self.calc_min('time')
 
-    def clac_max(self, f: str) -> TradeDto:
+    def calc_max(self, f: str) -> TradeDto:
         return max(self.trades, key=lambda x: getattr(x.get_data(), f))
 
-    def clac_min(self, f: str) -> TradeDto:
+    def calc_min(self, f: str) -> TradeDto:
         return min(self.trades, key=lambda x: getattr(x.get_data(), f))
 
 
 def gen_time_val_map(ts: TradeRange) -> Dict[str, float]:
     ans: Dict[str, float] = dict()
     for t in ts.trades:
-        ans[t.get_time_utc_iso()] = t.price()
+        ans[time_utils.to_time_utc_iso(t.time)] = t.price()
     return ans
