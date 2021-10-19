@@ -1,7 +1,10 @@
 import random
 import string
+from datetime import datetime
 from enum import Enum
 from typing import List, Any, TypeVar
+
+from utils import time_utils
 
 
 def random_chars(count: int) -> str:
@@ -82,6 +85,7 @@ def to_dict(obj, classkey=None) -> dict:
     if isinstance(obj, dict):
         data = {}
         for (k, v) in obj.items():
+            v = _to_date_dict(v)
             data[k] = to_dict(v, classkey)
         return data
     elif hasattr(obj, "_ast"):
@@ -97,6 +101,12 @@ def to_dict(obj, classkey=None) -> dict:
         return data
     else:
         return obj
+
+
+def _to_date_dict(v: Any) -> Any:
+    if isinstance(v, datetime):
+        return time_utils.to_time_utc_iso(v)
+    return v
 
 
 def calc_proportional_first(sum: float, rate: float, n: int) -> float:
