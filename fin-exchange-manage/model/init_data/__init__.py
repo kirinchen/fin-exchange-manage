@@ -33,7 +33,7 @@ def init_all_data():
     wd_path = os.path.dirname(__file__)
     filenames: List[str] = next(os.walk(wd_path), (None, None, []))[2]  # [] if no file
     for filename in filenames:
-        if not filename.startswith('init-'):
+        if not filename.startswith('init_'):
             continue
         path: str = f"{wd_path}/{filename}"
         spec = importlib.util.spec_from_file_location("action", path)
