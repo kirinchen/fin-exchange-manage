@@ -13,7 +13,8 @@ class BinanceLimitOrderBuilder(LimitOrderBuilder):
         self.client: RequestClient = gen_request_client()
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        price_str = str(self.dto.get_symbol().fix_precision_price(pq.price))
+
+        price_str = str(self.exchangeProductDao.dto.get_symbol().fix_precision_price(pq.price))
 
         p_amt: float = self.dto.get_symbol().fix_precision_amt(pq.quantity)
         if p_amt == 0:

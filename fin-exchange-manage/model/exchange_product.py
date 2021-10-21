@@ -15,13 +15,18 @@ class ExchangeProduct(Base):
     max_valuation_item = Column(Float, nullable=True)
     min_valuation_item = Column(Float, nullable=True)
 
-    def __init__(self, exchange: str, item: str, valuation_item: str, precision_price: int = None, precision_amount: int= None,
-                 max_valuation_item: float= None, min_valuation_item: float= None):
+    def __init__(self, exchange: str, item: str, valuation_item: str, precision_price: int = None,
+                 precision_amount: int = None,
+                 max_valuation_item: float = None, min_valuation_item: float = None):
         self.exchange: str = exchange
         self.item: str = item
         self.valuation_item: str = valuation_item
-        self.uid = comm_utils.to_sh256_str(f'{exchange}#{item}#{valuation_item}')[:32]
+        self.uid = get_uid(exchange, item, valuation_item)[:32]
         self.precision_price: int = precision_price
         self.precision_amount: int = precision_amount
         self.max_valuation_item: float = max_valuation_item
         self.min_valuation_item: float = min_valuation_item
+
+
+def get_uid(exchange: str, item: str, valuation_item: str) -> str:
+    return comm_utils.to_sh256_str(f'{exchange}#{item}#{valuation_item}')[:32]

@@ -10,6 +10,7 @@ from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto
 from rest import account
 from service.base_exchange_abc import BaseExchangeAbc
+from service.exchange_product_dao import ExchangeProductDao
 from service.position_client_service import PositionClientService
 from service.trade_client_service import TradeClientService
 from utils import direction_utils, comm_utils
@@ -39,11 +40,13 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.dto: T = None
         self.tradeClientService: TradeClientService = None
         self.positionClientService: PositionClientService = None
+        self.exchangeProductDao: ExchangeProductDao = None
 
     def init(self, dto: T):
         self.dto = dto
         self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService)
         self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService)
+        self.exchangeProductDao: ExchangeProductDao = exchange.gen_impl_obj(self.exchange, ExchangeProductDao)
 
     def get_current_position(self) -> PositionDto:
         return self.positionClientService.find_one(symbol=self.dto.symbol, positionSide=self.dto.positionSide)
