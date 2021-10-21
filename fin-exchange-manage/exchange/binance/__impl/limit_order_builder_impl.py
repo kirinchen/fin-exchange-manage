@@ -2,6 +2,7 @@ from binance_f import RequestClient
 from binance_f.model import TimeInForce, OrderType, WorkingType
 from dto.order_dto import OrderDto
 from exchange.binance import gen_request_client
+from model import Product, product
 from service.order_builder import LimitOrderBuilder, PriceQty
 from utils import comm_utils
 
@@ -13,7 +14,7 @@ class BinanceLimitOrderBuilder(LimitOrderBuilder):
         self.client: RequestClient = gen_request_client()
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-
+        product_entity :Product = self.exchangeProductDao.get(product.get_uid(exchange=self.exchange,item=self.dto.symbol))
         price_str = str(self.exchangeProductDao.dto.get_symbol().fix_precision_price(pq.price))
 
         p_amt: float = self.dto.get_symbol().fix_precision_amt(pq.quantity)

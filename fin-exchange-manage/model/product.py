@@ -4,8 +4,8 @@ from sqlalchemy import Column, Integer, String, Float
 from utils import comm_utils
 
 
-class ExchangeProduct(Base):
-    __tablename__ = 'exchange_product'
+class Product(Base):
+    __tablename__ = 'product'
     uid = Column(String(32), primary_key=True, nullable=False)
     exchange = Column(String(50), nullable=False)
     item = Column(String(50), nullable=False)
