@@ -37,11 +37,13 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
     def __init__(self, exchange_name: str):
         super(BaseOrderBuilder, self).__init__(exchange_name)
         self.dto: T = None
-        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(exchange_name, TradeClientService)
-        self.positionClientService: PositionClientService = exchange.gen_impl_obj(exchange_name, PositionClientService)
+        self.tradeClientService: TradeClientService = None
+        self.positionClientService: PositionClientService = None
 
     def init(self, dto: T):
         self.dto = dto
+        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService)
+        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService)
 
     def get_current_position(self) -> PositionDto:
         return self.positionClientService.find_one(symbol=self.dto.symbol, positionSide=self.dto.positionSide)

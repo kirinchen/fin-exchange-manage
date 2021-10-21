@@ -12,7 +12,62 @@ class InitExchangeProduct(DataInit[ExchangeProduct]):
         self.btc_binance = ExchangeProduct(exchange=_exchange.binance.name,
                                            item=item.btc.name,
                                            valuation_item=item.usdt.name,
-                                           precision_price=
+                                           precision_price=2,
+                                           precision_amount=3
+                                           )
+        self.bch_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.bch.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=2,
+                                           precision_amount=3
+                                           )
+        self.eth_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.eth.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=2,
+                                           precision_amount=3
+                                           )
+        self.etc_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.etc.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=3,
+                                           precision_amount=2
+                                           )
+        self.ltc_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.ltc.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=2,
+                                           precision_amount=3
+                                           )
+        self.xrp_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.xrp.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=4,
+                                           precision_amount=1
+                                           )
+        self.eos_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.eos.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=3,
+                                           precision_amount=1
+                                           )
+        self.bnb_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.bnb.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=2,
+                                           precision_amount=2
+                                           )
+        self.dot_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.dot.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=3,
+                                           precision_amount=1
+                                           )
+        self.ada_binance = ExchangeProduct(exchange=_exchange.binance.name,
+                                           item=item.ada.name,
+                                           valuation_item=item.usdt.name,
+                                           precision_price=4,
+                                           precision_amount=0
                                            )
 
     def get_clazz(self) -> ExchangeProduct:

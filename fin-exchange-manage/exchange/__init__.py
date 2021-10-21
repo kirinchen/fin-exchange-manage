@@ -23,7 +23,7 @@ _impl_obj_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
 
 
 def load_all_service():
-    wd_path = os.path.dirname(__file__)
+
     ex_dirs: List[str] = next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
     for exchange_name in ex_dirs:
         path = path_utils.get_exchange_impl_dir(wd_path, exchange_name)
@@ -37,6 +37,7 @@ def _load_exchange_all_service(exchange_name: str, exchange_path: str):
         if not service_filename.endswith(path_utils.EXCHANGE_IMPL_FILE_SUFFIX):
             continue
         path = f'{exchange_path}/{service_filename}'
+        print(f'path={path} load...')
         spec = importlib.util.spec_from_file_location("action", path)
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)

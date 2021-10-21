@@ -32,3 +32,7 @@ class BinanceLimitOrderBuilder(LimitOrderBuilder):
                                       quantity=quantity_str,
                                       newClientOrderId=comm_utils.get_order_cid(tags=self.dto.tags)
                                       )
+
+
+def get_impl_clazz() -> BinanceLimitOrderBuilder:
+    return BinanceLimitOrderBuilder
