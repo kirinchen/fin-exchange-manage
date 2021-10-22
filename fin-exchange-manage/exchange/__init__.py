@@ -22,9 +22,12 @@ def load_function(exchange: str, name: str) -> object:
 _impl_obj_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
 
 
-def load_all_service():
+def list_exchange_name() -> List[str]:
+    return next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
 
-    ex_dirs: List[str] = next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
+
+def load_all_service():
+    ex_dirs: List[str] = list_exchange_name()
     for exchange_name in ex_dirs:
         path = path_utils.get_exchange_impl_dir(wd_path, exchange_name)
         _impl_obj_map[exchange_name] = dict()
