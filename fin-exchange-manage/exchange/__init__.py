@@ -2,6 +2,8 @@ import importlib
 import os
 from typing import TypeVar, List, Dict
 
+from sqlalchemy.orm import Session
+
 from service.base_exchange_abc import BaseExchangeAbc
 from utils import path_utils
 
@@ -53,6 +55,6 @@ def _load_exchange_all_service(exchange_name: str, exchange_path: str):
 S = TypeVar("S", bound=BaseExchangeAbc)
 
 
-def gen_impl_obj(exchange_name: str, clazz: S) -> S:
+def gen_impl_obj(exchange_name: str, clazz: S, session: Session = None) -> S:
     service_clazz = _impl_obj_map[exchange_name][clazz]
-    return service_clazz(exchange_name)
+    return service_clazz(exchange_name, session)

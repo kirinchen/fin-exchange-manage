@@ -7,8 +7,9 @@ from sqlalchemy.orm import scoped_session, Session
 
 class BaseExchangeAbc(ABC):
 
-    def __init__(self, exchange: str):
+    def __init__(self, exchange: str, session: Session = None):
         self.exchange = exchange
+        self.session: Session = session
 
     @abc.abstractmethod
     def get_abc_clazz(self) -> object:
@@ -20,17 +21,9 @@ T = TypeVar('T')
 
 class BaseDao(Generic[T], BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str):
-        super(BaseDao, self).__init__(exchange_name)
-        self.session: Session = None
-
     @abc.abstractmethod
     def get_entity_clazz(self) -> T:
         raise NotImplementedError('get_entity_clazz')
-
-    def init(self, session: Session) -> object:
-        self.session = session
-        return self
 
     def get(self, pkid: Any) -> T:
         return self.session.query(self.get_entity_clazz()).get(pkid)
@@ -40,4 +33,5 @@ class BaseDao(Generic[T], BaseExchangeAbc, ABC):
         self.session.flush()
         return entity
 
-
+    def refresh_all(self):
+        pass

@@ -18,7 +18,7 @@ if __name__ == "__main__":
     init_data.init_all_data()
     exchange.load_all_service()
     # with database.session_scope() as session:
-    #     p_dao: ProductDao = exchange.gen_impl_obj('binance', ProductDao).init(session)
+    #     p_dao: ProductDao = exchange.gen_impl_obj('binance', ProductDao,session)
     #     p_e = p_dao.get_by_item_symbol('BTC', 'USDT')
     #     print(p_e)
     app.run(host='0.0.0.0', debug=True, port=9282, threaded=True)

@@ -46,9 +46,11 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
     def init(self, dto: T) -> object:
         self.dto = dto
-        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService)
-        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService)
-        self.exchangeProductDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao)
+        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService,
+                                                                            self.session)
+        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService,
+                                                                                  self.session)
+        self.exchangeProductDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
         return self
 
     def get_current_position(self) -> PositionDto:
