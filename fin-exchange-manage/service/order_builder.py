@@ -8,7 +8,9 @@ from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto
+from infra.enums import OrderStrategy
 from rest import account
+from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
 from service.product_dao import ProductDao
 from service.position_client_service import PositionClientService
@@ -42,11 +44,12 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.positionClientService: PositionClientService = None
         self.exchangeProductDao: ProductDao = None
 
-    def init(self, dto: T):
+    def init(self, dto: T) -> object:
         self.dto = dto
         self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService)
         self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService)
         self.exchangeProductDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao)
+        return self
 
     def get_current_position(self) -> PositionDto:
         return self.positionClientService.find_one(symbol=self.dto.symbol, positionSide=self.dto.positionSide)
@@ -123,3 +126,14 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
                 quantity=qty
             ))
         return priceQtyList
+
+
+def gen_order_builder(payload: dict) -> BaseOrderBuilder:
+    strategy: str = payload.get('strategy')
+    strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
+    if strategy == OrderStrategy.TAKE_PROFIT:
+        raise NotImplementedError('strategy == OrderStrategy.TAKE_PROFIT')
+    if strategy == OrderStrategy.LIMIT:
+        return exchange.gen_impl_obj(PayloadReqKey.exchange.get_val(payload), LimitOrderBuilder).init(
+            PostLimitOrderDto(**payload))
+    raise NotImplementedError(f'not Implemented {strategy} ')

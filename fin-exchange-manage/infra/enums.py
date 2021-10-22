@@ -12,6 +12,7 @@ class PositionSide:
     SHORT = "SHORT"
     INVALID = None
 
+
 class OrderSide:
     BUY = "BUY"
     SELL = "SELL"

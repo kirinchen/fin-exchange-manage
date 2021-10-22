@@ -20,7 +20,7 @@ class TradeClientService(BaseExchangeAbc, ABC):
         return trade_utils.gen_subtotal_result(self.fetch_recent_list(symbol, limit), time_maped)
 
     def get_last_price(self, symbol: str) -> float:
-        data = self.fetch_recent_set(symbol=symbol, limit=10, timeMaped=False)
+        data = self.fetch_recent_set(symbol=symbol, limit=10, time_maped=False)
         return data.all.lastPrice
 
     def get_last_rise_price(self, positionSide: str, symbol: str, buffRate=1.00002) -> float:
