@@ -28,8 +28,9 @@ class BaseDao(Generic[T], BaseExchangeAbc, ABC):
     def get_entity_clazz(self) -> T:
         raise NotImplementedError('get_entity_clazz')
 
-    def init(self, session: scoped_session):
+    def init(self, session: scoped_session) -> object:
         self.session = session
+        return self
 
     def get(self, pkid: Any) -> T:
         return self.session.query(self.get_entity_clazz()).get(pkid)
