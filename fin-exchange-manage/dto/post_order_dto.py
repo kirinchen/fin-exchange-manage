@@ -28,3 +28,10 @@ class PostLimitOrderDto(BasePostOrderDto):
     def __init__(self, withdrawAmountRate: float, **kwargs):
         super(PostLimitOrderDto, self).__init__(**kwargs)
         self.withdrawAmountRate: float = withdrawAmountRate
+
+
+class PostTakeProfitDto(BasePostOrderDto):
+
+    def __init__(self, positionRate: float, **kwargs):
+        super(PostTakeProfitDto, self).__init__(**kwargs)
+        self.positionRate: float = positionRate

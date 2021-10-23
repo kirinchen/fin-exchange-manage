@@ -30,7 +30,7 @@ class TradeRange:
         self.timeValMap: Dict[str, float] = None
 
     def subtotal(self, time_maped: bool = False):
-
+        try:
             amt = 0
             sup = 0
             for t in self.trades:
@@ -54,8 +54,8 @@ class TradeRange:
             if not time_maped:
                 return
             self.timeValMap = gen_time_val_map(self)
-
-
+        except Exception as e:  # work on python 3.x
+            print('subtotal ' + str(e))
 
     def get_first(self) -> TradeDto:
         return self.calc_min('time')

@@ -1,5 +1,5 @@
 import abc
-from abc import ABCMeta, ABC
+from abc import ABC
 from typing import TypeVar, Generic, List
 
 from sqlalchemy.orm import Session
@@ -9,17 +9,17 @@ import rest.account.info.get
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
-from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto
+from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeProfitDto
 from infra.enums import OrderStrategy
 from model import Product
 from model.init_data import init_item
 from rest import account
 from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
-from service.product_dao import ProductDao
 from service.position_client_service import PositionClientService
+from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
-from utils import direction_utils, comm_utils
+from utils import direction_utils, comm_utils, position_utils
 
 
 class PriceQty:
@@ -138,11 +138,51 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
 
+class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
+
+    def __init__(self, exchange_name: str, session: Session = None):
+        super().__init__(exchange_name, session)
+        self.position_quantity: float = None
+        self.position: PositionDto = None
+
+    def load_data(self) -> LoadDataCheck:
+        self.position = self.get_current_position()
+        self.position_quantity: float = position_utils.get_abs_amt(self.position)
+        if self.position_quantity <= 0:
+            return LoadDataCheck(success=False, failsMsg='no has position amt')
+        return LoadDataCheck(success=True)
+
+    def get_abc_clazz(self) -> object:
+        return TakeProfitOrderBuilder
+
+    def get_order_side(self) -> str:
+        return direction_utils.get_stop_order_side(self.dto.positionSide)
+
+    def gen_price_qty_list(self) -> List[PriceQty]:
+        lastPrice = self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
+                                                                positionSide=self.dto.positionSide,
+                                                                buffRate=self.dto.priceBuffRate)
+        part_qty: float = self.position_quantity * self.dto.positionRate
+        per_qty: float = comm_utils.calc_proportional_first(sum=part_qty, rate=self.dto.proportionalRate,
+                                                            n=self.dto.size)
+        priceQtyList: List[PriceQty] = list()
+        for i in range(int(self.dto.size)):
+            p = lastPrice * pow(1 + self.dto.gapRate, i)
+            q = per_qty * pow(self.dto.proportionalRate, i)
+            priceQtyList.append(PriceQty(
+                price=p,
+                quantity=q
+            ))
+        return priceQtyList
+
+
 def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     strategy: str = payload.get('strategy')
     strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
     if strategy == OrderStrategy.TAKE_PROFIT:
-        raise NotImplementedError('strategy == OrderStrategy.TAKE_PROFIT')
+        return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
+                                     clazz=TakeProfitOrderBuilder, session=session).init(
+            PostTakeProfitDto(**payload))
     if strategy == OrderStrategy.LIMIT:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
                                      clazz=LimitOrderBuilder, session=session).init(
