@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from binance_f import RequestClient
 from binance_f.model import Order
 from dto.order_dto import OrderDto
@@ -9,8 +11,8 @@ from service.order_client_service import OrderClientService
 
 class BinanceOrderClientService(OrderClientService):
 
-    def __init__(self, exchange: str):
-        super(BinanceOrderClientService, self).__init__(exchange)
+    def __init__(self, exchange: str, session: Session = None):
+        super(BinanceOrderClientService, self).__init__(exchange, session)
         self.client: RequestClient = gen_request_client()
 
     def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None,

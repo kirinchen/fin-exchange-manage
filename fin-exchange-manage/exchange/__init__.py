@@ -25,7 +25,8 @@ _impl_obj_map: Dict[str, Dict[object, BaseExchangeAbc]] = dict()
 
 
 def list_exchange_name() -> List[str]:
-    return next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
+    ans: List[str] = next(os.walk(wd_path), (None, [], None))[1]  # [] if no file
+    return [x for x in ans if not (x.startswith('_') or x.endswith('_'))]
 
 
 def load_all_service():
@@ -47,7 +48,7 @@ def _load_exchange_all_service(exchange_name: str, exchange_path: str):
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
         service_clazz: BaseExchangeAbc = foo.get_impl_clazz()
-        service_instance: BaseExchangeAbc = service_clazz(exchange_name)
+        service_instance: BaseExchangeAbc = service_clazz(exchange_name, None)
         this_dict = _impl_obj_map[exchange_name]
         this_dict[service_instance.get_abc_clazz()] = service_clazz
 

@@ -30,7 +30,7 @@ class TradeRange:
         self.timeValMap: Dict[str, float] = None
 
     def subtotal(self, time_maped: bool = False):
-        try:
+
             amt = 0
             sup = 0
             for t in self.trades:
@@ -46,7 +46,7 @@ class TradeRange:
             self.lowPriceAt = lpe.time
             hae = self.calc_max('qty')
             self.highAmount = hae.qty
-            self.highAmountAt = hae.time()
+            self.highAmountAt = hae.time
             le = self.calc_max('time')
             self.lastPrice = le.price
             self.lastAt = le.time
@@ -55,17 +55,16 @@ class TradeRange:
                 return
             self.timeValMap = gen_time_val_map(self)
 
-        except Exception as e:  # work on python 3.x
-            print(e)
+
 
     def get_first(self) -> TradeDto:
         return self.calc_min('time')
 
     def calc_max(self, f: str) -> TradeDto:
-        return max(self.trades, key=lambda x: getattr(x.get_data(), f))
+        return max(self.trades, key=lambda x: getattr(x, f))
 
     def calc_min(self, f: str) -> TradeDto:
-        return min(self.trades, key=lambda x: getattr(x.get_data(), f))
+        return min(self.trades, key=lambda x: getattr(x, f))
 
 
 def gen_time_val_map(ts: TradeRange) -> Dict[str, float]:

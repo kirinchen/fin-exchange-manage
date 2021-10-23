@@ -9,11 +9,6 @@ from service.base_exchange_abc import BaseDao
 
 class ProductDao(BaseDao):
 
-    def refresh_all(self):
-        ps: List[Product] = self.list_by_this_exchange()
-        for p in ps:
-            self.refresh_product(p)
-
     def list_by_this_exchange(self) -> List[Product]:
         return self.session.query(Product).filter(Product.exchange == self.exchange).all()
 
@@ -43,6 +38,11 @@ class ProductDao(BaseDao):
         fstr = str(product.precision_amount) + 'f'
         return float(('{:.' + fstr + '}').format(amt))
 
-    @abc.abstractmethod
-    def refresh_product(self, p: Product):
-        raise NotImplementedError('refresh_product')
+    def get_min_valuation_item_amount(self, product: Product, price: float) -> float:
+        if product.min_item and product.min_valuation_item:
+            return max(price * product.min_item, product.min_valuation_item)
+        if product.min_item:
+            return price * product.min_item
+        if product.min_valuation_item:
+            return product.min_valuation_item
+        return 0

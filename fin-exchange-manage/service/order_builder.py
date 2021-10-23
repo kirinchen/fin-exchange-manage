@@ -2,6 +2,8 @@ import abc
 from abc import ABCMeta, ABC
 from typing import TypeVar, Generic, List
 
+from sqlalchemy.orm import Session
+
 import exchange
 import rest.account.info.get
 from dto.account_dto import AccountDto
@@ -9,6 +11,8 @@ from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto
 from infra.enums import OrderStrategy
+from model import Product
+from model.init_data import init_item
 from rest import account
 from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
@@ -37,12 +41,13 @@ T = TypeVar('T', bound=BasePostOrderDto)
 
 class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str):
-        super(BaseOrderBuilder, self).__init__(exchange_name)
+    def __init__(self, exchange_name: str, session: Session = None):
+        super(BaseOrderBuilder, self).__init__(exchange_name, session)
         self.dto: T = None
         self.tradeClientService: TradeClientService = None
         self.positionClientService: PositionClientService = None
-        self.exchangeProductDao: ProductDao = None
+        self.productDao: ProductDao = None
+        self.product: Product = None
 
     def init(self, dto: T) -> object:
         self.dto = dto
@@ -50,7 +55,9 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
                                                                             self.session)
         self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService,
                                                                                   self.session)
-        self.exchangeProductDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
+        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
+        self.product = self.productDao.get_by_item_symbol(self.dto.symbol,
+                                                          init_item.get_instance().usdt.symbol)
         return self
 
     def get_current_position(self) -> PositionDto:
@@ -81,8 +88,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
 class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
-    def __init__(self, exchange: str):
-        super(LimitOrderBuilder, self).__init__(exchange)
+    def __init__(self, exchange: str, session: Session):
+        super(LimitOrderBuilder, self).__init__(exchange, session)
         self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
@@ -98,7 +105,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         self.lastPrice = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
                                                                      positionSide=self.dto.positionSide,
                                                                      buffRate=self.dto.priceBuffRate)
-        minUsdAmt: float = self.dto.get_symbol().get_min_usd_amount(self.lastPrice)
+        minUsdAmt: float = self.productDao.get_min_valuation_item_amount(product=self.product,
+                                                                         price=self.lastPrice)
         leverage_amt: float = self.amount * self.position.leverage
         if minUsdAmt > leverage_amt:
             return LoadDataCheck(success=False, failsMsg=f'not have enough {minUsdAmt} > {leverage_amt}')
@@ -130,12 +138,13 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
 
-def gen_order_builder(payload: dict) -> BaseOrderBuilder:
+def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     strategy: str = payload.get('strategy')
     strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
     if strategy == OrderStrategy.TAKE_PROFIT:
         raise NotImplementedError('strategy == OrderStrategy.TAKE_PROFIT')
     if strategy == OrderStrategy.LIMIT:
-        return exchange.gen_impl_obj(PayloadReqKey.exchange.get_val(payload), LimitOrderBuilder).init(
+        return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
+                                     clazz=LimitOrderBuilder, session=session).init(
             PostLimitOrderDto(**payload))
     raise NotImplementedError(f'not Implemented {strategy} ')

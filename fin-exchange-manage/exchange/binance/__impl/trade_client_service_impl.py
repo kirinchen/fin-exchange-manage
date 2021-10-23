@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from binance_f import RequestClient
 from binance_f.model import Trade
 from dto.trade_dto import TradeDto
@@ -9,8 +11,8 @@ from service.trade_client_service import TradeClientService
 
 class BinanceTradeClientService(TradeClientService):
 
-    def __init__(self, exchange: str):
-        super(BinanceTradeClientService, self).__init__(exchange)
+    def __init__(self, exchange: str, session: Session):
+        super(BinanceTradeClientService, self).__init__(exchange, session)
         self.client: RequestClient = gen_request_client()
 
     def fetch_recent_list(self, symbol: str, limit: int) -> List[TradeDto]:

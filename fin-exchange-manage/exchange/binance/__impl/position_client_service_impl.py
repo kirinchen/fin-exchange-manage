@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from binance_f import RequestClient
 from binance_f.model import Position
 from dto.position_dto import PositionDto
@@ -9,8 +11,8 @@ from service.position_client_service import PositionClientService
 
 class BinancePositionClientService(PositionClientService):
 
-    def __init__(self, exchange: str):
-        super(BinancePositionClientService, self).__init__(exchange)
+    def __init__(self, exchange: str, session: Session = None):
+        super(BinancePositionClientService, self).__init__(exchange,session)
         self.client: RequestClient = gen_request_client()
 
     def list_all(self) -> List[PositionDto]:
