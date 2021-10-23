@@ -1,9 +1,16 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from contextlib import contextmanager
 
-engine = create_engine('postgresql+psycopg2://root:root@localhost:5432/postgres', convert_unicode=True)
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+import config
+
+username = config.env('db_username')
+password = config.env('db_password')
+port = config.env('db_port')
+host = config.env('db_host')
+engine = create_engine(f'postgresql+psycopg2://{username}:{password}@{host}:{port}/postgres', convert_unicode=True)
 
 
 def _generate_session_maker() -> sessionmaker:
@@ -19,7 +26,6 @@ def init_db():
     # 在这里导入所有的可能与定义模型有关的模块，这样他们才会合适地
     # 在 metadata 中注册。否则，您将不得不在第一次执行 init_db() 时
     # 先导入他们。
-    import model
     Base.metadata.create_all(bind=engine)
 
 
