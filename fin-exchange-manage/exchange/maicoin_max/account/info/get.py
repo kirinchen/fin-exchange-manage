@@ -9,7 +9,7 @@ class APIFunctionAccountInfo(APIFunction[AccountDto]):
 
     def func(self, payload: dict) -> AccountDto:
         result: object = gen_request_client().get_private_account_balances()
-        return AccountDto(**result.__dict__)
+        return result
 
 
 def get_instance():
