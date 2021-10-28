@@ -1,33 +1,21 @@
 from datetime import datetime
+from typing import List
 
-from binance_f.model import Order, Trade, Position
+from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
+from max_exchange_api_python3.max.client import Client
+from max_exchange_api_python3.max.dto.position import Position
 
 
 def fix_usdt_symbol(symbol: str) -> str:
-    return f'{symbol}USDT'
+    return f'{symbol}usdt'
 
 
 def trim_usdt_symbol(symbol: str) -> str:
-    return symbol.replace('USDT', '')
+    return symbol.replace('usdt', '')
 
 
-def convert_order_dto(b_order: Order) -> OrderDto:
-    ans = OrderDto(**b_order.__dict__)
-    ans.symbol = trim_usdt_symbol(b_order.symbol)
-    return ans
-
-
-def convert_trade_dto(b_trade: Trade) -> TradeDto:
-    t_dict = b_trade.__dict__
-    time_time = datetime.fromtimestamp(b_trade.time / 1000)
-    t_dict['time'] = time_time
-    return TradeDto(**t_dict)
-
-
-def convert_position_dto(b_position: Position) -> PositionDto:
-    ans = PositionDto(**b_position.__dict__)
-    ans.symbol = trim_usdt_symbol(b_position.symbol)
-    return ans
+def convert_account_dto(client: Client, positions: List[Position]) -> AccountDto:
+    raise NotImplementedError('convert_account_dto')  # TODO
