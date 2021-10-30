@@ -22,6 +22,7 @@ api_key = config.env('api-key')
 class PayloadReqKey(Enum):
     name = 'name'
     exchange = 'exchange'
+    apiKey = '__bzk_api_key'
 
     @classmethod
     def values(cls):
@@ -63,10 +64,10 @@ def test():
 
 @app.route('/proxy', methods=['POST'])
 def proxy():
-    rh_api_key = request.headers['--bzk-api-key']
+    payload = request.json
+    rh_api_key = PayloadReqKey.apiKey.get_val(payload)
     if not rh_api_key == api_key:
         raise ConnectionAbortedError('API BYE')
-    payload = request.json
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
     spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{PayloadReqKey.name.get_val(payload)}.py")
