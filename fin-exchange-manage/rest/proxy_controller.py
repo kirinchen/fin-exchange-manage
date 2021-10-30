@@ -16,6 +16,8 @@ import importlib.util
 
 from utils import comm_utils
 
+api_key = config.env('api-key')
+
 
 class PayloadReqKey(Enum):
     name = 'name'
@@ -61,6 +63,9 @@ def test():
 
 @app.route('/proxy', methods=['POST'])
 def proxy():
+    rh_api_key = request.headers['--bzk-api-key']
+    if not rh_api_key == api_key:
+        raise ConnectionAbortedError('API BYE')
     payload = request.json
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
