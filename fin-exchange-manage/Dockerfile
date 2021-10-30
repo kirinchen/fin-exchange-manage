@@ -11,7 +11,7 @@ WORKDIR  /myapp
 RUN pipenv install
 #RUN pipenv shell
 # RUN pip install /tmp/myapp
-EXPOSE 9282
+EXPOSE 5000
 ENV FLASK_APP=main
 ENV FLASK_ENV=development
 CMD ["pipenv","run","flask","run","--host=0.0.0.0"]

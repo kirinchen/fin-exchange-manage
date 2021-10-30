@@ -6,7 +6,7 @@ services:
         context: ./fin-exchange-manage/
         dockerfile: Dockerfile
     ports: 
-      - "9282:9282"
+      - "9282:5000"
     depends_on:
       - "db"     
   
