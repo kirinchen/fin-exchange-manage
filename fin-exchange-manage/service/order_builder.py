@@ -128,7 +128,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
         priceQtyList: List[PriceQty] = list()
         for i in range(int(self.dto.size)):
-            p = self.lastPrice * (1 + (self.dto.gapRate * i))
+            p = direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                           rate=1 + (self.dto.gapRate * i))
             pre_amt: float = base_amt * pow(self.dto.proportionalRate, i)
             qty: float = self._calc_quantity(quote=p, amount=pre_amt)
             priceQtyList.append(PriceQty(
