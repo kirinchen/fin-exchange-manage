@@ -151,8 +151,8 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
         self.position = self.get_current_position()
         self.position_quantity: float = position_utils.get_abs_amt(self.position)
         self.lastPrice = self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
-                                                                positionSide=self.dto.positionSide,
-                                                                buffRate=self.dto.priceBuffRate)
+                                                                     positionSide=self.dto.positionSide,
+                                                                     buffRate=self.dto.priceBuffRate)
         if self.position_quantity <= 0:
             return LoadDataCheck(success=False, failsMsg='no has position amt')
         return LoadDataCheck(success=True)
@@ -169,8 +169,7 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
                                                             n=self.dto.size)
         priceQtyList: List[PriceQty] = list()
         for i in range(int(self.dto.size)):
-            p = direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
-                                           rate=1 + (self.dto.gapRate * i))
+            p = self.calc_price(i)
             q = per_qty * pow(self.dto.proportionalRate, i)
             priceQtyList.append(PriceQty(
                 price=p,
@@ -178,6 +177,14 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
             ))
         return priceQtyList
 
+    def calc_price(self, idx: int) -> float:
+        return direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                          rate=1 + (self.dto.gapRate * idx))
+
+
+class StopMarketOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
+
+    
 
 def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     strategy: str = payload.get('strategy')
