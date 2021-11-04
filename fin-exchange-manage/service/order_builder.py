@@ -9,7 +9,7 @@ import rest.account.info.get
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
-from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeProfitDto
+from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeStopProfitDto
 from infra.enums import OrderStrategy
 from model import Product
 from model.init_data import init_item
@@ -139,7 +139,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
 
-class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
+class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
 
     def __init__(self, exchange_name: str, session: Session = None):
         super().__init__(exchange_name, session)
@@ -182,9 +182,12 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
                                           rate=1 + (self.dto.gapRate * idx))
 
 
-class StopMarketOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
+class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
 
-    
+    def calc_price(self, idx: int) -> float:
+        return direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                          rate=1 + (self.dto.gapRate * idx))
+
 
 def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     strategy: str = payload.get('strategy')
@@ -192,7 +195,11 @@ def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     if strategy == OrderStrategy.TAKE_PROFIT:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
                                      clazz=TakeProfitOrderBuilder, session=session).init(
-            PostTakeProfitDto(**payload))
+            PostTakeStopProfitDto(**payload))
+    if strategy == OrderStrategy.STOP_MARKET:
+        return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
+                                     clazz=StopMarketOrderBuilder, session=session).init(
+            PostTakeStopProfitDto(**payload))
     if strategy == OrderStrategy.LIMIT:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
                                      clazz=LimitOrderBuilder, session=session).init(
