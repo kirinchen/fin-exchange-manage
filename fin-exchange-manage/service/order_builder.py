@@ -150,12 +150,15 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
         self.position_quantity: float = position_utils.get_abs_amt(self.position)
-        self.lastPrice = self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
-                                                                     positionSide=self.dto.positionSide,
-                                                                     buffRate=self.dto.priceBuffRate)
+        self.lastPrice = self.get_last_price()
         if self.position_quantity <= 0:
             return LoadDataCheck(success=False, failsMsg='no has position amt')
         return LoadDataCheck(success=True)
+
+    def get_last_price(self) -> float:
+        return self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
+                                                           positionSide=self.dto.positionSide,
+                                                           buffRate=self.dto.priceBuffRate)
 
     def get_abc_clazz(self) -> object:
         return TakeProfitOrderBuilder
@@ -183,6 +186,14 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
 
 
 class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
+
+    def get_abc_clazz(self) -> object:
+        return StopMarketOrderBuilder
+
+    def get_last_price(self) -> float:
+        return self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
+                                                           positionSide=self.dto.positionSide,
+                                                           buffRate=self.dto.priceBuffRate)
 
     def calc_price(self, idx: int) -> float:
         return direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
