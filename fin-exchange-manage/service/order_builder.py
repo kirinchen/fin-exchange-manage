@@ -145,10 +145,14 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
         super().__init__(exchange_name, session)
         self.position_quantity: float = None
         self.position: PositionDto = None
+        self.lastPrice: float = None
 
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
         self.position_quantity: float = position_utils.get_abs_amt(self.position)
+        self.lastPrice = self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
+                                                                positionSide=self.dto.positionSide,
+                                                                buffRate=self.dto.priceBuffRate)
         if self.position_quantity <= 0:
             return LoadDataCheck(success=False, failsMsg='no has position amt')
         return LoadDataCheck(success=True)
@@ -160,9 +164,6 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
         return direction_utils.get_stop_order_side(self.dto.positionSide)
 
     def gen_price_qty_list(self) -> List[PriceQty]:
-        lastPrice = self.tradeClientService.get_last_rise_price(symbol=self.dto.symbol,
-                                                                positionSide=self.dto.positionSide,
-                                                                buffRate=self.dto.priceBuffRate)
         part_qty: float = self.position_quantity * self.dto.positionRate
         per_qty: float = comm_utils.calc_proportional_first(sum=part_qty, rate=self.dto.proportionalRate,
                                                             n=self.dto.size)
