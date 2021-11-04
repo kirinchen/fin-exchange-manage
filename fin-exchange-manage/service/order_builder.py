@@ -168,7 +168,8 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeProfitDto], ABC):
                                                             n=self.dto.size)
         priceQtyList: List[PriceQty] = list()
         for i in range(int(self.dto.size)):
-            p = lastPrice * pow(1 + self.dto.gapRate, i)
+            p = direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                           rate=1 + (self.dto.gapRate * i))
             q = per_qty * pow(self.dto.proportionalRate, i)
             priceQtyList.append(PriceQty(
                 price=p,
