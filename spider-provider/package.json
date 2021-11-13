@@ -1,0 +1,29 @@
+{
+  "name": "etoro-provider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^16.11.7",
+    "typescript": "^4.4.4",
+    "@js-joda/core": "^4.3.1",
+    "@js-joda/locale": "^4.4.0",
+    "@js-joda/timezone": "^2.10.0",
+    "@types/selenium-webdriver": "^4.0.16",
+    "chromedriver": "^95.0.0",
+    "dateformat": "^5.0.2",
+    "moment": "^2.29.1",
+    "selenium-webdriver": "^4.0.0",
+    "typescript-string-operations": "^1.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0"
+  }
+}
