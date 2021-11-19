@@ -52,14 +52,6 @@ def fall_price(positionSide: str, orgPrice: float, rate: float) -> float:
     return rise_price(positionSide=positionSide, orgPrice=orgPrice, rate=1 / rate)
 
 
-def is_valid_stop_price(positionSide: str, recent_price: float, stop_price: float) -> bool:
-    if positionSide == PositionSide.LONG:
-        return recent_price > stop_price
-    elif positionSide == PositionSide.SHORT:
-        return recent_price < stop_price
-    raise NotImplementedError('not support ' + str(positionSide))
-
-
 def get_stop_order_side(positionSide: str) -> str:
     if positionSide == PositionSide.SHORT:
         return OrderSide.BUY
