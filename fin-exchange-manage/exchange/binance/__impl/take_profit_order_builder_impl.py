@@ -15,10 +15,12 @@ class BinanceTakeProfitOrderBuilder(TakeProfitOrderBuilder):
         self.client: RequestClient = gen_request_client()
 
     def post_one(self, pq: PriceQty) -> OrderDto:
+        if pq.quantity == 0:
+            return None
         price_str = str(self.productDao.fix_precision_price(self.product, pq.price))
         p_amt: float = self.productDao.fix_precision_amt(self.product, pq.quantity)
-        if p_amt == 0:
-            return None
+        p_amt == p_amt if p_amt > 0 else self.product.min_item
+
         quantity_str = str(p_amt)
         side = self.get_order_side()
         result = self.client.post_order(

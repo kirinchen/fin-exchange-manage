@@ -27,8 +27,8 @@ class Product(Base):
         self.uid = get_uid(exchange, item, valuation_item)[:32]
         self.precision_price: int = precision_price
         self.precision_amount: int = precision_amount
-        self.max_valuation_item: float = max_valuation_item
-        self.min_valuation_item: float = min_valuation_item
+        self.max_valuation_item: float = max_valuation_item  # price
+        self.min_valuation_item: float = min_valuation_item  # price
         self.max_item: float = max_item
         self.min_item: float = min_item
 
