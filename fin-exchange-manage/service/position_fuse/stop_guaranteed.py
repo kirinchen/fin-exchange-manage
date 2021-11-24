@@ -3,9 +3,11 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from dto.order_dto import OrderDto
-from service.position_fuse.mediation import StopDto, Stoper, StopState
+from service.position_fuse import stop_guaranteed_type_handle
+from service.position_fuse.mediation import StopDto, Stoper, StopState, StopResult
 from service.position_fuse.stop_guaranteed_type_handle import HandleBundle
-from utils import position_utils, direction_utils
+from utils import position_utils, direction_utils, formula_utils
+from utils.formula_utils import GuaranteedBundle
 
 
 class StopOrder:
@@ -25,22 +27,25 @@ class StopGuaranteedDto(StopDto):
 
 class StopGuaranteed(Stoper[StopGuaranteedDto]):
 
-    def __init__(self, exchange_name: str, session: Session, dto: StopGuaranteedDto):
-        super().__init__(exchange_name=exchange_name, session=session, state=StopState.GUARANTEED, dto=dto)
+    def __init__(self, exchange_name: str, session: Session):
+        super().__init__(exchange_name=exchange_name, session=session, state=StopState.GUARANTEED)
         self.stopPrice: float = None
         self.stopAmt: float = None
         self.guaranteed_price: float = None
         self.guaranteed_amt: float = None
         self.orderHandleBundle: HandleBundle = None
 
+    def get_abc_clazz(self) -> object:
+        return StopGuaranteed
+
     def load_vars(self):
         super().load_vars()
         self.stopPrice: float = self._calc_stop_price()
-        self.guaranteed_price: float = position_stop_utils.calc_guaranteed_price(self.position.positionSide,
+        self.guaranteed_price: float = formula_utils.calc_guaranteed_price(self.position.positionSide,
                                                                                  self._gen_guaranteed_bundle())
         self.guaranteed_amt: float = position_utils.get_abs_amt(self.position) * self.dto.closeRate
         self.stopAmt: float = position_utils.get_abs_amt(self.position) - self.guaranteed_amt
-        self.orderHandleBundle = type_order.gen_type_order_handle(**self.__dict__)
+        self.orderHandleBundle = stop_guaranteed_type_handle.gen_type_order_handle(**self.__dict__)
 
     def is_conformable(self) -> bool:
         if not super().is_conformable():
@@ -50,7 +55,7 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
         return position_stop_utils.is_valid_stop_price(self.position, self.lastPrice, p)
 
     def stop(self) -> StopResult:
-        ods: List[Order] = list()
+        ods: List[OrderDto] = list()
         if not self.orderHandleBundle.guaranteed.is_up_to_date():
             ods.extend(self.orderHandleBundle.guaranteed.post_order(client=self.client, tags=self.tags))
         if not self.orderHandleBundle.base.is_up_to_date():
@@ -64,8 +69,8 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
             return False
         return True
 
-    def clean_old_orders(self) -> List[Order]:
-        ans: List[Order] = list()
+    def clean_old_orders(self) -> List[OrderDto]:
+        ans: List[OrderDto] = list()
         if not self.orderHandleBundle.guaranteed.is_up_to_date():
             ans.extend(self.orderHandleBundle.guaranteed.clean_old_orders(client=self.client))
         if not self.orderHandleBundle.base.is_up_to_date():

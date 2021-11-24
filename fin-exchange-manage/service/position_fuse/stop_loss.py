@@ -19,9 +19,12 @@ class StopLossDto(StopDto):
 
 class StopLoss(Stoper[StopLossDto]):
 
-    def __init__(self, exchange_name: str, session: Session, dto: StopLossDto):
-        super().__init__(exchange_name=exchange_name, session=session, state=StopState.LOSS, dto=dto)
+    def __init__(self, exchange_name: str, session: Session):
+        super(StopLoss, self).__init__(exchange_name=exchange_name, session=session, state=StopState.LOSS)
         self.stopPrice: float = None
+
+    def get_abc_clazz(self) -> object:
+        return StopLoss
 
     def load_vars(self):
         super(StopLoss, self).load_vars()

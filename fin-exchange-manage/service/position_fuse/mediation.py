@@ -9,9 +9,10 @@ from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from model import exchange
 from rest import account
+from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
 from service.position_client_service import PositionClientService
-from service.position_fuse.stop_guaranteed import StopGuaranteedDto
+from service.position_fuse.stop_guaranteed import StopGuaranteedDto, StopGuaranteed
 from service.position_fuse.stop_loss import StopLossDto, StopLoss
 from service.trade_client_service import TradeClientService
 from utils import position_utils, order_utils
@@ -67,26 +68,35 @@ class StopDto(metaclass=abc.ABCMeta):
 T = TypeVar('T', bound=StopDto)
 
 
-class Stoper(Generic[T], metaclass=abc.ABCMeta):
+class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
 
-    def __init__(self, exchange_name: str, session: Session, state: StopState, dto: T):
-        self.session = session
-        self.exchange_name = exchange_name
-        self.dto: T = dto
+    def __init__(self, state: StopState, exchange_name: str, session: Session):
+        super(Stoper, self).__init__(exchange_name, session)
+        self.dto: T = None
         self.state: StopState = state
+        self.position_client: PositionClientService = None
+        self.tradeClientService: TradeClientService = None
+        self.orderClientService: OrderClientService = None
+        self.position: PositionDto = None
+        self.no_position: bool = None
+        self.tags: List[str] = None
+        self.currentStopOrdersInfo: OrdersInfo = None
+        self.lastPrice: float = None
+
+    def after_init(self):
         self.position_client: PositionClientService = exchange.gen_impl_obj(self.exchange_name, PositionClientService,
                                                                             self.session)
         self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange_name, TradeClientService,
                                                                             self.session)
         self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
                                                                             self.session)
+
+    def init(self, dto: T) -> object:
+        self.dto: T = dto
         self.position: PositionDto = self.get_current_position()
         self.no_position = position_utils.get_abs_amt(self.position) <= 0
         self.tags = self._setup_tags(list(dto.tags))
-        if self.no_position:
-            return
-        self.currentStopOrdersInfo: OrdersInfo = None
-        self.lastPrice: float = None
+        return self
 
     def load_vars(self):
         if self.no_position:
@@ -137,11 +147,22 @@ class Stoper(Generic[T], metaclass=abc.ABCMeta):
         return self.stop()
 
 
-class StopMediation:
+class StopMediation(BaseExchangeAbc):
 
-    def __init__(self, dto: StopMediationDto):
+    def __init__(self, exchange: str, session: Session = None):
+        super(StopMediation, self).__init__(exchange, session)
+        self.dto: StopMediationDto = None
+        self.stopLoss: StopLoss = None
+        self.stopGuaranteed: StopGuaranteed = None
+
+    def get_abc_clazz(self) -> object:
+        return StopMediation
+
+    def init(self, dto: StopMediationDto):
         self.dto: StopMediationDto = dto
         self.stopLoss = StopLoss(client=self.client, dto=self.dto.stopLoss)
+        self.stopLoss: StopLoss = exchange.gen_impl_obj(self.exchange_name, StopLoss,
+                                                        self.session).init(dto=self.dto.stopLoss)
         self.stopGuaranteed = StopGuaranteed(client=self.client, dto=self.dto.stopGuaranteed)
 
     def stop(self) -> List[StopResult]:
