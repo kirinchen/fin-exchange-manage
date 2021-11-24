@@ -20,6 +20,22 @@ class OrderClientService(BaseExchangeAbc, ABC):
                                      startTime=filter_obj.updateStartTime, endTime=filter_obj.updateEndTime)
         return order_utils.filter_order(oods=orders, ft=filter_obj)
 
+    def clean_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
+        try:
+            if currentOds is None:
+                return list()
+            if len(currentOds) <= 0:
+                return list()
+            self.cancel_list_orders(symbol=symbol,
+                                    orderIdList=[od.clientOrderId for od in currentOds])
+            return currentOds
+        except Exception as e:  # work on python 3.x
+            print('Failed to upload to ftp: ' + str(e))
+
+    @abc.abstractmethod
+    def cancel_list_orders(self, symbol: str, orderIdList: List[str]):
+        raise NotImplementedError('cancel_list_orders')
+
     @abc.abstractmethod
     def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None,
                        endTime: int = None, limit: int = None) -> List[OrderDto]:

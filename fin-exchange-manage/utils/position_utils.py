@@ -20,5 +20,7 @@ def filter_position(ps: List[PositionDto], ft: PositionFilter) -> List[PositionD
     return ans
 
 
+
+
 def get_abs_amt(p: PositionDto) -> float:
     return abs(p.positionAmt)

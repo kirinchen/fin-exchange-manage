@@ -5,7 +5,8 @@ import dateutil
 import pytz
 
 from dto.order_dto import OrderDto
-from utils import comm_utils
+from infra.enums import OrderType, OrderStatus
+from utils import comm_utils, direction_utils
 
 
 class OrderFilter:
@@ -115,3 +116,13 @@ def filter_order(oods: List[OrderDto], ft: OrderFilter) -> OrdersInfo:
         ans.orders.append(ods)
     ans.subtotal()
     return ans
+
+
+def get_current_new_stop_orders(oods: List[OrderDto], symbol: str, positionSide: str) -> OrdersInfo:
+    stop_order_side: str = direction_utils.get_stop_order_side(positionSide)
+    of = OrderFilter(symbol=symbol.symbol,
+                     orderType=OrderType.STOP_MARKET,
+                     status=OrderStatus.NEW,
+                     side=stop_order_side
+                     )
+    return filter_order(oods, of)

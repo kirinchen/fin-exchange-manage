@@ -21,6 +21,9 @@ class BinanceOrderClientService(OrderClientService):
                                                        startTime=startTime, endTime=endTime, orderId=orderId)
         return [binance_utils.convert_order_dto(o) for o in oods]
 
+    def cancel_list_orders(self, symbol: str, orderIdList: List[str]):
+        self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol), orderIdList=orderIdList)
+
 
 def get_impl_clazz() -> BinanceOrderClientService:
     return BinanceOrderClientService

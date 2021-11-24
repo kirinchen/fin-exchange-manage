@@ -24,6 +24,10 @@ def env_int(s) -> int:
     return int(os.getenv(s))
 
 
+def env_float(s) -> float:
+    return float(os.getenv(s))
+
+
 def env_bool(s) -> bool:
     return env(s) == 'true'
 
