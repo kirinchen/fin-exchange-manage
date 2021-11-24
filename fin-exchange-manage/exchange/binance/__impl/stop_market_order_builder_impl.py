@@ -14,25 +14,25 @@ class BinanceStopMarketOrderBuilder(StopMarketOrderBuilder):
         super(BinanceStopMarketOrderBuilder, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
 
-    def post_one(self, pq: PriceQty) -> OrderDto:
-        price_str = str(self.productDao.fix_precision_price(self.product, pq.price))
-        p_amt: float = self.productDao.fix_precision_amt(self.product, pq.quantity)
-        if p_amt == 0:
-            return None
-        quantity_str = str(p_amt)
-        side = self.get_order_side()
-        result = self.client.post_order(
-            side=side,
-            symbol=binance_utils.fix_usdt_symbol(self.dto.symbol),
-            timeInForce=TimeInForce.GTC,
-            ordertype=OrderType.STOP_MARKET,
-            workingType=WorkingType.CONTRACT_PRICE,
-            positionSide=self.dto.positionSide,
-            stopPrice=price_str,
-            quantity=quantity_str,
-            newClientOrderId=comm_utils.get_order_cid(self.dto.tags)
-        )
-        return binance_utils.convert_order_dto(result)
+    # def post_one(self, pq: PriceQty) -> OrderDto:
+    #     price_str = str(self.productDao.fix_precision_price(self.product, pq.price))
+    #     p_amt: float = self.productDao.fix_precision_amt(self.product, pq.quantity)
+    #     if p_amt == 0:
+    #         return None
+    #     quantity_str = str(p_amt)
+    #     side = self.get_order_side()
+    #     result = self.client.post_order(
+    #         side=side,
+    #         symbol=binance_utils.fix_usdt_symbol(self.dto.symbol),
+    #         timeInForce=TimeInForce.GTC,
+    #         ordertype=OrderType.STOP_MARKET,
+    #         workingType=WorkingType.CONTRACT_PRICE,
+    #         positionSide=self.dto.positionSide,
+    #         stopPrice=price_str,
+    #         quantity=quantity_str,
+    #         newClientOrderId=comm_utils.get_order_cid(self.dto.tags)
+    #     )
+    #     return binance_utils.convert_order_dto(result)
 
 
 def get_impl_clazz() -> BinanceStopMarketOrderBuilder:

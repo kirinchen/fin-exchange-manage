@@ -16,6 +16,7 @@ from model.init_data import init_item
 from rest import account
 from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
+from service.order_client_service import OrderClientService
 from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
@@ -46,6 +47,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.dto: T = None
         self.tradeClientService: TradeClientService = None
         self.positionClientService: PositionClientService = None
+        self.orderClientService: OrderClientService = None
         self.productDao: ProductDao = None
         self.product: Product = None
 
@@ -55,6 +57,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
                                                                             self.session)
         self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService,
                                                                                   self.session)
+        self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange, OrderClientService,
+                                                                            self.session)
         self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
         self.product = self.productDao.get_by_item_symbol(self.dto.symbol,
                                                           init_item.get_instance().usdt.symbol)
@@ -72,10 +76,6 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
     @abc.abstractmethod
     def load_data(self) -> LoadDataCheck:
         raise NotImplementedError('load_data')
-
-    @abc.abstractmethod
-    def get_order_side(self) -> str:
-        raise NotImplementedError('get_order_side')
 
     @abc.abstractmethod
     def gen_price_qty_list(self) -> List[PriceQty]:
@@ -138,6 +138,10 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
             ))
         return priceQtyList
 
+    def post_one(self, pq: PriceQty) -> OrderDto:
+        return self.orderClientService.post_limit(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+                                                  positionSide=self.dto.positionSide, tags=self.dto.tags)
+
 
 class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
 
@@ -163,9 +167,6 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
     def get_abc_clazz(self) -> object:
         return TakeProfitOrderBuilder
 
-    def get_order_side(self) -> str:
-        return direction_utils.get_stop_order_side(self.dto.positionSide)
-
     def gen_price_qty_list(self) -> List[PriceQty]:
         part_qty: float = self.position_quantity * self.dto.positionRate
         per_qty: float = comm_utils.calc_proportional_first(sum=part_qty, rate=self.dto.proportionalRate,
@@ -184,6 +185,10 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
         return direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
                                           rate=1 + (self.dto.gapRate * idx))
 
+    def post_one(self, pq: PriceQty) -> OrderDto:
+        return self.orderClientService.post_take_profit(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+                                                        positionSide=self.dto.positionSide, tags=self.dto.tags)
+
 
 class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
 
@@ -198,6 +203,10 @@ class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
     def calc_price(self, idx: int) -> float:
         return direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
                                           rate=1 + (self.dto.gapRate * idx))
+
+    def post_one(self, pq: PriceQty) -> OrderDto:
+        return self.orderClientService.post_stop_market(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+                                                        positionSide=self.dto.positionSide, tags=self.dto.tags)
 
 
 def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
