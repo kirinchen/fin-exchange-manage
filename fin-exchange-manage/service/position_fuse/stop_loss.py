@@ -2,13 +2,9 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from binance_f import RequestClient
-from binance_f.model import Position, AccountInformation, Order
+from dto.order_dto import OrderDto
 from service.position_fuse.mediation import StopDto, Stoper, StopState, StopResult
 from utils import position_utils, formula_utils
-from utils.formula_utils import GuaranteedBundle
-from utils.order_utils import OrdersInfo
-from utils.position_utils import PositionFilter, filter_position
 
 
 class StopLossDto(StopDto):
@@ -43,7 +39,7 @@ class StopLoss(Stoper[StopLossDto]):
         return not formula_utils.is_difference_over_range(self.stopPrice, self.currentStopOrdersInfo.avgPrice,
                                                           self.dto.restopRate)
 
-    def clean_old_orders(self) -> List[Order]:
+    def clean_old_orders(self) -> List[OrderDto]:
         self.orderClientService.clean_orders(client=self.client, symbol=self.position.symbol,
                                              currentOds=self.currentStopOrdersInfo.orders)
         return self.currentStopOrdersInfo.orders
@@ -59,8 +55,7 @@ class StopLoss(Stoper[StopLossDto]):
             return False
         return True
 
-    def post_order(self) -> Order:
+    def post_order(self) -> OrderDto:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
-        return position_stop_utils.post_stop_order(client=self.client, tags=self.tags, position=self.position,
-                                                   stopPrice=self.stopPrice,
-                                                   quantity=quantity)
+        return self.orderClientService.post_stop_market(symbol=self.dto.symbol, price=self.stopPrice, quantity=quantity,
+                                                        positionSide=self.dto.positionSide, tags=self.tags)

@@ -11,6 +11,7 @@ from model import exchange
 from rest import account
 from service.order_client_service import OrderClientService
 from service.position_client_service import PositionClientService
+from service.position_fuse.stop_guaranteed import StopGuaranteedDto
 from service.position_fuse.stop_loss import StopLossDto, StopLoss
 from service.trade_client_service import TradeClientService
 from utils import position_utils, order_utils

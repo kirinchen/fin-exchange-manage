@@ -21,6 +21,20 @@ class MaxOrderClientService(OrderClientService):
                                                        startTime=startTime, endTime=endTime, orderId=orderId)
         return [binance_utils.convert_order_dto(o) for o in oods]
 
+    def cancel_list_orders(self, symbol: str, orderIdList: List[str]):
+        pass  # TODO
+
+    def post_limit(self, symbol: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+        pass  # TODO
+
+    def post_stop_market(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        pass  # TODO
+
+    def post_take_profit(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        pass  # TODO
+
 
 def get_impl_clazz() -> MaxOrderClientService:
     return MaxOrderClientService
