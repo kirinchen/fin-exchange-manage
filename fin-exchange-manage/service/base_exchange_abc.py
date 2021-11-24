@@ -11,6 +11,9 @@ class BaseExchangeAbc(ABC):
         self.exchange = exchange
         self.session: Session = session
 
+    def after_init(self):
+        pass
+
     @abc.abstractmethod
     def get_abc_clazz(self) -> object:
         raise NotImplementedError()

@@ -9,10 +9,10 @@ from exchange.binance import gen_request_client, binance_utils
 from service.order_client_service import OrderClientService
 
 
-class BinanceOrderClientService(OrderClientService):
+class MaxOrderClientService(OrderClientService):
 
     def __init__(self, exchange: str, session: Session = None):
-        super(BinanceOrderClientService, self).__init__(exchange, session)
+        super(MaxOrderClientService, self).__init__(exchange, session)
         self.client: RequestClient = gen_request_client()
 
     def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None,
@@ -22,5 +22,5 @@ class BinanceOrderClientService(OrderClientService):
         return [binance_utils.convert_order_dto(o) for o in oods]
 
 
-def get_impl_clazz() -> BinanceOrderClientService:
-    return BinanceOrderClientService
+def get_impl_clazz() -> MaxOrderClientService:
+    return MaxOrderClientService

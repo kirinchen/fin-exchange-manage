@@ -58,4 +58,6 @@ S = TypeVar("S", bound=BaseExchangeAbc)
 
 def gen_impl_obj(exchange_name: str, clazz: S, session: Session = None) -> S:
     service_clazz = _impl_obj_map[exchange_name][clazz]
-    return service_clazz(exchange_name, session)
+    ans= service_clazz(exchange_name, session)
+    ans.after_init()
+    return ans

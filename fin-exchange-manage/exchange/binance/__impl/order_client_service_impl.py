@@ -3,10 +3,12 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from binance_f import RequestClient
-from binance_f.model import Order
+from binance_f.model import Order, TimeInForce, OrderType, WorkingType
 from dto.order_dto import OrderDto
 from exchange.binance import gen_request_client, binance_utils
+from model.init_data import init_item
 from service.order_client_service import OrderClientService
+from utils import comm_utils, direction_utils
 
 
 class BinanceOrderClientService(OrderClientService):
@@ -23,6 +25,77 @@ class BinanceOrderClientService(OrderClientService):
 
     def cancel_list_orders(self, symbol: str, orderIdList: List[str]):
         self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol), orderIdList=orderIdList)
+
+    def post_limit(self, symbol: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+        product = self.productDao.get_by_item_symbol(symbol,
+                                                     init_item.get_instance().usdt.symbol)
+        price_str = str(self.productDao.fix_precision_price(product, price))
+        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        if p_amt == 0:
+            return None
+        quantity_str = str(p_amt)
+        side = direction_utils.get_limit_order_side(positionSide)
+        ans = self.client.post_order(price=price_str,
+                                     side=side,
+                                     symbol=binance_utils.fix_usdt_symbol(symbol),
+                                     timeInForce=TimeInForce.GTC,
+                                     ordertype=OrderType.LIMIT,
+                                     workingType=WorkingType.CONTRACT_PRICE,
+                                     positionSide=positionSide,
+                                     # activationPrice=None,
+                                     # closePosition=False,
+                                     quantity=quantity_str,
+                                     newClientOrderId=comm_utils.get_order_cid(tags=tags)
+                                     )
+        return binance_utils.convert_order_dto(ans)
+
+    def post_stop_market(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        if quantity == 0:
+            return None
+        product = self.productDao.get_by_item_symbol(symbol,
+                                                     init_item.get_instance().usdt.symbol)
+        price_str = str(self.productDao.fix_precision_price(product, price))
+        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        p_amt = p_amt if p_amt > 0 else product.min_item
+        quantity_str = str(p_amt)
+        side = direction_utils.get_stop_order_side(positionSide)
+        result = self.client.post_order(
+            side=side,
+            symbol=binance_utils.fix_usdt_symbol(symbol),
+            timeInForce=TimeInForce.GTC,
+            ordertype=OrderType.STOP_MARKET,
+            workingType=WorkingType.CONTRACT_PRICE,
+            positionSide=positionSide,
+            stopPrice=price_str,
+            quantity=quantity_str,
+            newClientOrderId=comm_utils.get_order_cid(tags)
+        )
+        return binance_utils.convert_order_dto(result)
+
+    def post_take_profit(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        if quantity == 0:
+            return None
+        product = self.productDao.get_by_item_symbol(symbol,
+                                                     init_item.get_instance().usdt.symbol)
+        price_str = str(self.productDao.fix_precision_price(product, price))
+        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        p_amt = p_amt if p_amt > 0 else product.min_item
+        quantity_str = str(p_amt)
+        side = direction_utils.get_stop_order_side(positionSide)
+        result = self.client.post_order(
+            side=side,
+            symbol=binance_utils.fix_usdt_symbol(symbol),
+            timeInForce=TimeInForce.GTC,
+            ordertype=OrderType.TAKE_PROFIT_MARKET,
+            workingType=WorkingType.CONTRACT_PRICE,
+            positionSide=positionSide,
+            stopPrice=price_str,
+            quantity=quantity_str,
+            newClientOrderId=comm_utils.get_order_cid(tags)
+        )
+        return binance_utils.convert_order_dto(result)
 
 
 def get_impl_clazz() -> BinanceOrderClientService:

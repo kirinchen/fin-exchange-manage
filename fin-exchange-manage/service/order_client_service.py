@@ -4,13 +4,22 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
+import exchange
 from dto.order_dto import OrderDto
 from service.base_exchange_abc import BaseExchangeAbc
+from service.product_dao import ProductDao
 from utils import order_utils
 from utils.order_utils import OrderFilter, OrdersInfo
 
 
 class OrderClientService(BaseExchangeAbc, ABC):
+
+    def __init__(self, **kwargs):
+        super(OrderClientService, self).__init__(**kwargs)
+        self.productDao: ProductDao = None
+
+    def after_init(self):
+        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
 
     def get_abc_clazz(self) -> object:
         return OrderClientService
@@ -40,3 +49,17 @@ class OrderClientService(BaseExchangeAbc, ABC):
     def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None,
                        endTime: int = None, limit: int = None) -> List[OrderDto]:
         raise NotImplementedError('not impl')
+
+    @abc.abstractmethod
+    def post_limit(self, symbol: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+        raise NotImplementedError('post_limit')
+
+    @abc.abstractmethod
+    def post_stop_market(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        raise NotImplementedError('post_stop_market')
+
+    @abc.abstractmethod
+    def post_take_profit(self, symbol: str, price: float, quantity: float, positionSide: str,
+                         tags: List[str]) -> OrderDto:
+        raise NotImplementedError('post_take_profit')
