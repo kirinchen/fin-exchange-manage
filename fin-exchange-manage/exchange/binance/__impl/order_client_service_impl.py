@@ -13,8 +13,8 @@ from utils import comm_utils, direction_utils
 
 class BinanceOrderClientService(OrderClientService):
 
-    def __init__(self, exchange: str, session: Session = None):
-        super(BinanceOrderClientService, self).__init__(exchange, session)
+    def __init__(self, exchange_name: str, session: Session = None):
+        super(BinanceOrderClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
 
     def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None,

@@ -53,13 +53,13 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
     def init(self, dto: T) -> object:
         self.dto = dto
-        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange, TradeClientService,
+        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange_name, TradeClientService,
                                                                             self.session)
-        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange, PositionClientService,
+        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange_name, PositionClientService,
                                                                                   self.session)
-        self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange, OrderClientService,
+        self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
                                                                             self.session)
-        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
+        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
         self.product = self.productDao.get_by_prd_name(self.dto.symbol)
         return self
 
@@ -87,8 +87,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
 class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
-    def __init__(self, exchange: str, session: Session):
-        super(LimitOrderBuilder, self).__init__(exchange, session)
+    def __init__(self, exchange_name: str, session: Session):
+        super(LimitOrderBuilder, self).__init__(exchange_name, session)
         self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
@@ -99,7 +99,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
-        self.account = account.info.get.invoke(self.exchange)
+        self.account = account.info.get.invoke(self.exchange_name)
         self.amount = self.account.maxWithdrawAmount * self.dto.withdrawAmountRate
         self.lastPrice = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
                                                                      positionSide=self.dto.positionSide,

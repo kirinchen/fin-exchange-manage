@@ -11,8 +11,8 @@ from service.position_client_service import PositionClientService
 
 class BinancePositionClientService(PositionClientService):
 
-    def __init__(self, exchange: str, session: Session = None):
-        super(BinancePositionClientService, self).__init__(exchange,session)
+    def __init__(self, exchange_name: str, session: Session = None):
+        super(BinancePositionClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
 
     def list_all(self) -> List[PositionDto]:

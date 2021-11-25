@@ -19,7 +19,7 @@ class SyncCron(BaseExchangeAbc, ABC):
             self.sync_all_product(session)
 
     def sync_all_product(self, session: Session):
-        p_dao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, session)
+        p_dao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, session)
         ps: List[Product] = p_dao.list_by_this_exchange()
         for p in ps:
             self.sync_product(p,p_dao)

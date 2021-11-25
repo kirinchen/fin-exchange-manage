@@ -39,6 +39,15 @@ def load_all_service():
 
 def _load_exchange_all_service(exchange_name: str, exchange_path: str):
     service_filenames: List[str] = next(os.walk(exchange_path), (None, None, []))[2]  # [] if no file
+    _load_exchange_by_service_names(exchange_name, service_filenames, exchange_path)
+    dirs: List[str] = next(os.walk(exchange_path), (None, [], None))[1]  # [] if no file
+    for d in dirs:
+        if d.startswith("_"):
+            continue
+        _load_exchange_all_service(exchange_name, f'{exchange_path}/{d}')
+
+
+def _load_exchange_by_service_names(exchange_name: str, service_filenames: List[str], exchange_path: str):
     for service_filename in service_filenames:
         if not service_filename.endswith(path_utils.EXCHANGE_IMPL_FILE_SUFFIX):
             continue
@@ -58,6 +67,6 @@ S = TypeVar("S", bound=BaseExchangeAbc)
 
 def gen_impl_obj(exchange_name: str, clazz: S, session: Session = None) -> S:
     service_clazz = _impl_obj_map[exchange_name][clazz]
-    ans= service_clazz(exchange_name, session)
+    ans = service_clazz(exchange_name, session)
     ans.after_init()
     return ans

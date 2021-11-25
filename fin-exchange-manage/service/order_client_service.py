@@ -14,12 +14,12 @@ from utils.order_utils import OrderFilter, OrdersInfo
 
 class OrderClientService(BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange: str, session: Session = None):
-        super(OrderClientService, self).__init__(exchange, session)
+    def __init__(self, exchange_name: str, session: Session = None):
+        super(OrderClientService, self).__init__(exchange_name, session)
         self.productDao: ProductDao = None
 
     def after_init(self):
-        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
+        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
 
     def get_abc_clazz(self) -> object:
         return OrderClientService

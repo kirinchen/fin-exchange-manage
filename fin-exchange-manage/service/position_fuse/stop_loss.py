@@ -3,11 +3,12 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from dto.order_dto import OrderDto
-from service.position_fuse.mediation import StopDto, Stoper, StopState, StopResult
+from service.position_fuse import dtos
+from service.position_fuse.stoper import Stoper
 from utils import position_utils, formula_utils
 
 
-class StopLossDto(StopDto):
+class StopLossDto(dtos.StopDto):
 
     def __init__(self, symbol: str, positionSide: str, balanceRate: float, restopRate: float, tags: List[str] = list(),
                  clearRate: float = 1):
@@ -20,7 +21,7 @@ class StopLossDto(StopDto):
 class StopLoss(Stoper[StopLossDto]):
 
     def __init__(self, exchange_name: str, session: Session):
-        super(StopLoss, self).__init__(exchange_name=exchange_name, session=session, state=StopState.LOSS)
+        super(StopLoss, self).__init__(exchange_name=exchange_name, session=session, state=dtos.StopState.LOSS)
         self.stopPrice: float = None
 
     def get_abc_clazz(self) -> object:
@@ -43,12 +44,11 @@ class StopLoss(Stoper[StopLossDto]):
                                                           self.dto.restopRate)
 
     def clean_old_orders(self) -> List[OrderDto]:
-        self.orderClientService.clean_orders(client=self.client, symbol=self.position.symbol,
-                                             currentOds=self.currentStopOrdersInfo.orders)
+        self.orderClientService.clean_orders(symbol=self.position.symbol, currentOds=self.currentStopOrdersInfo.orders)
         return self.currentStopOrdersInfo.orders
 
-    def stop(self) -> StopResult:
-        ans = StopResult(stopState=self.state)
+    def stop(self) -> dtos.StopResult:
+        ans = dtos.StopResult(stopState=self.state)
         ans.orders = [self.post_order()]
         ans.active = True
         return ans

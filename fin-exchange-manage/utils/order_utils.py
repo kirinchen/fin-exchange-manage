@@ -120,7 +120,7 @@ def filter_order(oods: List[OrderDto], ft: OrderFilter) -> OrdersInfo:
 
 def get_current_new_stop_orders(oods: List[OrderDto], symbol: str, positionSide: str) -> OrdersInfo:
     stop_order_side: str = direction_utils.get_stop_order_side(positionSide)
-    of = OrderFilter(symbol=symbol.symbol,
+    of = OrderFilter(symbol=symbol,
                      orderType=OrderType.STOP_MARKET,
                      status=OrderStatus.NEW,
                      side=stop_order_side
