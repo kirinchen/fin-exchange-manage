@@ -36,13 +36,13 @@ class OrderClientService(BaseExchangeAbc, ABC):
             if len(currentOds) <= 0:
                 return list()
             self.cancel_list_orders(symbol=symbol,
-                                    orderIdList=[od.clientOrderId for od in currentOds])
+                                    clientOrderIdList=[od.clientOrderId for od in currentOds])
             return currentOds
         except Exception as e:  # work on python 3.x
             print('Failed to upload to ftp: ' + str(e))
 
     @abc.abstractmethod
-    def cancel_list_orders(self, symbol: str, orderIdList: List[str]):
+    def cancel_list_orders(self, symbol: str, clientOrderIdList: List[str]):
         raise NotImplementedError('cancel_list_orders')
 
     @abc.abstractmethod

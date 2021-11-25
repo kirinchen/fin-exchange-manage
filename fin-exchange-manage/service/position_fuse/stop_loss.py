@@ -34,7 +34,7 @@ class StopLoss(Stoper[StopLossDto]):
     def _get_stop_quote(self):
         amount = self.get_account().maxWithdrawAmount
         guard_amt = amount * self.dto.balanceRate
-        return formula_utils.calc_guard_price(self.position, guard_amt, self.dto.clearRate)
+        return formula_utils.calc_guard_price(self.position, guard_amt)
 
     def is_up_to_date(self) -> bool:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
