@@ -60,8 +60,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange, OrderClientService,
                                                                             self.session)
         self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange, ProductDao, self.session)
-        self.product = self.productDao.get_by_item_symbol(self.dto.symbol,
-                                                          init_item.get_instance().usdt.symbol)
+        self.product = self.productDao.get_by_prd_name(self.dto.symbol)
         return self
 
     def get_current_position(self) -> PositionDto:

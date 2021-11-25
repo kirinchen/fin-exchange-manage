@@ -4,10 +4,14 @@ from typing import TypeVar, Generic, Any
 
 from sqlalchemy.orm import scoped_session, Session
 
+import exchange
+
+EX = TypeVar('E')
+
 
 class BaseExchangeAbc(ABC):
 
-    def __init__(self, exchange: str, session: Session = None):
+    def __init__(self, exchange: str, session: Session):
         self.exchange = exchange
         self.session: Session = session
 
@@ -17,6 +21,10 @@ class BaseExchangeAbc(ABC):
     @abc.abstractmethod
     def get_abc_clazz(self) -> object:
         raise NotImplementedError()
+
+    def get_ex_obj(self, ex: EX) -> EX:
+        return exchange.gen_impl_obj(self.exchange_name, ex,
+                                     self.session)
 
 
 T = TypeVar('T')
