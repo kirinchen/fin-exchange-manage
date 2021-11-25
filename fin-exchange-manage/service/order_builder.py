@@ -138,7 +138,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        return self.orderClientService.post_limit(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+        return self.orderClientService.post_limit(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
                                                   positionSide=self.dto.positionSide, tags=self.dto.tags)
 
 
@@ -185,7 +185,7 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
                                           rate=1 + (self.dto.gapRate * idx))
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        return self.orderClientService.post_take_profit(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+        return self.orderClientService.post_take_profit(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
                                                         positionSide=self.dto.positionSide, tags=self.dto.tags)
 
 
@@ -204,7 +204,7 @@ class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
                                           rate=1 + (self.dto.gapRate * idx))
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        return self.orderClientService.post_stop_market(symbol=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+        return self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
                                                         positionSide=self.dto.positionSide, tags=self.dto.tags)
 
 

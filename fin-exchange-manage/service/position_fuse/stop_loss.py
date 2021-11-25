@@ -60,5 +60,6 @@ class StopLoss(Stoper[StopLossDto]):
 
     def post_order(self) -> OrderDto:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
-        return self.orderClientService.post_stop_market(symbol=self.dto.symbol, price=self.stopPrice, quantity=quantity,
+        return self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=self.stopPrice,
+                                                        quantity=quantity,
                                                         positionSide=self.dto.positionSide, tags=self.tags)

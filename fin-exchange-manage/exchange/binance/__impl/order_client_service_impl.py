@@ -75,7 +75,7 @@ class BinanceOrderClientService(OrderClientService):
                          tags: List[str]) -> OrderDto:
         if quantity == 0:
             return None
-        product = self.productDao.productDao.get_by_prd_name(prd_name)
+        product = self.productDao.get_by_prd_name(prd_name)
         price_str = str(self.productDao.fix_precision_price(product, price))
         p_amt: float = self.productDao.fix_precision_amt(product, quantity)
         p_amt = p_amt if p_amt > 0 else product.min_item

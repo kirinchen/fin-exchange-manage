@@ -11,70 +11,70 @@ class InitProduct(DataInit[Product]):
         _exchange = init_exchange.get_instance()
         self.btc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.btc.name,
-                                   prd_name=item.btc.name,
+                                   prd_name=item.btc.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=2,
                                    precision_amount=3
                                    )
         self.bch_binance = Product(exchange=_exchange.binance.name,
                                    item=item.bch.name,
-                                   prd_name=item.bch.name,
+                                   prd_name=item.bch.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=2,
                                    precision_amount=3
                                    )
         self.eth_binance = Product(exchange=_exchange.binance.name,
                                    item=item.eth.name,
-                                   prd_name=item.eth.name,
+                                   prd_name=item.eth.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=2,
                                    precision_amount=3
                                    )
         self.etc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.etc.name,
-                                   prd_name=item.etc.name,
+                                   prd_name=item.etc.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=3,
                                    precision_amount=2
                                    )
         self.ltc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.ltc.name,
-                                   prd_name=item.ltc.name,
+                                   prd_name=item.ltc.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=2,
                                    precision_amount=3
                                    )
         self.xrp_binance = Product(exchange=_exchange.binance.name,
                                    item=item.xrp.name,
-                                   prd_name=item.xrp.name,
+                                   prd_name=item.xrp.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=4,
                                    precision_amount=1
                                    )
         self.eos_binance = Product(exchange=_exchange.binance.name,
                                    item=item.eos.name,
-                                   prd_name=item.eos.name,
+                                   prd_name=item.eos.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=3,
                                    precision_amount=1
                                    )
         self.bnb_binance = Product(exchange=_exchange.binance.name,
                                    item=item.bnb.name,
-                                   prd_name=item.bnb.name,
+                                   prd_name=item.bnb.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=2,
                                    precision_amount=2
                                    )
         self.dot_binance = Product(exchange=_exchange.binance.name,
                                    item=item.dot.name,
-                                   prd_name=item.dot.name,
+                                   prd_name=item.dot.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=3,
                                    precision_amount=1
                                    )
         self.ada_binance = Product(exchange=_exchange.binance.name,
                                    item=item.ada.name,
-                                   prd_name=item.ada.name,
+                                   prd_name=item.ada.symbol,
                                    valuation_item=item.usdt.name,
                                    precision_price=4,
                                    precision_amount=0

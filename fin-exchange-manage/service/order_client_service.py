@@ -51,15 +51,15 @@ class OrderClientService(BaseExchangeAbc, ABC):
         raise NotImplementedError('not impl')
 
     @abc.abstractmethod
-    def post_limit(self, symbol: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+    def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_limit')
 
     @abc.abstractmethod
-    def post_stop_market(self, symbol: str, price: float, quantity: float, positionSide: str,
+    def post_stop_market(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_stop_market')
 
     @abc.abstractmethod
-    def post_take_profit(self, symbol: str, price: float, quantity: float, positionSide: str,
+    def post_take_profit(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_take_profit')

@@ -84,12 +84,9 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.lastPrice: float = None
 
     def after_init(self):
-        self.position_client: PositionClientService = exchange.gen_impl_obj(self.exchange_name, PositionClientService,
-                                                                            self.session)
-        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange_name, TradeClientService,
-                                                                            self.session)
-        self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
-                                                                            self.session)
+        self.position_client: PositionClientService = self.get_ex_obj(PositionClientService)
+        self.tradeClientService: TradeClientService = self.get_ex_obj(TradeClientService)
+        self.orderClientService: OrderClientService = self.get_ex_obj(OrderClientService)
 
     def init(self, dto: T) -> object:
         self.dto: T = dto
