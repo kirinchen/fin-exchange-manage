@@ -42,7 +42,7 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
         super().load_vars()
         self.stopPrice: float = self._calc_stop_price()
         self.guaranteed_price: float = formula_utils.calc_guaranteed_price(self.position.positionSide,
-                                                                                 self._gen_guaranteed_bundle())
+                                                                           self._gen_guaranteed_bundle())
         self.guaranteed_amt: float = position_utils.get_abs_amt(self.position) * self.dto.closeRate
         self.stopAmt: float = position_utils.get_abs_amt(self.position) - self.guaranteed_amt
         self.orderHandleBundle = stop_guaranteed_type_handle.gen_type_order_handle(**self.__dict__)
@@ -51,8 +51,7 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
         if not super().is_conformable():
             return False
         p: float = direction_utils.rise_price(self.position.positionSide, self.guaranteed_price, self.dto.thresholdRate)
-
-        return position_stop_utils.is_valid_stop_price(self.position, self.lastPrice, p)
+        return direction_utils.is_low_price(self.position.positionSide, self.lastPrice, p)
 
     def stop(self) -> StopResult:
         ods: List[OrderDto] = list()
@@ -88,4 +87,4 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
     def _calc_stop_price(self) -> float:
         amt: float = position_utils.get_abs_amt(self.position)
         guard_balance = (self.position.entryPrice * amt) / self.position.leverage
-        return position_stop_utils.calc_guard_price(self.position, guard_balance)
+        return formula_utils.calc_guard_price(self.position, guard_balance)

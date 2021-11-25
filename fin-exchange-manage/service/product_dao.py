@@ -18,6 +18,12 @@ class ProductDao(BaseDao):
     def get_abc_clazz(self) -> object:
         return ProductDao
 
+    def get_by_prd_name(self, prd_name: str) -> Product:
+        return self.session.query(Product) \
+            .filter(Product.exchange == self.exchange) \
+            .filter(Product.prd_name == prd_name) \
+            .one()
+
     def get_by_item_symbol(self, item_symbol: str, valuation_item_symbol: str) -> Product:
         item_table = aliased(Item)
         valuation_item_table = aliased(Item)

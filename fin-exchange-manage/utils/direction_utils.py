@@ -1,6 +1,14 @@
 from infra.enums import PositionSide, OrderSide
 
 
+def is_high_price(positionSide: str, base: float, tar: float) -> bool:
+    if positionSide == PositionSide.LONG:
+        return base < tar
+    elif positionSide == PositionSide.SHORT:
+        return base > tar
+    raise NotImplementedError('not support ' + str(positionSide))
+
+
 def get_high_price(positionSide: str, a: float, b: float) -> float:
     """
     LONG : a = 100 , b = 50  -> a = 100
@@ -14,6 +22,14 @@ def get_high_price(positionSide: str, a: float, b: float) -> float:
         return max(a, b)
     elif positionSide == PositionSide.SHORT:
         return min(a, b)
+    raise NotImplementedError('not support ' + str(positionSide))
+
+
+def is_low_price(positionSide: str, base: float, tar: float) -> bool:
+    if positionSide == PositionSide.LONG:
+        return base > tar
+    elif positionSide == PositionSide.SHORT:
+        return base < tar
     raise NotImplementedError('not support ' + str(positionSide))
 
 

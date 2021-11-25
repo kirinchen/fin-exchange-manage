@@ -3,13 +3,11 @@ from abc import ABCMeta
 from enum import Enum
 from typing import List
 
-from infr import constant
-from market.Symbol import Symbol
-from rest.position.stop import position_stop_utils
-
-from binance_f import RequestClient
-from binance_f.model import Order, Position
-from utils import order_utils
+from dto.order_dto import OrderDto
+from dto.position_dto import PositionDto
+from infra import constant
+from service.order_client_service import OrderClientService
+from utils import order_utils, formula_utils
 from utils.order_utils import OrdersInfo, OrderFilter
 
 GUARANTEED_ORDER_TAG = 'gntop'
@@ -17,10 +15,10 @@ GUARANTEED_ORDER_TAG = 'gntop'
 
 class TypeOrderHandle(metaclass=ABCMeta):
 
-    def __init__(self, position: Position):
-        self.position: Position = position
-        self.currentOrders: List[Order] = list()
-        self.symbol: Symbol = Symbol.get_with_usdt(position.symbol)
+    def __init__(self, position: PositionDto, orderClient: OrderClientService):
+        self.position: PositionDto = position
+        self.orderClient: OrderClientService = orderClient
+        self.currentOrders: List[OrderDto] = list()
 
     def init_vars(self):
         pass
@@ -30,11 +28,11 @@ class TypeOrderHandle(metaclass=ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def clean_old_orders(self, client: RequestClient) -> List[Order]:
+    def clean_old_orders(self) -> List[OrderDto]:
         return NotImplemented
 
     @abc.abstractmethod
-    def post_order(self, client: RequestClient, tags: List[str]) -> List[Order]:
+    def post_order(self, tags: List[str]) -> List[OrderDto]:
         return NotImplemented
 
 
@@ -47,8 +45,9 @@ class GuaranteedState(Enum):
 
 class GuaranteedOrderHandle(TypeOrderHandle):
 
-    def __init__(self, position: Position, guaranteed_price: float, guaranteed_amt: float):
-        super(GuaranteedOrderHandle, self).__init__(position=position)
+    def __init__(self, position: PositionDto, orderClient: OrderClientService, guaranteed_price: float,
+                 guaranteed_amt: float):
+        super(GuaranteedOrderHandle, self).__init__(position=position, orderClient=orderClient)
         self.guaranteed_price: float = guaranteed_price
         self.guaranteed_amt: float = guaranteed_amt
         self.currentStopOrderInfo: OrdersInfo = None
@@ -58,27 +57,30 @@ class GuaranteedOrderHandle(TypeOrderHandle):
             tags=[GUARANTEED_ORDER_TAG]
         ))
 
-    def clean_old_orders(self, client: RequestClient) -> List[Order]:
-        return position_stop_utils.clean_old_orders(client=client, symbol=Symbol.get_with_usdt(self.position.symbol),
-                                                    currentOds=self.currentStopOrderInfo.orders)
+    def clean_old_orders(self) -> List[OrderDto]:
+        self.orderClient.clean_orders(symbol=self.position.symbol, currentOds=self.currentStopOrderInfo.orders)
+        return self.currentStopOrderInfo.orders
 
-    def post_order(self, client: RequestClient, tags: List[str]) -> List[Order]:
+    def post_order(self, tags: List[str]) -> List[OrderDto]:
         n_tag = list(tags)
         n_tag.append(GUARANTEED_ORDER_TAG)
-        return [position_stop_utils.post_stop_order(client=client, tags=n_tag, position=self.position,
-                                                    stopPrice=self.guaranteed_price, quantity=self.guaranteed_amt)]
+        return [self.orderClient.post_stop_market(symbol=self.position.symbol
+                                                  , price=self.guaranteed_price
+                                                  , quantity=self.guaranteed_amt
+                                                  , positionSide=self.position.positionSide
+                                                  , tags=n_tag)]
 
     def get_state(self) -> GuaranteedState:
         if self.currentStopOrderInfo.origQty <= 0:
             return GuaranteedState.IDLE
 
-        if position_stop_utils.is_difference_over_range(
+        if formula_utils.is_difference_over_range(
                 self.symbol.fix_precision_amt(self.currentStopOrderInfo.origQty),
                 self.symbol.fix_precision_amt(self.guaranteed_amt),
                 constant.LIMIT_0_RATE):
             return GuaranteedState.CHAOS_CURRENT
         currentAvgPrice: float = self.currentStopOrderInfo.avgPrice
-        return GuaranteedState.CHAOS_CURRENT if position_stop_utils.is_difference_over_range(
+        return GuaranteedState.CHAOS_CURRENT if formula_utils.is_difference_over_range(
             self.symbol.fix_precision_price(currentAvgPrice),
             self.symbol.fix_precision_price(self.guaranteed_price),
             constant.LIMIT_0_RATE) else GuaranteedState.DONE
@@ -116,7 +118,7 @@ class BaseOrderHandle(TypeOrderHandle):
             return BaseState.IDLE
         if position_stop_utils.is_difference_over_range(self.symbol.fix_precision_price(self.stopPrice),
                                                         self.symbol.fix_precision_price(
-                                                                self.currentStopOrderInfo.avgPrice),
+                                                            self.currentStopOrderInfo.avgPrice),
                                                         constant.LIMIT_0_RATE):
             return BaseState.CHAOS
         return BaseState.CHAOS if position_stop_utils.is_difference_over_range(
@@ -144,7 +146,7 @@ class HandleBundle:
         self.base: BaseOrderHandle = base
 
 
-def gen_type_order_handle(position: Position,
+def gen_type_order_handle(position: PositionDto,
                           currentStopOrdersInfo: OrdersInfo,
                           guaranteed_price: float,
                           guaranteed_amt: float,
