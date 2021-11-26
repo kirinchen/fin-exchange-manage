@@ -12,6 +12,7 @@ from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
 from service.position_client_service import PositionClientService
 from service.position_fuse import dtos
+from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
 from utils import position_utils, order_utils
 from utils.order_utils import OrdersInfo
@@ -26,6 +27,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.dto: T = None
         self.state: dtos.StopState = state
         self.position_client: PositionClientService = None
+        self.productDao : ProductDao = None
         self.tradeClientService: TradeClientService = None
         self.orderClientService: OrderClientService = None
         self.position: PositionDto = None
@@ -36,6 +38,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
 
     def after_init(self):
         self.position_client: PositionClientService = self.get_ex_obj(PositionClientService)
+        self.productDao: ProductDao = self.get_ex_obj(ProductDao)
         self.tradeClientService: TradeClientService = self.get_ex_obj(TradeClientService)
         self.orderClientService: OrderClientService = self.get_ex_obj(OrderClientService)
 

@@ -23,9 +23,10 @@ class BinanceOrderClientService(OrderClientService):
                                                        startTime=startTime, endTime=endTime, orderId=orderId)
         return [binance_utils.convert_order_dto(o) for o in oods]
 
-    def cancel_list_orders(self, symbol: str, clientOrderIdList: List[str]):
-        self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
-                                       origClientOrderIdList=clientOrderIdList)
+    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]):
+        ans = self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
+                                             orderIdList=[od.orderId for od in currentOds])
+        print(ans)
 
     def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)

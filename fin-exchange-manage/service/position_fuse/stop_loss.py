@@ -38,6 +38,8 @@ class StopLoss(Stoper[StopLossDto]):
 
     def is_up_to_date(self) -> bool:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
+        product = self.productDao.get_by_prd_name(self.dto.symbol)
+        quantity = self.productDao.fix_precision_amt(product, quantity)
         if quantity != self.currentStopOrdersInfo.origQty:
             return False
         return not formula_utils.is_difference_over_range(self.stopPrice, self.currentStopOrdersInfo.avgPrice,
