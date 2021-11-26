@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from dto.order_dto import OrderDto
 from service.position_fuse import dtos
 from service.position_fuse.stoper import Stoper
-from utils import position_utils, formula_utils
+from utils import position_utils, formula_utils, direction_utils
 
 
 class StopLossDto(dtos.StopDto):
@@ -60,6 +60,9 @@ class StopLoss(Stoper[StopLossDto]):
 
     def post_order(self) -> OrderDto:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
-        return self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=self.stopPrice,
+        price: float = self.stopPrice if direction_utils.is_low_price(self.position.positionSide, self.lastPrice,
+                                                                      self.stopPrice) else direction_utils.fall_price(
+            self.position.positionSide, self.lastPrice, 1.005)
+        return self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=price,
                                                         quantity=quantity,
                                                         positionSide=self.dto.positionSide, tags=self.tags)
