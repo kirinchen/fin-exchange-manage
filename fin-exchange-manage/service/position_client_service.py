@@ -21,3 +21,7 @@ class PositionClientService(BaseExchangeAbc, ABC):
 
     def find_one(self, symbol: str, positionSide: str) -> PositionDto:
         return position_utils.find_position_one(self.list_all(), symbol, positionSide)
+
+    def get_max_order_amt(self, symbol: str, positionSide: str, price: float) -> float:
+        pos = self.find_one(symbol, positionSide)
+        return pos.maxNotionalValue / price

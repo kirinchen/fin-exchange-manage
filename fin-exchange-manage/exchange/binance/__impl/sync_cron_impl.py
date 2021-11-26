@@ -1,4 +1,6 @@
+from infra.enums import PositionSide
 from model import Product
+from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
 from service.sync_cron import SyncCron
 

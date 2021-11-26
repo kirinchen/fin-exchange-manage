@@ -24,10 +24,13 @@ class BinanceOrderClientService(OrderClientService):
         return [binance_utils.convert_order_dto(o) for o in oods]
 
     def cancel_list_orders(self, symbol: str, clientOrderIdList: List[str]):
-        self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol), origClientOrderIdList=clientOrderIdList)
+        self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
+                                       origClientOrderIdList=clientOrderIdList)
 
     def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
+        amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
+        quantity = min(amt, quantity)
         price_str = str(self.productDao.fix_precision_price(product, price))
         p_amt: float = self.productDao.fix_precision_amt(product, quantity)
         if p_amt == 0:

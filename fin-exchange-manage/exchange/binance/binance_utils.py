@@ -4,6 +4,8 @@ from binance_f.model import Order, Trade, Position
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
+from model import Product
+from service.order_client_service import OrderClientService
 
 
 def fix_usdt_symbol(symbol: str) -> str:
@@ -31,3 +33,5 @@ def convert_position_dto(b_position: Position) -> PositionDto:
     ans = PositionDto(**b_position.__dict__)
     ans.symbol = trim_usdt_symbol(b_position.symbol)
     return ans
+
+

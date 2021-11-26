@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 import exchange
 from dto.order_dto import OrderDto
 from service.base_exchange_abc import BaseExchangeAbc
+from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
 from utils import order_utils
 from utils.order_utils import OrderFilter, OrdersInfo
@@ -17,9 +18,11 @@ class OrderClientService(BaseExchangeAbc, ABC):
     def __init__(self, exchange_name: str, session: Session = None):
         super(OrderClientService, self).__init__(exchange_name, session)
         self.productDao: ProductDao = None
+        self.positionClient: PositionClientService = None
 
     def after_init(self):
         self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
+        self.positionClient: PositionClientService = self.get_ex_obj(PositionClientService)
 
     def get_abc_clazz(self) -> object:
         return OrderClientService
