@@ -14,11 +14,9 @@ from service.product_dao import ProductDao
 class SyncCron(BaseExchangeAbc, ABC):
 
     def init_bind_load(self):
-        with database.session_scope() as session:
-            session: Session
-            self.sync_all_product(session)
+        self.sync_all_product()
 
-    def sync_all_product(self, session: Session):
+    def sync_all_product(self):
         p_dao: ProductDao = self.get_ex_obj(ProductDao)
         ps: List[Product] = p_dao.list_by_this_exchange()
         for p in ps:
