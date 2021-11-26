@@ -46,7 +46,7 @@ class StopMediation(BaseExchangeAbc):
 
     def stop(self) -> List[dtos.StopResult]:
         if self.stopGuaranteed.no_position:
-            return [dtos.StopResult(stopState=stoper.StopState.NO_POS, noActiveMsg='no_position')]
+            return [dtos.StopResult(stopState=dtos.StopState.NO_POS, noActiveMsg='no_position')]
         return self._stop_each([self.stopGuaranteed, self.stopLoss])
 
     def _stop_each(self, stops: List[stoper.Stoper]) -> List[dtos.StopResult]:
