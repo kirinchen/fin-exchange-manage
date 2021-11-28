@@ -20,8 +20,8 @@ class TypeOrderHandle(metaclass=ABCMeta):
     def __init__(self, position: PositionDto, orderClient: OrderClientService):
         self.position: PositionDto = position
         self.orderClient: OrderClientService = orderClient
-        self.product_dao: ProductDao = orderClient.get_ex_obj(ProductDao)
-        self.product: Product = self.product_dao.get_by_prd_name(position.symbol)
+        self.productDao: ProductDao = orderClient.get_ex_obj(ProductDao)
+        self.product: Product = self.productDao.get_by_prd_name(position.symbol)
         self.currentOrders: List[OrderDto] = list()
 
     def init_vars(self):

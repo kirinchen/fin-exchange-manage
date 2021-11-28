@@ -56,9 +56,9 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
     def stop(self) -> dtos.StopResult:
         ods: List[OrderDto] = list()
         if not self.orderHandleBundle.guaranteed.is_up_to_date():
-            ods.extend(self.orderHandleBundle.guaranteed.post_order(client=self.client, tags=self.tags))
+            ods.extend(self.orderHandleBundle.guaranteed.post_order(tags=self.tags))
         if not self.orderHandleBundle.base.is_up_to_date():
-            ods.extend(self.orderHandleBundle.base.post_order(client=self.client, tags=self.tags))
+            ods.extend(self.orderHandleBundle.base.post_order(tags=self.tags))
         return dtos.StopResult(orders=ods, active=True, stopState=self.state)
 
     def is_up_to_date(self) -> bool:
@@ -71,9 +71,9 @@ class StopGuaranteed(Stoper[StopGuaranteedDto]):
     def clean_old_orders(self) -> List[OrderDto]:
         ans: List[OrderDto] = list()
         if not self.orderHandleBundle.guaranteed.is_up_to_date():
-            ans.extend(self.orderHandleBundle.guaranteed.clean_old_orders(client=self.client))
+            ans.extend(self.orderHandleBundle.guaranteed.clean_old_orders())
         if not self.orderHandleBundle.base.is_up_to_date():
-            ans.extend(self.orderHandleBundle.base.clean_old_orders(client=self.client))
+            ans.extend(self.orderHandleBundle.base.clean_old_orders())
         return ans
 
     def _gen_guaranteed_bundle(self) -> GuaranteedBundle:
