@@ -48,8 +48,18 @@ def get_low_price(positionSide: str, a: float, b: float) -> float:
     return -nv
 
 
+def plus_price_by_rate(positionSide: str, orgPrice: float, rate: float) -> float:
+    dp = orgPrice * rate
+    if positionSide == PositionSide.LONG:
+        return orgPrice + dp
+    elif positionSide == PositionSide.SHORT:
+        return orgPrice - dp
+    raise NotImplementedError('not support ' + str(positionSide))
+
+
 def rise_price(positionSide: str, orgPrice: float, rate: float) -> float:
     """
+    rate > 0
     LONG : orgPrice = 100 -> 101
     SHORT : orgPrice = 100 -> 99
     """

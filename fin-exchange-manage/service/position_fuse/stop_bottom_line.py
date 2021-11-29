@@ -3,40 +3,49 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from dto.order_dto import OrderDto
+from dto.position_dto import PositionDto
 from service.position_fuse import dtos
 from service.position_fuse.stoper import Stoper
 from utils import position_utils, formula_utils, direction_utils
 
 
-class StopLossDto(dtos.StopDto):
+class StopBottomLineStep:
 
-    def __init__(self, symbol: str, positionSide: str, balanceRate: float, restopRate: float, tags: List[str] = list(),
-                 clearRate: float = 1):
-        super().__init__(symbol=symbol, positionSide=positionSide, tags=tags)
-        self.balanceRate: float = balanceRate
-        self.restopRate: float = restopRate
+    def __init__(self, profitRate: float, fallRate: float, clearRate: float = 1):
+        self.profitRate: float = profitRate
         self.clearRate: float = clearRate
+        self.fallRate: float = fallRate
+
+    def is_conformable(self, pos: PositionDto, lastPrice: float) -> bool:
+        profit_price = self.get_profit_price()
+        return direction_utils.is_high_price(pos.positionSide, profit_price, lastPrice)
+
+    def get_profit_price(self, pos: PositionDto) -> float:
+        return direction_utils.plus_price_by_rate(pos.positionSide, pos.entryPrice, self.profitRate)
 
 
-class StopBottomLine(Stoper[StopLossDto]):
+class StopBottomLineDto(dtos.StopDto):
+
+    def __init__(self, symbol: str, positionSide: str, steps: List[StopBottomLineStep], tags: List[str] = list()):
+        super().__init__(symbol=symbol, positionSide=positionSide, tags=tags)
+        self.steps: List[StopBottomLineStep] = steps
+
+
+class StopBottomLine(Stoper[StopBottomLineDto]):
 
     def __init__(self, exchange_name: str, session: Session):
         super(StopBottomLine, self).__init__(exchange_name=exchange_name, session=session, state=dtos.StopState.LOSS)
-        self.stopPrice: float = None
 
     def get_abc_clazz(self) -> object:
         return StopBottomLine
 
     def load_vars(self):
         super(StopBottomLine, self).load_vars()
-        self.stopPrice = self._get_stop_quote()
-
-    def _get_stop_quote(self):
-        amount = self.get_account().maxWithdrawAmount
-        guard_amt = amount * self.dto.balanceRate
-        return formula_utils.calc_guard_price(self.position, guard_amt)
+        self.dto.steps = sorted(self.dto.steps, key=lambda s: s.profitRate,reverse = True)
 
     def is_up_to_date(self) -> bool:
+        for step in self.dto.steps:
+
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
         product = self.productDao.get_by_prd_name(self.dto.symbol)
         quantity = self.productDao.fix_precision_amt(product, quantity)
@@ -58,7 +67,10 @@ class StopBottomLine(Stoper[StopLossDto]):
     def is_conformable(self) -> bool:
         if not super().is_conformable():
             return False
-        return True
+        for step in self.dto.steps:
+            if step.is_conformable(self.position,self.lastPrice):
+                return True
+        return False
 
     def post_order(self) -> OrderDto:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
