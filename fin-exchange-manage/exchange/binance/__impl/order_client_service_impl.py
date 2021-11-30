@@ -8,6 +8,7 @@ from dto.order_dto import OrderDto
 from exchange.binance import gen_request_client, binance_utils
 from model.init_data import init_item
 from service.order_client_service import OrderClientService
+from service.product_dao import ProductDao
 from utils import comm_utils, direction_utils
 
 
@@ -32,8 +33,8 @@ class BinanceOrderClientService(OrderClientService):
         product = self.productDao.get_by_prd_name(prd_name)
         amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
         quantity = min(amt, quantity)
-        price_str = str(self.productDao.fix_precision_price(product, price))
-        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        price_str = str(ProductDao.fix_precision_price(product, price))
+        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         if p_amt == 0:
             return None
         quantity_str = str(p_amt)
@@ -57,8 +58,8 @@ class BinanceOrderClientService(OrderClientService):
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price_str = str(self.productDao.fix_precision_price(product, price))
-        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        price_str = str(ProductDao.fix_precision_price(product, price))
+        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         p_amt = p_amt if p_amt > 0 else product.min_item
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)
@@ -80,8 +81,8 @@ class BinanceOrderClientService(OrderClientService):
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price_str = str(self.productDao.fix_precision_price(product, price))
-        p_amt: float = self.productDao.fix_precision_amt(product, quantity)
+        price_str = str(ProductDao.fix_precision_price(product, price))
+        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         p_amt = p_amt if p_amt > 0 else product.min_item
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)

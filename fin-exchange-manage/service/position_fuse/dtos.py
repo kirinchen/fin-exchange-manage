@@ -16,7 +16,7 @@ class StopDto(metaclass=abc.ABCMeta):
 class StopState(Enum):
     NO_POS = 'NO_POS'
     LOSS = 'LOSS'
-    GUARANTEED = 'GATE'
+    Trailing = 'TRAI'
     PROFIT = 'PROF'
 
 

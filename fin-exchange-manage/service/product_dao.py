@@ -36,11 +36,13 @@ class ProductDao(BaseDao):
             .filter(Product.exchange == self.exchange_name) \
             .one()
 
-    def fix_precision_price(self, product: Product, price: float) -> float:
+    @classmethod
+    def fix_precision_price(cls, product: Product, price: float) -> float:
         fstr = str(product.precision_price) + 'f'
         return float(('{:.' + fstr + '}').format(price))
 
-    def fix_precision_amt(self, product: Product, amt: float) -> float:
+    @classmethod
+    def fix_precision_amt(cls, product: Product, amt: float) -> float:
         fstr = str(product.precision_amount) + 'f'
         return float(('{:.' + fstr + '}').format(amt))
 

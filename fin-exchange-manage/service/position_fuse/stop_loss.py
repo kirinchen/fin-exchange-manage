@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from dto.order_dto import OrderDto
 from service.position_fuse import dtos
 from service.position_fuse.stoper import Stoper
+from service.product_dao import ProductDao
 from utils import position_utils, formula_utils, direction_utils
 
 
@@ -38,8 +39,7 @@ class StopLoss(Stoper[StopLossDto]):
 
     def is_up_to_date(self) -> bool:
         quantity: float = position_utils.get_abs_amt(self.position) * self.dto.clearRate
-        product = self.productDao.get_by_prd_name(self.dto.symbol)
-        quantity = self.productDao.fix_precision_amt(product, quantity)
+        quantity = ProductDao.fix_precision_amt(self.product, quantity)
         if quantity != self.currentStopOrdersInfo.origQty:
             return False
         return not formula_utils.is_difference_over_range(self.stopPrice, self.currentStopOrdersInfo.avgPrice,

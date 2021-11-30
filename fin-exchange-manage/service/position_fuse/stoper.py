@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
+from model import Product
 from rest import account
 from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
@@ -27,7 +28,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.dto: T = None
         self.state: dtos.StopState = state
         self.position_client: PositionClientService = None
-        self.productDao : ProductDao = None
+        self.productDao: ProductDao = None
         self.tradeClientService: TradeClientService = None
         self.orderClientService: OrderClientService = None
         self.position: PositionDto = None
@@ -35,6 +36,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.tags: List[str] = None
         self.currentStopOrdersInfo: OrdersInfo = None
         self.lastPrice: float = None
+        self.product: Product = None
 
     def after_init(self):
         self.position_client: PositionClientService = self.get_ex_obj(PositionClientService)
@@ -47,6 +49,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.position: PositionDto = self.get_current_position()
         self.no_position = position_utils.get_abs_amt(self.position) <= 0
         self.tags = self._setup_tags(list(dto.tags))
+        self.product: Product = self.productDao.get_by_prd_name(self.dto.symbol)
         return self
 
     def load_vars(self):
