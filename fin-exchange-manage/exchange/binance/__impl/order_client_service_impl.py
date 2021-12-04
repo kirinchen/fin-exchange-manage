@@ -33,7 +33,10 @@ class BinanceOrderClientService(OrderClientService):
         product = self.productDao.get_by_prd_name(prd_name)
         amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
         quantity = min(amt, quantity)
-        price_str = str(ProductDao.fix_precision_price(product, price))
+        price = ProductDao.fix_precision_price(product, price)
+        if price <= 0:
+            return None
+        price_str = str(price)
         p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         if p_amt == 0:
             return None
@@ -55,10 +58,14 @@ class BinanceOrderClientService(OrderClientService):
 
     def post_stop_market(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
+
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price_str = str(ProductDao.fix_precision_price(product, price))
+        price = ProductDao.fix_precision_price(product, price)
+        if price <= 0:
+            return None
+        price_str = str(price)
         p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         p_amt = p_amt if p_amt > 0 else product.min_item
         quantity_str = str(p_amt)
@@ -81,7 +88,10 @@ class BinanceOrderClientService(OrderClientService):
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price_str = str(ProductDao.fix_precision_price(product, price))
+        price = ProductDao.fix_precision_price(product, price)
+        if price <= 0:
+            return None
+        price_str = str(price)
         p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         p_amt = p_amt if p_amt > 0 else product.min_item
         quantity_str = str(p_amt)
