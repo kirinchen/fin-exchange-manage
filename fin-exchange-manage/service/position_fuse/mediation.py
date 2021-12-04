@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from service.base_exchange_abc import BaseExchangeAbc
+from service.order_client_service import OrderClientService
 from service.position_fuse import stoper, dtos
 from service.position_fuse.stop_loss import StopLossDto, StopLoss
 from service.position_fuse.stop_trailing import StopTrailingDto, StopTrailing
@@ -35,12 +36,14 @@ class StopMediation(BaseExchangeAbc):
         self.dto: StopMediationDto = None
         self.stopLoss: StopLoss = None
         self.stopTrailing: StopTrailing = None
+        self.orderClientService: OrderClientService = None
 
     def get_abc_clazz(self) -> object:
         return StopMediation
 
     def init(self, dto: StopMediationDto):
         self.dto: StopMediationDto = dto
+        self.orderClientService: OrderClientService = self.get_ex_obj(OrderClientService)
         self.stopLoss: StopLoss = self.get_ex_obj(StopLoss).init(dto=self.dto.stopLoss)
         self.stopTrailing: StopTrailing = self.get_ex_obj(StopTrailing).init(dto=self.dto.stopTrailing)
 

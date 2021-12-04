@@ -28,8 +28,8 @@ class StopLoss(Stoper[StopLossDto]):
     def get_abc_clazz(self) -> object:
         return StopLoss
 
-    def load_vars(self):
-        super(StopLoss, self).load_vars()
+    def load_vars(self, all_orders: List[OrderDto]):
+        super(StopLoss, self).load_vars(all_orders)
         self.stopPrice = self._get_stop_quote()
 
     def _get_stop_quote(self):

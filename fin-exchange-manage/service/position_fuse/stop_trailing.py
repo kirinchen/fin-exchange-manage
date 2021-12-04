@@ -50,8 +50,8 @@ class StopTrailing(Stoper[StopTrailingDto]):
     def get_abc_clazz(self) -> object:
         return StopTrailing
 
-    def load_vars(self):
-        super(StopTrailing, self).load_vars()
+    def load_vars(self, all_orders: List[OrderDto]):
+        super(StopTrailing, self).load_vars(all_orders)
         self.dto.steps = sorted(self.dto.steps, key=lambda s: s.profitRate, reverse=True)
 
     def is_up_to_date(self) -> bool:
