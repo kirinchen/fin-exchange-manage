@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
+from infra.enums import OrderStatus
 from model import Product
 from rest import account
 from service.base_exchange_abc import BaseExchangeAbc
@@ -15,8 +16,8 @@ from service.position_client_service import PositionClientService
 from service.position_fuse import dtos
 from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
-from utils import position_utils, order_utils
-from utils.order_utils import OrdersInfo
+from utils import position_utils, order_utils, direction_utils
+from utils.order_utils import OrdersInfo, OrderFilter
 
 T = TypeVar('T', bound=dtos.StopDto)
 
@@ -52,13 +53,14 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.product: Product = self.productDao.get_by_prd_name(self.dto.symbol)
         return self
 
-    def load_vars(self):
+    def load_vars(self, all_orders: List[OrderDto]):
         if self.no_position:
             raise TypeError('no position')
-        all_orders = self.orderClientService.list_all_order(symbol=self.dto.symbol)
-        self.currentStopOrdersInfo = order_utils.get_current_new_stop_orders(all_orders,
-                                                                             self.dto.symbol,
-                                                                             self.position.positionSide)
+        allStopOrders = order_utils.get_current_new_stop_orders(all_orders,
+                                                                self.dto.symbol,
+                                                                self.position.positionSide)
+        self.currentStopOrdersInfo = order_utils.filter_order(allStopOrders.orders,
+                                                              OrderFilter(tags=[self.state.value]))
         self.lastPrice: float = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
                                                                             positionSide=self.dto.positionSide)
 

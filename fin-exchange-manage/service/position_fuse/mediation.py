@@ -6,6 +6,7 @@ from service.base_exchange_abc import BaseExchangeAbc
 from service.position_fuse import stoper, dtos
 from service.position_fuse.stop_loss import StopLossDto, StopLoss
 from service.position_fuse.stop_trailing import StopTrailingDto, StopTrailing
+from utils import order_utils
 
 
 class StopMediationDto:
@@ -50,11 +51,10 @@ class StopMediation(BaseExchangeAbc):
 
     def _stop_each(self, stops: List[stoper.Stoper]) -> List[dtos.StopResult]:
         no_stop_results: List[dtos.StopResult] = list()
+        all_orders = self.orderClientService.list_all_order(symbol=self.dto.symbol)
         for stop in stops:
-            stop.load_vars()
+            stop.load_vars(all_orders)
             stop_result: dtos.StopResult = stop.run()
             no_stop_results.append(stop_result)
-            if stop_result.active:
-                break
 
         return no_stop_results
