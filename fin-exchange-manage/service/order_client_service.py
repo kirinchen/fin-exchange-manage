@@ -32,6 +32,12 @@ class OrderClientService(BaseExchangeAbc, ABC):
                                      startTime=filter_obj.updateStartTime, endTime=filter_obj.updateEndTime)
         return order_utils.filter_order(oods=orders, ft=filter_obj)
 
+    def cancel_orders_by(self, order_filter: OrderFilter) -> List[OrderDto]:
+        if not order_filter.symbol:
+            raise TypeError('symbol can not null')
+        result = self.query_order(order_filter)
+        return self.clean_orders(order_filter.symbol, result.orders)
+
     def clean_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
         try:
             if currentOds is None:
