@@ -11,6 +11,8 @@ from service.order_client_service import OrderClientService
 from service.product_dao import ProductDao
 from utils import comm_utils, direction_utils
 
+MAX_BATCH_COUNT = 7
+
 
 class BinanceOrderClientService(OrderClientService):
 
@@ -25,9 +27,23 @@ class BinanceOrderClientService(OrderClientService):
         return [binance_utils.convert_order_dto(o) for o in oods]
 
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]):
-        ans = self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
-                                             orderIdList=[od.orderId for od in currentOds])
-        print(ans)
+        ids: List[str] = [od.orderId for od in currentOds]
+        batch_ids: List[str] = list()
+        results = list()
+        count = 0
+        for oid in ids:
+            count = count + 1
+            batch_ids.append(oid)
+            if count == MAX_BATCH_COUNT:
+                results.extend(self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
+                                                              orderIdList=batch_ids))
+
+                count = 0
+                batch_ids.clear()
+
+        if len(batch_ids) > 0:
+            results.extend(self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
+                                                          orderIdList=batch_ids))
 
     def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
