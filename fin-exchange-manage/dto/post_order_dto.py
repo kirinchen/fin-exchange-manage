@@ -11,12 +11,14 @@ class BasePostOrderDto:
                  targetPrice: float = -1,
                  size: int = 1,
                  proportionalRate: float = 1,
+                 targetIdxShift=0,
                  tags: List[str] = list(), **kwargs):
         self.strategy: str = strategy
         self.symbol: str = symbol
         self.positionSide: str = positionSide
         self.priceBuffRate: float = priceBuffRate
         self.targetPrice: float = targetPrice
+        self.targetIdxShift: int = targetIdxShift
         self.gapRate: float = gapRate
         self.proportionalRate: float = proportionalRate
         self.proportionalReverse: bool = proportionalReverse

@@ -93,7 +93,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
             highPrice = direction_utils.get_high_price(positionSide=self.dto.positionSide, a=self.lastPrice,
                                                        b=self.dto.targetPrice)
             dp = (highPrice - self.lastPrice) / self.dto.size
-            return self.lastPrice + (dp * idx)
+            return self.lastPrice + (dp * (idx + self.dto.targetIdxShift))
 
     def calc_fall_price(self, idx: int) -> float:
         self._valid_calc_price()
@@ -104,7 +104,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
             lowPrice = direction_utils.get_low_price(positionSide=self.dto.positionSide, a=self.lastPrice,
                                                      b=self.dto.targetPrice)
             dp = (lowPrice - self.lastPrice) / self.dto.size
-            return self.lastPrice + (dp * idx)
+            return self.lastPrice + (dp * (idx + self.dto.targetIdxShift))
 
     @abc.abstractmethod
     def load_data(self) -> LoadDataCheck:
