@@ -6,7 +6,9 @@ from utils import comm_utils
 
 class BasePostOrderDto:
 
-    def __init__(self, symbol: str, positionSide: str, strategy: str, priceBuffRate: float, gapRate: float,
+    def __init__(self, symbol: str, positionSide: str, strategy: str, priceBuffRate: float, gapRate: float = -1,
+                 proportionalReverse: bool = False,
+                 targetPrice: float = -1,
                  size: int = 1,
                  proportionalRate: float = 1,
                  tags: List[str] = list(), **kwargs):
@@ -14,8 +16,10 @@ class BasePostOrderDto:
         self.symbol: str = symbol
         self.positionSide: str = positionSide
         self.priceBuffRate: float = priceBuffRate
+        self.targetPrice: float = targetPrice
         self.gapRate: float = gapRate
         self.proportionalRate: float = proportionalRate
+        self.proportionalReverse: bool = proportionalReverse
         self.size: int = size
         self.tags: List[str] = list(tags)
 

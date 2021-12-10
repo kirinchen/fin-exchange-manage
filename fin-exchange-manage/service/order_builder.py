@@ -50,12 +50,14 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.orderClientService: OrderClientService = None
         self.productDao: ProductDao = None
         self.product: Product = None
+        self.lastPrice: float = None
 
     def init(self, dto: T) -> object:
         self.dto = dto
         self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange_name, TradeClientService,
                                                                             self.session)
-        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange_name, PositionClientService,
+        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange_name,
+                                                                                  PositionClientService,
                                                                                   self.session)
         self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
                                                                             self.session)
@@ -71,6 +73,38 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         for pq in self.gen_price_qty_list():
             ans.append(self.post_one(pq))
         return ans
+
+    def calc_proportional_amt(self, per_qty: float, i: int) -> float:
+        num = self.dto.size - i if self.dto.proportionalReverse else i
+        return per_qty * pow(self.dto.proportionalRate, num)
+
+    def _valid_calc_price(self):
+        if self.dto.gapRate < 0 and self.dto.targetPrice < 0:
+            raise TypeError(f'gapRate={self.dto.gapRate} targetPrice={self.dto.targetPrice} tow <0')
+        if self.dto.gapRate > 0 and self.dto.targetPrice > 0:
+            raise TypeError(f'gapRate={self.dto.gapRate} targetPrice={self.dto.targetPrice} tow >0')
+
+    def calc_rise_price(self, idx: int) -> float:
+        self._valid_calc_price()
+        if self.dto.gapRate > 0:
+            return direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                              rate=1 + (self.dto.gapRate * idx))
+        else:
+            highPrice = direction_utils.get_high_price(positionSide=self.dto.positionSide, a=self.lastPrice,
+                                                       b=self.dto.targetPrice)
+            dp = (highPrice - self.lastPrice) / self.dto.size
+            return self.lastPrice + (dp * idx)
+
+    def calc_fall_price(self, idx: int) -> float:
+        self._valid_calc_price()
+        if self.dto.gapRate > 0:
+            return direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
+                                              rate=1 + (self.dto.gapRate * idx))
+        else:
+            lowPrice = direction_utils.get_low_price(positionSide=self.dto.positionSide, a=self.lastPrice,
+                                                     b=self.dto.targetPrice)
+            dp = (lowPrice - self.lastPrice) / self.dto.size
+            return self.lastPrice + (dp * idx)
 
     @abc.abstractmethod
     def load_data(self) -> LoadDataCheck:
@@ -92,7 +126,6 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
-        self.lastPrice: float = None
 
     def get_abc_clazz(self) -> object:
         return LimitOrderBuilder
@@ -127,9 +160,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
         priceQtyList: List[PriceQty] = list()
         for i in range(int(self.dto.size)):
-            p = direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
-                                           rate=1 + (self.dto.gapRate * i))
-            pre_amt: float = base_amt * pow(self.dto.proportionalRate, i)
+            p = self.calc_fall_price(i)
+            pre_amt: float = self.calc_proportional_amt(base_amt, i)
             qty: float = self._calc_quantity(quote=p, amount=pre_amt)
             priceQtyList.append(PriceQty(
                 price=p,
@@ -148,7 +180,6 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
         super().__init__(exchange_name, session)
         self.position_quantity: float = None
         self.position: PositionDto = None
-        self.lastPrice: float = None
 
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
@@ -173,7 +204,7 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
         priceQtyList: List[PriceQty] = list()
         for i in range(int(self.dto.size)):
             p = self.calc_price(i)
-            q = per_qty * pow(self.dto.proportionalRate, i)
+            q = self.calc_proportional_amt(per_qty, i)
             priceQtyList.append(PriceQty(
                 price=p,
                 quantity=q
@@ -181,8 +212,7 @@ class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
         return priceQtyList
 
     def calc_price(self, idx: int) -> float:
-        return direction_utils.rise_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
-                                          rate=1 + (self.dto.gapRate * idx))
+        return self.calc_rise_price(idx)
 
     def post_one(self, pq: PriceQty) -> OrderDto:
         return self.orderClientService.post_take_profit(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
@@ -200,8 +230,7 @@ class StopMarketOrderBuilder(TakeProfitOrderBuilder, ABC):
                                                            buffRate=self.dto.priceBuffRate)
 
     def calc_price(self, idx: int) -> float:
-        return direction_utils.fall_price(positionSide=self.dto.positionSide, orgPrice=self.lastPrice,
-                                          rate=1 + (self.dto.gapRate * idx))
+        return self.calc_fall_price(idx)
 
     def post_one(self, pq: PriceQty) -> OrderDto:
         return self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
