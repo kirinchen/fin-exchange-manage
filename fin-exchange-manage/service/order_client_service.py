@@ -51,7 +51,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
             print('Failed to upload to ftp: ' + str(e))
 
     @abc.abstractmethod
-    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]):
+    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto])-> List[OrderDto]:
         raise NotImplementedError('cancel_list_orders')
 
     @abc.abstractmethod

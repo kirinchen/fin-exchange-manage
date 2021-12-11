@@ -26,10 +26,10 @@ class BinanceOrderClientService(OrderClientService):
                                                        startTime=startTime, endTime=endTime, orderId=orderId)
         return [binance_utils.convert_order_dto(o) for o in oods]
 
-    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]):
+    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
         ids: List[str] = [od.orderId for od in currentOds]
         batch_ids: List[str] = list()
-        results = list()
+        results: List[OrderDto] = list()
         count = 0
         for oid in ids:
             count = count + 1
@@ -44,6 +44,7 @@ class BinanceOrderClientService(OrderClientService):
         if len(batch_ids) > 0:
             results.extend(self.client.cancel_list_orders(symbol=binance_utils.fix_usdt_symbol(symbol),
                                                           orderIdList=batch_ids))
+        return results
 
     def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
