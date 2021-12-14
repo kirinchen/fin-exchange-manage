@@ -72,7 +72,11 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         ans: List[OrderDto] = list()
         for pq in self.gen_price_qty_list():
             ans.append(self.post_one(pq))
+        ans.extend(self.post_expansion())
         return ans
+
+    def post_expansion(self) -> List[OrderDto]:
+        return list()
 
     def calc_proportional_amt(self, per_qty: float, i: int) -> float:
         num = self.dto.size - i if self.dto.proportionalReverse else i
@@ -126,6 +130,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
+        self._all_order_qty = 0
 
     def get_abc_clazz(self) -> object:
         return LimitOrderBuilder
@@ -163,6 +168,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
             p = self.calc_fall_price(i)
             pre_amt: float = self.calc_proportional_amt(base_amt, i)
             qty: float = self._calc_quantity(quote=p, amount=pre_amt)
+            self._all_order_qty += qty
             priceQtyList.append(PriceQty(
                 price=p,
                 quantity=qty
@@ -172,6 +178,17 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
     def post_one(self, pq: PriceQty) -> OrderDto:
         return self.orderClientService.post_limit(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
                                                   positionSide=self.dto.positionSide, tags=self.dto.tags)
+
+    def get_stop_price(self) -> float:
+        return self.dto.stopPrice
+
+    def post_expansion(self) -> List[OrderDto]:
+        stopPrice = self.get_stop_price()
+        if not stopPrice or stopPrice < 0:
+            return list()
+        return [self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=stopPrice,
+                                                         quantity=self._all_order_qty,
+                                                         positionSide=self.dto.positionSide, tags=self.dto.tags)]
 
 
 class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
