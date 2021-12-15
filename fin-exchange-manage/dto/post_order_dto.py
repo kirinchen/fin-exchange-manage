@@ -17,9 +17,9 @@ class BasePostOrderDto:
         self.symbol: str = symbol
         self.positionSide: str = positionSide
         self.priceBuffRate: float = priceBuffRate
-        self.targetPrice: float = targetPrice
         self.targetIdxShift: int = targetIdxShift
-        self.gapRate: float = gapRate
+        self.targetPrice: float = targetPrice if targetPrice is not None else -1
+        self.gapRate: float = gapRate if gapRate is not None else -1
         self.proportionalRate: float = proportionalRate
         self.proportionalReverse: bool = proportionalReverse
         self.size: int = size
