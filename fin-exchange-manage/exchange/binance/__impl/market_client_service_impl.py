@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from binance_f import RequestClient
@@ -19,12 +20,14 @@ class BinanceMarketClientService(MarketClientService):
         super(BinanceMarketClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
 
-    def get_candlestick_data(self, prd_name: str, interval: CandlestickInterval, startTime: int = None,
-                             endTime: int = None, limit: int = None) -> List[CandlestickDto]:
+    def get_candlestick_data(self, prd_name: str, interval: CandlestickInterval, startTime: datetime = None,
+                             endTime: datetime = None, limit: int = None) -> List[CandlestickDto]:
+        start_int = int(startTime.timestamp() * 1000) if startTime else None
+        end_int = int(endTime.timestamp() * 1000) if endTime else None
         result: List[Candlestick] = self.client.get_candlestick_data(symbol=binance_utils.fix_usdt_symbol(prd_name),
                                                                      interval=interval,
-                                                                     startTime=startTime,
-                                                                     endTime=endTime, limit=limit)
+                                                                     startTime=start_int,
+                                                                     endTime=end_int, limit=limit)
         return [binance_utils.convert_candlestick_dto(r) for r in result]
 
 

@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import dateutil.parser
+
 import exchange
 from infra import database
 from infra.enums import CandlestickInterval
@@ -8,12 +12,12 @@ from utils import comm_utils
 
 class ParmsDto:
 
-    def __init__(self, prd_name: str, interval: CandlestickInterval, startTime: int = None,
-                 endTime: int = None, limit: int = None, **kwargs):
+    def __init__(self, prd_name: str, interval: CandlestickInterval, startTime: str = None,
+                 endTime: str = None, limit: int = None, **kwargs):
         self.prd_name = prd_name
         self.interval = interval
-        self.startTime = startTime
-        self.endTime = endTime
+        self.startTime: datetime = dateutil.parser.parse(startTime) if startTime else None
+        self.endTime: datetime = dateutil.parser.parse(endTime) if endTime else None
         self.limit = limit
 
 

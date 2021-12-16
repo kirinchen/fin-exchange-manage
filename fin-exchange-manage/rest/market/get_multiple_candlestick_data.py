@@ -1,4 +1,7 @@
+from datetime import datetime
 from typing import List
+
+import dateutil.parser
 
 import exchange
 from infra import database
@@ -10,12 +13,12 @@ from utils import comm_utils
 
 class ParmsDto:
 
-    def __init__(self, prd_name_list: List[str], interval: CandlestickInterval, startTime: int = None,
-                 endTime: int = None, limit: int = None, **kwargs):
+    def __init__(self, prd_name_list: List[str], interval: CandlestickInterval, startTime: str = None,
+                 endTime: str = None, limit: int = None, **kwargs):
         self.prd_name_list = prd_name_list
         self.interval = interval
-        self.startTime = startTime
-        self.endTime = endTime
+        self.startTime: datetime = dateutil.parser.parse(startTime) if startTime else None
+        self.endTime: datetime = dateutil.parser.parse(endTime) if endTime else None
         self.limit = limit
 
 
