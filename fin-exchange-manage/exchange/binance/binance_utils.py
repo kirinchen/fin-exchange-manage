@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from binance_f.model import Order, Trade, Position
+from binance_f.model import Order, Trade, Position, Candlestick
+
+from dto.market_dto import CandlestickDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
@@ -35,3 +37,10 @@ def convert_position_dto(b_position: Position) -> PositionDto:
     return ans
 
 
+def convert_candlestick_dto(ct: Candlestick) -> CandlestickDto:
+    t_dict = ct.__dict__
+    op_time = datetime.fromtimestamp(ct.openTime / 1000)
+    cl_time = datetime.fromtimestamp(ct.closeTime / 1000)
+    t_dict['openTime'] = op_time
+    t_dict['closeTime'] = cl_time
+    return CandlestickDto(**t_dict)

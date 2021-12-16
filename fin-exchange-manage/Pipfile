@@ -11,6 +11,7 @@ python-dotenv = "*"
 python-dateutil = "*"
 psycopg2 = "*"
 long = "*"
+kwargs = "*"
 
 [dev-packages]
 
