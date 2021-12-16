@@ -45,6 +45,6 @@ def convert_candlestick_dto(ct: Candlestick) -> CandlestickDto:
     cl_time = datetime.fromtimestamp(ct.closeTime / 1000)
     t_dict['openAt'] = op_time
     t_dict['closeAt'] = cl_time
-    t_dict['highAt'] = datetime.fromtimestamp((ct.openTime + oc_dt) / 1000)
-    t_dict['lowAt'] = datetime.fromtimestamp((ct.openTime + oc_dt * 2) / 1000)
+    t_dict['highAt'] = None
+    t_dict['lowAt'] = None
     return CandlestickDto(**t_dict)
