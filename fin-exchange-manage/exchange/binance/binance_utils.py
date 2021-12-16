@@ -39,8 +39,12 @@ def convert_position_dto(b_position: Position) -> PositionDto:
 
 def convert_candlestick_dto(ct: Candlestick) -> CandlestickDto:
     t_dict = ct.__dict__
+    oc_dt = (ct.closeTime - ct.openTime) / 3
+
     op_time = datetime.fromtimestamp(ct.openTime / 1000)
     cl_time = datetime.fromtimestamp(ct.closeTime / 1000)
-    t_dict['openTime'] = op_time
-    t_dict['closeTime'] = cl_time
+    t_dict['openAt'] = op_time
+    t_dict['closeAt'] = cl_time
+    t_dict['highAt'] = datetime.fromtimestamp((ct.openTime + oc_dt) / 1000)
+    t_dict['lowAt'] = datetime.fromtimestamp((ct.openTime + oc_dt * 2) / 1000)
     return CandlestickDto(**t_dict)
