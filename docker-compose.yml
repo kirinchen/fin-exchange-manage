@@ -3,8 +3,8 @@ services:
 
   fin-exchange-manage:
     build:
-        context: ./fin-exchange-manage/
-        dockerfile: Dockerfile
+        context: ./
+        dockerfile: ./fin-exchange-manage/Dockerfile
     ports: 
       - "9282:5000"
     depends_on:
