@@ -2,7 +2,7 @@ from typing import Any, List
 
 from dto.account_dto import AccountDto
 from exchange.maicoin_max import gen_request_client, max_utils
-from max_exchange_api_python3.max.dto.position import Position
+from maicoin_max.dto.position import Position
 from rest.api_function import APIFunction, T
 
 

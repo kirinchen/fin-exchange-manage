@@ -1,11 +1,8 @@
+from binance_f import RequestClient
 from sqlalchemy.orm import Session
 
-from binance_f import RequestClient
-from binance_f.model import TimeInForce, OrderType, WorkingType
-from dto.order_dto import OrderDto
-from exchange.binance import gen_request_client, binance_utils
-from service.order_builder import TakeProfitOrderBuilder, PriceQty
-from utils import comm_utils
+from exchange.binance import gen_request_client
+from service.order_builder import TakeProfitOrderBuilder
 
 
 class MaxTakeProfitOrderBuilder(TakeProfitOrderBuilder):

@@ -12,6 +12,7 @@ python-dateutil = "*"
 psycopg2 = "*"
 long = "*"
 kwargs = "*"
+max-exchange-api-python3 = {editable = true, path = "./../max-exchange-api-python3"}
 
 [dev-packages]
 

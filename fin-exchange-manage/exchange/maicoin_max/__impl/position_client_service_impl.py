@@ -1,9 +1,9 @@
 from typing import List
 
-from sqlalchemy.orm import Session
-
 from binance_f import RequestClient
 from binance_f.model import Position
+from sqlalchemy.orm import Session
+
 from dto.position_dto import PositionDto
 from exchange.binance import gen_request_client, binance_utils
 from service.position_client_service import PositionClientService
