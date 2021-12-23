@@ -1,5 +1,5 @@
 import config
-from max_exchange_api_python3.maicoin_max.client import Client
+from maicoin_max.client import Client
 
 
 def gen_request_client() -> Client:
