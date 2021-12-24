@@ -1,7 +1,7 @@
 FROM python:3.9.2
 RUN pip install pipenv
-COPY . /myapp
-ADD ../max-exchange-api-python3 /max-exchange-api-python3
+COPY ./fin-exchange-manage /myapp
+ADD ./max-exchange-api-python3 /max-exchange-api-python3
 WORKDIR  /myapp
 RUN pipenv install
 
