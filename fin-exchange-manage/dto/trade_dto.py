@@ -70,7 +70,7 @@ class TradeRange:
 def gen_time_val_map(ts: TradeRange) -> Dict[str, float]:
     ans: Dict[str, float] = dict()
     for t in ts.trades:
-        ans[time_utils.to_time_utc_iso(t.time)] = t.price()
+        ans[time_utils.to_time_utc_iso(t.time)] = t.price
     return ans
 
 
