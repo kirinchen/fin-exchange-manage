@@ -6,7 +6,7 @@ from typing import TypeVar, Generic, Any
 from sqlalchemy.orm import scoped_session, Session
 
 import exchange
-from model import TimestampMixin
+from model.comm import TimestampMixin
 
 EX = TypeVar('E')
 
@@ -32,7 +32,7 @@ class BaseExchangeAbc(ABC):
 T = TypeVar('T')
 
 
-class BaseDao(Generic[T], BaseExchangeAbc, ABC):
+class BaseDao(BaseExchangeAbc,Generic[T], ABC):
 
     @abc.abstractmethod
     def get_entity_clazz(self) -> T:

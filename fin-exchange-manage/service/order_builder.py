@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 import exchange
 import rest.account.info.get
+from dto import order_dto
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
@@ -13,10 +14,13 @@ from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeStop
 from infra.enums import OrderStrategy
 from model import Product
 from model.init_data import init_item
+from model.order_pack import OrderPack
 from rest import account
 from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
+from service.order_dao import OrderDao
+from service.order_pack_dao import OrderPackDao
 from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
@@ -49,6 +53,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.positionClientService: PositionClientService = None
         self.orderClientService: OrderClientService = None
         self.productDao: ProductDao = None
+        self.orderDao: OrderDao = None
+        self.orderPackDao: OrderPackDao = None
         self.product: Product = None
         self.lastPrice: float = None
 
@@ -62,6 +68,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
                                                                             self.session)
         self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
+        self.orderDao: OrderDao = self.get_ex_obj(OrderDao)
+        self.orderPackDao: OrderPackDao = self.get_ex_obj(OrderPackDao)
         self.product = self.productDao.get_by_prd_name(self.dto.symbol)
         return self
 
@@ -77,9 +85,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         return ans
 
     def record_batch_info(self, ods: List[OrderDto]):
-        if len(ods) <= 0:
-            return
-        raise NotImplementedError('record_batch_info')
+        self.orderPackDao.create_by_orders(ods=ods, tags=self.dto.tags, strategy=self.dto.strategy)
 
     def post_expansion(self) -> List[OrderDto]:
         return list()

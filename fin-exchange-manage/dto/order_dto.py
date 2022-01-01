@@ -1,3 +1,7 @@
+from model import Order
+from utils import reflection_util, entity_utils
+
+
 class OrderDto:
 
     def __init__(self,
@@ -19,7 +23,7 @@ class OrderDto:
                  , activatePrice=None
                  , priceRate=None
                  , closePosition=None
-                 , **kwargs
+                 , updateAt=None, **kwargs
                  ):
         self.clientOrderId = clientOrderId
         self.cumQuote = cumQuote
@@ -39,3 +43,7 @@ class OrderDto:
         self.activatePrice = activatePrice
         self.priceRate = priceRate
         self.closePosition = closePosition
+        self.updateAt: str = updateAt
+
+
+

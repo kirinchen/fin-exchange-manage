@@ -6,7 +6,8 @@ import pytz
 
 from dto.order_dto import OrderDto
 from infra.enums import OrderType, OrderStatus
-from utils import comm_utils, direction_utils
+from model import Order
+from utils import comm_utils, direction_utils, entity_utils
 
 
 class OrderFilter:
@@ -53,7 +54,7 @@ class OrdersInfo:
         self.lastAt = datetime.fromtimestamp(ups, pytz.utc)
         sum_avg_price = 0
         for e in self.orders:
-            e.updateAt = datetime.fromtimestamp(e.updateTime / 1000, pytz.utc).isoformat()
+            # e.updateAt = datetime.fromtimestamp(e.updateTime / 1000, pytz.utc).isoformat()
             self.origQty += e.origQty
             sum_avg_price += e.origQty * get_price(e)
         self.avgPrice = sum_avg_price / self.origQty
@@ -126,3 +127,15 @@ def get_current_new_stop_orders(oods: List[OrderDto], symbol: str, positionSide:
                      side=stop_order_side
                      )
     return filter_order(oods, of)
+
+
+def convert_to_model(dto: OrderDto, exchange: str, order_strategy: str = None, pack_uid: str = None) -> Order:
+    ans: Order = entity_utils.gen_entity_from_obj(dto, Order)
+    ans.price = get_price(dto)
+    ans.prd_name = dto.symbol
+    ans.order_strategy = order_strategy
+    ans.exchange_update_at = dto.updateAt
+    ans.exchange = exchange
+    ans.pack_uid = pack_uid
+    ans.exchangeOrderId = str(dto.orderId)
+    return ans

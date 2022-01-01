@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytz
 from binance_f.model import Order, Trade, Position, Candlestick
 
 from dto.market_dto import CandlestickDto
@@ -21,6 +22,7 @@ def trim_usdt_symbol(symbol: str) -> str:
 def convert_order_dto(b_order: Order) -> OrderDto:
     ans = OrderDto(**b_order.__dict__)
     ans.symbol = trim_usdt_symbol(b_order.symbol)
+    ans.updateAt = datetime.fromtimestamp(ans.updateTime / 1000, pytz.utc).isoformat()
     return ans
 
 
