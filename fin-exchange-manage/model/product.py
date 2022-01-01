@@ -8,7 +8,7 @@ class Product(Base):
     __tablename__ = 'product'
     uid = Column(String(32), primary_key=True, nullable=False)
     exchange = Column(String(50), nullable=False)
-    prd_name = Column(String(50), nullable=False)  # ex NSDAQUSD USDTWD ... but U本位幣安例外 BTC ETH ...
+    prd_name = Column(String(150), nullable=False)  # ex NSDAQUSD USDTWD ... but U本位幣安例外 BTC ETH ...
     item = Column(String(50), nullable=False)
     valuation_item = Column(String(50), nullable=False)
     precision_price = Column(Integer, nullable=True)

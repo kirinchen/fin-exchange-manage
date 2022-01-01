@@ -1,10 +1,12 @@
 import abc
 from abc import ABC
+from datetime import datetime, timezone
 from typing import TypeVar, Generic, Any
 
 from sqlalchemy.orm import scoped_session, Session
 
 import exchange
+from model import TimestampMixin
 
 EX = TypeVar('E')
 
@@ -39,9 +41,19 @@ class BaseDao(Generic[T], BaseExchangeAbc, ABC):
     def get(self, pkid: Any) -> T:
         return self.session.query(self.get_entity_clazz()).get(pkid)
 
+    def create(self, entity: T) -> T:
+        if isinstance(entity, TimestampMixin):
+            entity.created_at = datetime.now(tz=timezone.utc)
+        self.session.add(entity)
+        self.session.flush()
+        return entity
+
     def update(self, entity: T) -> T:
+        if isinstance(entity, TimestampMixin):
+            entity.updated_at = datetime.now(tz=timezone.utc)
         self.session.merge(entity)
         self.session.flush()
+
         return entity
 
     def refresh_all(self):

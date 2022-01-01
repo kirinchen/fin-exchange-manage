@@ -73,7 +73,13 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         for pq in self.gen_price_qty_list():
             ans.append(self.post_one(pq))
         ans.extend(self.post_expansion())
+        self.record_batch_info(ans)
         return ans
+
+    def record_batch_info(self, ods: List[OrderDto]):
+        if len(ods) <= 0:
+            return
+        raise NotImplementedError('record_batch_info')
 
     def post_expansion(self) -> List[OrderDto]:
         return list()
