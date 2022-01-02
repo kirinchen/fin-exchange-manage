@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, Text, Float
 
 from infra.database import Base
 from model.comm import TimestampMixin
+from utils import comm_utils
 
 
 class OrderPack(Base, TimestampMixin):
@@ -17,7 +18,6 @@ class OrderPack(Base, TimestampMixin):
     attach_name = Column(String(255), nullable=True)
     parameters = Column(Text, nullable=True)
     market_price = Column(Float, nullable=False)
-    side = Column(String(50), nullable=False)
     prd_name = Column(String(150), nullable=False)
     positionSide = Column(String(50), nullable=False)
 
@@ -35,6 +35,8 @@ class OrderPack(Base, TimestampMixin):
         self.attach = json.dumps(obj)
 
     def get_attach(self) -> dict:
+        if self.attach is None:
+            return None
         return json.loads(self.attach)
 
     def set_parameters(self, parameters: dict):
@@ -43,4 +45,12 @@ class OrderPack(Base, TimestampMixin):
         self.parameters = json.dumps(parameters)
 
     def get_parameters(self) -> dict:
+        if self.parameters is None:
+            return None
         return json.loads(self.parameters)
+
+    def to_dict(self) -> dict:
+        ans = comm_utils.to_dict(self)
+        ans["parameters"] = self.get_parameters()
+        ans["attach"] = self.get_attach()
+        return ans

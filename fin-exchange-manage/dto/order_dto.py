@@ -1,3 +1,5 @@
+from typing import List
+
 from model import Order
 from utils import reflection_util, entity_utils
 
@@ -46,4 +48,24 @@ class OrderDto:
         self.updateAt: str = updateAt
 
 
+class OrderPackQueryDto:
 
+    def __init__(self, **kwargs):
+        self.uid_list: List[str] = None
+        self.exchange: str = None
+        self.order_strategy: str = None
+        self.tags: List[str] = None
+        self.attach_name: str = None
+        self.side: str = None
+        self.prd_name: str = None
+        self.positionSide: str = None
+        reflection_util.merge(kwargs, self)
+
+    def to_query_eq_dict(self) -> dict:
+        ans = dict()
+        for k, v in self.__dict__.items():
+            if k.startswith('_'):
+                continue
+            if isinstance(v, str):
+                ans[k] = v
+        return ans

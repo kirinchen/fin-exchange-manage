@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from dto import order_dto
+from dto.order_dto import OrderPackQueryDto
 from model import Order
 from model.order_pack import OrderPack
 from service.base_exchange_abc import BaseDao, BaseExchangeAbc
@@ -27,15 +28,18 @@ class OrderPackDao(BaseDao):
         entity.exchange = self.exchange_name
         return super(OrderPackDao, self).create(entity)
 
+    def query(self, dto: OrderPackQueryDto) -> List[OrderPack]:
+        return self.session.query(OrderPack).filter_by(**dto.to_query_eq_dict()).all()
+
     def create_by_orders(self, od_pack_entity: OrderPack, ods: List[Order]) -> OrderPack:
         if len(ods) <= 0:
             return
-
         self.create(od_pack_entity)
         for od in ods:
-            od_entity = order_utils.convert_to_model(dto=od, exchange=self.exchange_name, order_strategy=strategy)
+            od_entity = order_utils.convert_to_model(dto=od, exchange=self.exchange_name,
+                                                     order_strategy=od_pack_entity.order_strategy)
             od_entity.pack_uid = od_pack_entity.uid
-            od_entity.set_tags(tags)
+            od_entity.set_tags(od_pack_entity.tags)
             self.orderDao.create(od_entity)
 
     def get_entity_clazz(self) -> OrderPack:

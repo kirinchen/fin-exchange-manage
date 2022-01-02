@@ -95,7 +95,9 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         od_pack_entity.set_attach(self.dto.attach)
         od_pack_entity.attach_name = self.dto.attachName
         od_pack_entity.set_parameters(parameters)
-        self.orderPackDao.create_by_orders(ods=ods, order_pack=od_pack_entity)
+        od_pack_entity.positionSide = self.dto.positionSide
+        od_pack_entity.prd_name = self.dto.symbol
+        self.orderPackDao.create_by_orders(ods=ods, od_pack_entity=od_pack_entity)
 
     def post_expansion(self) -> List[OrderDto]:
         return list()
