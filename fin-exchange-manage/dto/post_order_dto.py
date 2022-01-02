@@ -12,7 +12,7 @@ class BasePostOrderDto:
                  size: int = 1,
                  proportionalRate: float = 1,
                  targetIdxShift=0,
-                 tags: List[str] = list(), **kwargs):
+                 tags: List[str] = list(), attach: dict = None, attachName:str=None, **kwargs):
         self.strategy: str = strategy
         self.symbol: str = symbol
         self.positionSide: str = positionSide
@@ -24,6 +24,8 @@ class BasePostOrderDto:
         self.proportionalReverse: bool = proportionalReverse
         self.size: int = size
         self.tags: List[str] = list(tags)
+        self.attach: dict = attach
+        self.attachName: dict = attachName
 
     def get_strategy(self) -> OrderStrategy:
         return comm_utils.value_of_enum(OrderStrategy, self.strategy)

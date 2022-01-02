@@ -81,11 +81,21 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         for pq in self.gen_price_qty_list():
             ans.append(self.post_one(pq))
         ans.extend(self.post_expansion())
-        self.record_batch_info(ans)
+        self.record_pack_info(ans)
         return ans
 
-    def record_batch_info(self, ods: List[OrderDto]):
-        self.orderPackDao.create_by_orders(ods=ods, tags=self.dto.tags, strategy=self.dto.strategy)
+    def record_pack_info(self, ods: List[OrderDto]):
+        parameters = dict(self.dto.__dict__)
+        parameters.pop("attach", None)
+        parameters.pop("tags", None)
+        od_pack_entity = OrderPack()
+        od_pack_entity.set_tags(self.dto.tags)
+        od_pack_entity.order_strategy = self.dto.strategy
+        od_pack_entity.market_price = self.lastPrice
+        od_pack_entity.set_attach(self.dto.attach)
+        od_pack_entity.attach_name = self.dto.attachName
+        od_pack_entity.set_parameters(parameters)
+        self.orderPackDao.create_by_orders(ods=ods, order_pack=od_pack_entity)
 
     def post_expansion(self) -> List[OrderDto]:
         return list()

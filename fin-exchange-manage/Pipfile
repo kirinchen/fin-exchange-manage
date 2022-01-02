@@ -14,6 +14,7 @@ long = "*"
 kwargs = "*"
 max-exchange-api-python3 = {editable = true, path = "./../max-exchange-api-python3"}
 bitfinex-api-py = "*"
+attach = "*"
 
 [dev-packages]
 

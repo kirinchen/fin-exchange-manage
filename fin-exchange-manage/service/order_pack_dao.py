@@ -27,16 +27,14 @@ class OrderPackDao(BaseDao):
         entity.exchange = self.exchange_name
         return super(OrderPackDao, self).create(entity)
 
-    def create_by_orders(self, ods: List[Order], tags: List[str], strategy: str = None,
-                         attach: dict = None) -> OrderPack:
+    def create_by_orders(self, od_pack_entity: OrderPack, ods: List[Order]) -> OrderPack:
         if len(ods) <= 0:
             return
-        od_pack_entity = OrderPack()
-        od_pack_entity.set_tags(tags)
-        od_pack_entity.order_strategy = strategy
-        od_pack_entity.set_attach(attach)
+
+        self.create(od_pack_entity)
         for od in ods:
             od_entity = order_utils.convert_to_model(dto=od, exchange=self.exchange_name, order_strategy=strategy)
+            od_entity.pack_uid = od_pack_entity.uid
             od_entity.set_tags(tags)
             self.orderDao.create(od_entity)
 

@@ -24,6 +24,8 @@ class Order(Base, TimestampMixin):
     tags = Column(Text, nullable=True)
 
     def set_tags(self, tags: List[str]):
+        if tags is None:
+            return
         self.tags = json.dumps(tags)
 
     def get_tags(self) -> List[str]:
