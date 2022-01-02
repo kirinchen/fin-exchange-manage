@@ -27,6 +27,8 @@ class OrderPack(Base, TimestampMixin):
         self.tags = json.dumps(tags)
 
     def get_tags(self) -> List[str]:
+        if self.tags is None:
+            return None
         return json.loads(self.tags)
 
     def set_attach(self, obj: dict):
@@ -53,4 +55,5 @@ class OrderPack(Base, TimestampMixin):
         ans = comm_utils.to_dict(self)
         ans["parameters"] = self.get_parameters()
         ans["attach"] = self.get_attach()
+        ans["tags"] = self.get_tags()
         return ans
