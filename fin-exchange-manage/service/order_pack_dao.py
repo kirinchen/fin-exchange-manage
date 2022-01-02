@@ -36,9 +36,8 @@ class OrderPackDao(BaseDao):
             return
         self.create(od_pack_entity)
         for od in ods:
-            od_entity = order_utils.convert_to_model(dto=od, exchange=self.exchange_name,
+            od_entity = order_utils.convert_to_model(dto=od, exchange=self.exchange_name,pack_uid=od_pack_entity.uid,
                                                      order_strategy=od_pack_entity.order_strategy)
-            od_entity.pack_uid = od_pack_entity.uid
             od_entity.set_tags(od_pack_entity.tags)
             self.orderDao.create(od_entity)
 

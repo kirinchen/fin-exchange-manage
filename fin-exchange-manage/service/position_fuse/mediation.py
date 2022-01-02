@@ -54,7 +54,7 @@ class StopMediation(BaseExchangeAbc):
 
     def _stop_each(self, stops: List[stoper.Stoper]) -> List[dtos.StopResult]:
         no_stop_results: List[dtos.StopResult] = list()
-        all_orders = self.orderClientService.list_all_order(symbol=self.dto.symbol)
+        all_orders = self.orderClientService.list_all_order(prd_name=self.dto.symbol)
         for stop in stops:
             stop.load_vars(all_orders)
             stop_result: dtos.StopResult = stop.run()

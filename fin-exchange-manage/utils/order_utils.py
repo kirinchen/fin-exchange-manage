@@ -131,11 +131,16 @@ def get_current_new_stop_orders(oods: List[OrderDto], symbol: str, positionSide:
 
 def convert_to_model(dto: OrderDto, exchange: str, order_strategy: str = None, pack_uid: str = None) -> Order:
     ans: Order = entity_utils.gen_entity_from_obj(dto, Order)
-    ans.price = get_price(dto)
-    ans.prd_name = dto.symbol
     ans.order_strategy = order_strategy
-    ans.exchange_update_at = dto.updateAt
     ans.exchange = exchange
     ans.pack_uid = pack_uid
-    ans.exchangeOrderId = str(dto.orderId)
+    merge_dto_entity(dto, ans)
     return ans
+
+
+def merge_dto_entity(dto: OrderDto, entity: Order):
+    entity.exchangeOrderId = str(dto.orderId)
+    entity.exchange_update_at = dto.updateAt
+    entity.prd_name = dto.symbol
+    entity.price = get_price(dto)
+    entity.status = dto.status

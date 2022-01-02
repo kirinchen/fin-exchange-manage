@@ -20,9 +20,9 @@ class BinanceOrderClientService(OrderClientService):
         super(BinanceOrderClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
 
-    def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None,
+    def list_all_order(self, prd_name: str, orderId: int = None, startTime: int = None, endTime: int = None,
                        limit: int = None) -> List[OrderDto]:
-        oods: List[Order] = self.client.get_all_orders(symbol=binance_utils.fix_usdt_symbol(symbol), limit=limit,
+        oods: List[Order] = self.client.get_all_orders(symbol=binance_utils.fix_usdt_symbol(prd_name), limit=limit,
                                                        startTime=startTime, endTime=endTime, orderId=orderId)
         return [binance_utils.convert_order_dto(o) for o in oods]
 

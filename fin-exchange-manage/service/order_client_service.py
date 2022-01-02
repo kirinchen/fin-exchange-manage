@@ -28,7 +28,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
         return OrderClientService
 
     def query_order(self, filter_obj: OrderFilter) -> OrdersInfo:
-        orders = self.list_all_order(symbol=filter_obj.symbol, limit=filter_obj.limit,
+        orders = self.list_all_order(prd_name=filter_obj.symbol, limit=filter_obj.limit,
                                      startTime=filter_obj.updateStartTime, endTime=filter_obj.updateEndTime)
         return order_utils.filter_order(oods=orders, ft=filter_obj)
 
@@ -55,7 +55,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
         raise NotImplementedError('cancel_list_orders')
 
     @abc.abstractmethod
-    def list_all_order(self, symbol: str, orderId: int = None, startTime: int = None,
+    def list_all_order(self, prd_name: str, orderId: int = None, startTime: int = None,
                        endTime: int = None, limit: int = None) -> List[OrderDto]:
         raise NotImplementedError('not impl')
 
