@@ -11,6 +11,7 @@ from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeStopProfitDto
+from dto.wallet_dto import WalletDto
 from infra.enums import OrderStrategy
 from model import Product
 from model.init_data import init_item
@@ -24,7 +25,9 @@ from service.order_pack_dao import OrderPackDao
 from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
+from service.wallet_client_service import WalletClientService
 from utils import direction_utils, comm_utils, position_utils
+from utils.wallet_utils import WalletFilter
 
 
 class PriceQty:
@@ -52,6 +55,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.tradeClientService: TradeClientService = None
         self.positionClientService: PositionClientService = None
         self.orderClientService: OrderClientService = None
+        self.walletClientService: WalletClientService = None
         self.productDao: ProductDao = None
         self.orderDao: OrderDao = None
         self.orderPackDao: OrderPackDao = None
@@ -68,6 +72,7 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
                                                                             self.session)
         self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
+        self.walletClientService: WalletClientService = self.get_ex_obj(WalletClientService)
         self.orderDao: OrderDao = self.get_ex_obj(OrderDao)
         self.orderPackDao: OrderPackDao = self.get_ex_obj(OrderPackDao)
         self.product = self.productDao.get_by_prd_name(self.dto.symbol)
@@ -151,7 +156,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
     def __init__(self, exchange_name: str, session: Session):
         super(LimitOrderBuilder, self).__init__(exchange_name, session)
-        self.account: AccountDto = None
+        # self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
         self._all_order_qty = 0
@@ -161,8 +166,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
-        self.account = account.info.get.invoke(self.exchange_name)
-        self.amount = self.account.maxWithdrawAmount * self.dto.withdrawAmountRate
+        wallet: WalletDto = self.walletClientService.get_one(WalletFilter(prd_name=self.dto.symbol))
+        self.amount = wallet.balance_available * self.dto.withdrawAmountRate
         self.lastPrice = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
                                                                      positionSide=self.dto.positionSide,
                                                                      buffRate=self.dto.priceBuffRate)

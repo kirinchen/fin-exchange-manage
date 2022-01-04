@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
+from dto.wallet_dto import WalletDto
 from infra.enums import OrderStatus
 from model import Product
 from rest import account
@@ -16,8 +17,10 @@ from service.position_client_service import PositionClientService
 from service.position_fuse import dtos
 from service.product_dao import ProductDao
 from service.trade_client_service import TradeClientService
+from service.wallet_client_service import WalletClientService
 from utils import position_utils, order_utils, direction_utils
 from utils.order_utils import OrdersInfo, OrderFilter
+from utils.wallet_utils import WalletFilter
 
 T = TypeVar('T', bound=dtos.StopDto)
 
@@ -32,6 +35,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.productDao: ProductDao = None
         self.tradeClientService: TradeClientService = None
         self.orderClientService: OrderClientService = None
+        self.walletClientService: WalletClientService = None
         self.position: PositionDto = None
         self.no_position: bool = None
         self.tags: List[str] = None
@@ -44,6 +48,7 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
         self.productDao: ProductDao = self.get_ex_obj(ProductDao)
         self.tradeClientService: TradeClientService = self.get_ex_obj(TradeClientService)
         self.orderClientService: OrderClientService = self.get_ex_obj(OrderClientService)
+        self.walletClientService: WalletClientService = self.get_ex_obj(WalletClientService)
 
     def init(self, dto: T) -> object:
         self.dto: T = dto
@@ -71,8 +76,8 @@ class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
     def get_current_position(self) -> PositionDto:
         return self.position_client.find_one(self.dto.symbol, self.dto.positionSide)
 
-    def get_account(self) -> AccountDto:
-        return account.info.get.invoke(self.exchange_name)
+    def get_wallet(self) -> WalletDto:
+        return self.walletClientService.get_one(WalletFilter(prd_name=self.dto.symbol))
 
     def is_conformable(self) -> bool:
         """

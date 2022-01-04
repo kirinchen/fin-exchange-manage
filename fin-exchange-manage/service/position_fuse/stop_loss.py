@@ -33,7 +33,7 @@ class StopLoss(Stoper[StopLossDto]):
         self.stopPrice = self._get_stop_quote()
 
     def _get_stop_quote(self):
-        amount = self.get_account().maxWithdrawAmount
+        amount = self.get_wallet().balance_available
         guard_amt = amount * self.dto.balanceRate
         return formula_utils.calc_guard_price(self.position, guard_amt)
 
