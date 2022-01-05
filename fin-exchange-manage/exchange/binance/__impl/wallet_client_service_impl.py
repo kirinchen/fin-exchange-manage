@@ -12,9 +12,6 @@ from service.wallet_client_service import WalletClientService
 
 class BinanceWalletClientService(WalletClientService):
 
-    def lend_one(self, w: WalletDto,**kwargs) -> object:
-        pass
-
     def __init__(self, exchange_name: str, session: Session = None):
         super(BinanceWalletClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
@@ -28,6 +25,12 @@ class BinanceWalletClientService(WalletClientService):
         ans.balance = u_w.totalWalletBalance
         ans.balance_available = u_w.maxWithdrawAmount
         return [ans]
+
+    def cancel_lend_all(self, w: WalletDto):
+        pass
+
+    def lend_one(self, w: WalletDto, **kwargs) -> object:
+        pass
 
 
 def get_impl_clazz() -> BinanceWalletClientService:

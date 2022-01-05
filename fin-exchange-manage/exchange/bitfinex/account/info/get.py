@@ -10,7 +10,7 @@ from rest.api_function import APIFunction, T
 class APIFunctionAccountInfo(APIFunction[AccountDto]):
 
     def func(self, payload: dict) -> AccountDto:
-        client = gen_request_client()
+        (client, expandClient) = gen_request_client()
         loop = asyncio.get_event_loop()
         coroutine = client.rest.get_wallets()
         result = loop.run_until_complete(coroutine)

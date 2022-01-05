@@ -17,3 +17,5 @@ def convert_wallet_dto(w: Wallet) -> WalletDto:
 def call(coroutine) -> Any:
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(coroutine)
+
+

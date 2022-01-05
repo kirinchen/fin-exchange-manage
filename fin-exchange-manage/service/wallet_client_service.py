@@ -23,12 +23,23 @@ class WalletClientService(BaseExchangeAbc, ABC):
     def get_one(self, ft: WalletFilter) -> WalletDto:
         return self.query(ft)[0]
 
-    def lend_all(self, ft: WalletFilter, **kwargs) -> List[object]:
+    def lend_by_filter(self, ft: WalletFilter, **kwargs) -> List[object]:
         w_list = self.query(ft)
         ans: List[object] = list()
         for w in w_list:
             ans.append(self.lend_one(w, **kwargs))
         return ans
+
+    def cancel_lend_by_filter(self, ft: WalletFilter, **kwargs) -> List[object]:
+        w_list = self.query(ft)
+        ans: List[object] = list()
+        for w in w_list:
+            ans.append(self.cancel_lend_all(w))
+        return ans
+
+    @abc.abstractmethod
+    def cancel_lend_all(self, w: WalletDto):
+        raise NotImplementedError('cancel_lend_all')
 
     @abc.abstractmethod
     def lend_one(self, w: WalletDto, **kwargs) -> object:

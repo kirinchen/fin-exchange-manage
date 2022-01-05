@@ -1,9 +1,7 @@
-import asyncio
 import math
 from typing import List
 
-from bfxapi import Client, Wallet
-from binance_f import RequestClient
+from bfxapi import Wallet
 from sqlalchemy.orm import Session
 
 from dto.wallet_dto import WalletDto
@@ -14,7 +12,7 @@ from utils import comm_utils
 LEND_MIN_AMOUNT = 50
 
 
-class LendPriceSet:
+class LendAmtRateSet:
 
     def __init__(self, rate: float, day: int, amount: float):
         self.rate: float = rate
@@ -24,41 +22,50 @@ class LendPriceSet:
 
 class LendPrams:
 
-    def __init__(self, rowAmount: float, **kwargs):
+    def __init__(self, rowAmount: float, bottomWeight: float, topWeight: float, middleWeight: float, **kwargs):
         self.rowAmount: float = rowAmount
+        self.bottomWeight: float = bottomWeight
+        self.topWeight: float = topWeight
+        self.middleWeight: float = middleWeight
 
 
 class BitfinexWalletClientService(WalletClientService):
 
     def __init__(self, exchange_name: str, session: Session = None):
         super(BitfinexWalletClientService, self).__init__(exchange_name, session)
-        self.client: Client = gen_request_client()
+        (self.client, self.expandClient) = gen_request_client()
 
     def list_all(self) -> List[WalletDto]:
-        # loop = asyncio.get_event_loop()
-        # coroutine = self.client.rest.get_wallets()
-        # result: List[Wallet] = loop.run_until_complete(coroutine)
         result: List[Wallet] = bitfinex_utils.call(self.client.rest.get_wallets())
         return [bitfinex_utils.convert_wallet_dto(w) for w in result]
+
+    def cancel_lend_all(self, w: WalletDto):
+        bitfinex_utils.call(self.expandClient.cancel_funding_all(w.symbol))
 
     def lend_one(self, w: WalletDto, **kwargs) -> object:
         lend_prams = LendPrams(**kwargs)
         if w.balance_available < LEND_MIN_AMOUNT:
             return f'no enough {comm_utils.to_dict(w)}'
-        lend_price_set = self.gen_lend_price_set(w, lend_prams)
-        return comm_utils.to_dict(lend_price_set)
+        lend_amt_rate_set = self.gen_lend_price_set(w, lend_prams)
+        ans = list()
+        for amt_rate in lend_amt_rate_set:
+            r = bitfinex_utils.call(
+                self.client.rest.submit_funding_offer(symbol=f'f{w.symbol}', amount=amt_rate.amount, rate=amt_rate.rate,
+                                                      period=amt_rate.day))
+            ans.append(r)
+        return ans
 
-    def gen_lend_price_set(self, w: WalletDto, lp: LendPrams) -> List[LendPriceSet]:
+    def gen_lend_price_set(self, w: WalletDto, lp: LendPrams) -> List[LendAmtRateSet]:
         result: List[list] = bitfinex_utils.call(
             self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
         rate_list: List[float] = [a[0] for a in result]
         mx = max(rate_list)
-        mn = min(rate_list)
-        mn *= 1.02
-        mx *= 1.01
-        mn = (mx + mn) * 0.23
+        min_rate = min(rate_list)
+        min_rate *= lp.bottomWeight
+        mx *= lp.topWeight
+        middle_rate = (mx + min_rate) * lp.middleWeight
 
-        dr = mx - mn
+        dr = mx - middle_rate
 
         cusd = w.balance_available
         cusd = cusd - LEND_MIN_AMOUNT
@@ -67,13 +74,13 @@ class BitfinexWalletClientService(WalletClientService):
 
         rp = dr / spcount
 
-        batchList: List[LendPriceSet] = list()
+        batchList: List[LendAmtRateSet] = list()
 
         for i in range(spcount):
-            batchList.append(LendPriceSet(rate=mn + ((i + 1) * rp), day=i + 2, amount=lp.rowAmount))
+            batchList.append(LendAmtRateSet(rate=middle_rate + ((i + 1) * rp), day=i + 2, amount=lp.rowAmount))
 
         lasta = cusd + LEND_MIN_AMOUNT - (spcount * lp.rowAmount)
-        batchList.append(LendPriceSet(rate=mx, day=5, amount=lasta))
+        batchList.append(LendAmtRateSet(rate=mx, day=5, amount=lasta))
         return batchList
 
 

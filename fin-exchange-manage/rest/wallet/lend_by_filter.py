@@ -14,5 +14,5 @@ def run(payload: dict) -> AccountDto:
             exchange_name=PayloadReqKey.exchange.get_val(payload),
             clazz=WalletClientService, session=session)
         PayloadReqKey.clean_default_keys(payload)
-        result = walletClient.lend_all(w_filter, **payload)
+        result = walletClient.lend_by_filter(w_filter, **payload)
         return comm_utils.to_dict(result)
