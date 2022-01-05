@@ -138,9 +138,10 @@ def convert_to_model(dto: OrderDto, exchange: str, order_strategy: str = None, p
     return ans
 
 
-def merge_dto_entity(dto: OrderDto, entity: Order):
+def merge_dto_entity(dto: OrderDto, entity: Order) -> OrderDto:
     entity.exchangeOrderId = str(dto.orderId)
     entity.exchange_update_at = dto.updateAt
     entity.prd_name = dto.symbol
     entity.price = get_price(dto)
     entity.status = dto.status
+    return entity

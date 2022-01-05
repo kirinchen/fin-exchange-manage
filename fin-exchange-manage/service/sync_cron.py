@@ -71,7 +71,7 @@ class SyncCron(BaseExchangeAbc, ABC):
 
 def _set_last_order_sync_at_now():
     global _last_order_sync_at
-    _last_order_sync_at = datetime.utcnow
+    _last_order_sync_at = datetime.utcnow()
 
 
 def init_bind_all():
