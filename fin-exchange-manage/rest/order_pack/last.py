@@ -14,5 +14,5 @@ def run(payload: dict) -> dict:
         order_pack_dao: OrderPackDao = exchange.gen_impl_obj(exchange_name=ex, session=session,
                                                              clazz=OrderPackDao)
         dto: OrderPackQueryDto = OrderPackQueryDto(**payload)
-        ans: List[OrderPack] = order_pack_dao.query_by_dict(dto.to_query_eq_dict()).all()
+        ans: List[OrderPack] = order_pack_dao.query_by_dto(dto)
         return [op.to_dict() for op in ans]

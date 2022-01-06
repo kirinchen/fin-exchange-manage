@@ -1,3 +1,6 @@
+from enum import Enum
+from typing import Any
+
 from sqlalchemy.orm import DeclarativeMeta, Query
 
 
@@ -26,6 +29,19 @@ def gen_entity_from_obj(body: object, matched_schema: DeclarativeMeta) -> object
     return gen_entity_from_dict(body, matched_schema, validate=False)
 
 
+class Operand(Enum):
+    DEFAULT_EQ = ''
+    EQ = 'eq_'
+
+
+class ColumnCondition:
+
+    def __init__(self, column: str, operand: Operand, value: Any):
+        self.column: str = column
+        self.operand: Operand = operand
+        self.value: Any = value
+
+
 class DictFilter:
     """
         startswith
@@ -36,11 +52,20 @@ class DictFilter:
     def __init__(self, **kwargs):
         self.column_map: dict = kwargs
 
-    # def gen_query(self,q:Query)->Query:
-    #     for k,v in self.column_map.items():
-    #
-    def get_key_condition(self):
-        pass  # TODO impl
+    def gen_query(self, q: Query) -> Query:
+        for k, v in self.column_map.items():
+            column_condition = get_column_condition(k, v)
+            print(column_condition)
 
-    def get_column_by_key(self, key: str) -> str:
-        pass  # TODO impl
+
+def get_column_condition(key: str, val: Any) -> ColumnCondition:
+    operand = get_operand_by_key(key)
+    column = key[len(operand.value)::]
+    return ColumnCondition(column, operand, val)
+
+
+def get_operand_by_key(key: str) -> Operand:
+    for o in Operand:
+        if key.startswith(o.value):
+            return o
+    raise NotImplementedError('get_operand_by_key=' + key)

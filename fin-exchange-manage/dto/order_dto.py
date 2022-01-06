@@ -69,3 +69,9 @@ class OrderPackQueryDto:
             if isinstance(v, str):
                 ans[k] = v
         return ans
+
+
+def convert_entity_to_dto(e: Order) -> OrderDto:
+    ans = OrderDto(**e.__dict__)
+    ans.symbol = e.prd_name
+    return ans

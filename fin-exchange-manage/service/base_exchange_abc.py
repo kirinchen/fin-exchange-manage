@@ -3,7 +3,7 @@ from abc import ABC
 from datetime import datetime, timezone
 from typing import TypeVar, Generic, Any
 
-from sqlalchemy.orm import scoped_session, Session
+from sqlalchemy.orm import scoped_session, Session, Query
 
 import exchange
 from model.comm import TimestampMixin
@@ -32,7 +32,7 @@ class BaseExchangeAbc(ABC):
 T = TypeVar('T')
 
 
-class BaseDao(BaseExchangeAbc,Generic[T], ABC):
+class BaseDao(BaseExchangeAbc, Generic[T], ABC):
 
     @abc.abstractmethod
     def get_entity_clazz(self) -> T:
@@ -55,6 +55,9 @@ class BaseDao(BaseExchangeAbc,Generic[T], ABC):
         self.session.flush()
 
         return entity
+
+    def gen_query(self) -> Query:
+        return self.session.query(self.get_entity_clazz())
 
     def refresh_all(self):
         pass
