@@ -12,7 +12,7 @@ class BasePostOrderDto:
                  size: int = 1,
                  proportionalRate: float = 1,
                  targetIdxShift=0,
-                 tags: List[str] = list(), attach: dict = None, attachName:str=None, **kwargs):
+                 tags: List[str] = list(), attach: dict = None, attachName: str = None, **kwargs):
         self.strategy: str = strategy
         self.symbol: str = symbol
         self.positionSide: str = positionSide
@@ -33,10 +33,14 @@ class BasePostOrderDto:
 
 class PostLimitOrderDto(BasePostOrderDto):
 
-    def __init__(self, withdrawAmountRate: float, stopPrice: float = None, **kwargs):
+    def __init__(self, withdrawAmountRate: float, stopPrice: float = None, martingaleRate: float = 0,
+                 closeLoseThreshold: float = -1,
+                 **kwargs):
         super(PostLimitOrderDto, self).__init__(**kwargs)
         self.withdrawAmountRate: float = withdrawAmountRate
         self.stopPrice: float = stopPrice
+        self.martingaleRate: float = martingaleRate
+        self.closeLoseThreshold: float = closeLoseThreshold
 
 
 class PostTakeStopProfitDto(BasePostOrderDto):

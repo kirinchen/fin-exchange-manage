@@ -164,6 +164,9 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
     def get_abc_clazz(self) -> object:
         return LimitOrderBuilder
 
+    def _get_martingale_amt(self):
+        return (-1 * self.position.unrealizedProfit) * self.dto.martingaleRate
+
     def load_data(self) -> LoadDataCheck:
         self.position = self.get_current_position()
         wallet: WalletDto = self.walletClientService.get_one(WalletFilter(prd_name=self.dto.symbol))
@@ -211,13 +214,32 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
     def get_stop_price(self) -> float:
         return self.dto.stopPrice
 
-    def post_expansion(self) -> List[OrderDto]:
+    def _post_stop_lose_position(self) -> List[OrderDto]:
+        if self.dto.closeLoseThreshold <= 0:
+            return list()
+        if self.position.unrealizedProfit >= 0:
+            return list()
+        range_close = self.position.liquidationPrice - self.position.entryPrice
+        lose_rate = self.position.unrealizedProfit / range_close
+        if self.dto.closeLoseThreshold > lose_rate:
+            return list()
+        return [self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=self.position.markPrice,
+                                                         quantity=self.position.positionAmt,
+                                                         positionSide=self.dto.positionSide, tags=self.dto.tags)]
+
+    def _post_stop_order(self) -> List[OrderDto]:
         stopPrice = self.get_stop_price()
         if not stopPrice or stopPrice < 0:
             return list()
         return [self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=stopPrice,
                                                          quantity=self._all_order_qty,
                                                          positionSide=self.dto.positionSide, tags=self.dto.tags)]
+
+    def post_expansion(self) -> List[OrderDto]:
+        ans: List[OrderDto] = list()
+        ans.extend(self._post_stop_order())
+        ans.extend(self._post_stop_lose_position())
+        return ans
 
 
 class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
