@@ -171,6 +171,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         self.position = self.get_current_position()
         wallet: WalletDto = self.walletClientService.get_one(WalletFilter(prd_name=self.dto.symbol))
         self.amount = wallet.balance_available * self.dto.withdrawAmountRate
+        self.amount += self._get_martingale_amt()
         self.lastPrice = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
                                                                      positionSide=self.dto.positionSide,
                                                                      buffRate=self.dto.priceBuffRate)
