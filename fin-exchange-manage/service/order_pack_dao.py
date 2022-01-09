@@ -34,6 +34,8 @@ class OrderPackDao(BaseDao[OrderPack]):
 
     def last(self, d: dict) -> (OrderPack, List[Order]):
         entity: OrderPack = self.query_by_dict(d).order_by(desc(OrderPack.created_at)).first()
+        if not entity:
+            return entity, list()
         orders: List[Order] = self.orderDao.list_by_pack(entity.uid)
         return entity, orders
 
