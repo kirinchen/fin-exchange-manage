@@ -19,6 +19,9 @@ class BitfinexPositionClientService(PositionClientService):
         result: List[Position] = self.client.get_position()
         return [binance_utils.convert_position_dto(op) for op in result]
 
+    def close(self, prd_name: str, positionSide: str, amount: float) -> any:
+        pass
+
 
 def get_impl_clazz() -> BitfinexPositionClientService:
     return BitfinexPositionClientService
