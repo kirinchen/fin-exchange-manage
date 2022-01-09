@@ -25,7 +25,7 @@ class BasePostOrderDto:
         self.size: int = size
         self.tags: List[str] = list(tags)
         self.attach: dict = attach
-        self.attachName: dict = attachName
+        self.attachName: str = attachName
 
     def get_strategy(self) -> OrderStrategy:
         return comm_utils.value_of_enum(OrderStrategy, self.strategy)
