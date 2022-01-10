@@ -25,6 +25,8 @@ def run(payload: dict) -> dict:
 
 def fetch_one(f_dict: dict, order_pack_dao: OrderPackDao) -> object:
     (order_pack, orders) = order_pack_dao.last(f_dict)
+    if not order_pack:
+        return None
     return {
         "orderPack": order_pack.to_dict(),
         "orders": comm_utils.to_dict([order_dto.convert_entity_to_dto(o) for o in orders])
