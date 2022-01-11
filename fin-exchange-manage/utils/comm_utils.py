@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Any, TypeVar
 
+from infra import constant
 from utils import time_utils
 
 
@@ -120,3 +121,7 @@ def calc_proportional_first(sum: float, rate: float, n: int) -> float:
 
 def to_sh256_str(plain: str) -> str:
     return hashlib.sha256(plain.encode('utf-8')).hexdigest()
+
+
+def is_similar(a: float, b: float, tolerance=constant.LIMIT_0_RATE):
+    return abs(a - b) <= tolerance
