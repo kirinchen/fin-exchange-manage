@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 import exchange
 from dto.order_dto import OrderDto
+from infra.enums import OrderStatus
 from service.base_exchange_abc import BaseExchangeAbc
 from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
@@ -42,8 +43,10 @@ class OrderClientService(BaseExchangeAbc, ABC):
         try:
             if currentOds is None:
                 return list()
+            currentOds = [x for x in currentOds if x.status == OrderStatus.NEW]
             if len(currentOds) <= 0:
                 return list()
+
             self.cancel_list_orders(symbol=symbol,
                                     currentOds=currentOds)
             return currentOds
@@ -51,7 +54,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
             print('Failed to upload to ftp: ' + str(e))
 
     @abc.abstractmethod
-    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto])-> List[OrderDto]:
+    def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
         raise NotImplementedError('cancel_list_orders')
 
     @abc.abstractmethod

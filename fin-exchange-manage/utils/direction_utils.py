@@ -57,6 +57,14 @@ def plus_price_by_rate(positionSide: str, orgPrice: float, rate: float) -> float
     raise NotImplementedError('not support ' + str(positionSide))
 
 
+def plus_price_by_fixed(positionSide: str, orgPrice: float, fixed_price: float) -> float:
+    if positionSide == PositionSide.LONG:
+        return orgPrice + fixed_price
+    elif positionSide == PositionSide.SHORT:
+        return orgPrice - fixed_price
+    raise NotImplementedError('not support ' + str(positionSide))
+
+
 def rise_price(positionSide: str, orgPrice: float, rate: float) -> float:
     """
     rate > 0

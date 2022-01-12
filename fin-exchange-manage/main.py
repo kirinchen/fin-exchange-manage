@@ -21,10 +21,6 @@ exchange.load_all_service()
 sync_cron.init_bind_all()
 
 if __name__ == "__main__":
-    # with database.session_scope() as session:
-    #     p_dao: ProductDao = exchange.gen_impl_obj('binance', ProductDao,session)
-    #     p_e = p_dao.get_by_item_symbol('BTC', 'USDT')
-    #     print(p_e)
 
     app.run(host='0.0.0.0', debug=config.env_bool('debug'), port=9282, threaded=True)
 
