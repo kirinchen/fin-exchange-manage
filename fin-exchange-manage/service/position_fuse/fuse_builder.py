@@ -112,7 +112,7 @@ class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
         raise NotImplementedError('is_up_to_date')
 
     @abc.abstractmethod
-    def post_fuse_orders(self):
+    def post_fuse_orders(self) -> [OrderDto]:
         raise NotImplementedError('post_fuse_orders')
 
 
@@ -151,9 +151,36 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
             return False
         return True
 
-    def post_fuse_orders(self):
+    def post_fuse_orders(self) -> [OrderDto]:
+        ans: List[OrderDto] = list()
         post_count = self._get_step_count()
-        price_qty_list :List[PriceQty] = self._gen_price_qty_list(post_count)
+        price_qty_list: List[PriceQty] = self._gen_price_qty_list(post_count)
+        for pq in price_qty_list:
+            o_dto = self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=pq.price,
+                                                             quantity=pq.quantity,
+                                                             positionSide=self.dto.positionSide, tags=self.dto.tags)
+            ans.append(o_dto)
+        self._record_pack_info(ans)
+        return ans
+
+    def _record_pack_info(self, ods: List[OrderDto]):
+        parameters = dict(self.dto.__dict__)
+        parameters.pop("attach", None)
+        parameters.pop("tags", None)
+        od_pack_entity = OrderPack()
+        od_pack_entity.set_tags(self.dto.tags)
+        od_pack_entity.order_strategy = self.dto.fuseStrategy
+        od_pack_entity.market_price = self.prepareData.currentPrice
+
+        attach = FixedStepAttach(currentTopPrice=self.prepareData.currentPrice,
+                                 positionAmt=position_utils.get_abs_amt(self.prepareData.position.positionAmt))
+
+        od_pack_entity.set_attach(attach.__dict__)
+        od_pack_entity.attach_name = self.get_attach_name()
+        od_pack_entity.set_parameters(parameters)
+        od_pack_entity.positionSide = self.dto.positionSide
+        od_pack_entity.prd_name = self.dto.prd_name
+        self.orderPackDao.create_by_orders(ods=ods, od_pack_entity=od_pack_entity)
 
     def _get_step_count(self):
         entryPrice = self.prepareData.position.entryPrice
