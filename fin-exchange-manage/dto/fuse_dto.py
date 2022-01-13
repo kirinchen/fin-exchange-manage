@@ -3,20 +3,20 @@ from typing import List
 
 class BaseFuseDto:
 
-    def __init__(self, prd_name: str, positionSide: str, fuseStrategy: str, **kwargs):
+    def __init__(self, prd_name: str, positionSide: str, fuseStrategy: str, tags: List[str] = list(), **kwargs):
         self.prd_name: str = prd_name
         self.positionSide: str = positionSide
         self.fuseStrategy: str = fuseStrategy
+        self.tags: List[str] = tags
 
 
 class FixedStepFuseDto(BaseFuseDto):
 
     def __init__(self, minCount: int, priceStep: float, rebuildByPriceStepRate: float, noLoseBaseCount: int,
                  proportionalRate: float,
-                 tags: List[str] = list(), proportionalReverse: bool = False, **kwargs):
+                 proportionalReverse: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.proportionalReverse: bool = proportionalReverse
-        self.tags: List[str] = tags
         self.minCount: int = minCount
         self.priceStep: float = priceStep
         self.rebuildByPriceStepRate: float = rebuildByPriceStepRate

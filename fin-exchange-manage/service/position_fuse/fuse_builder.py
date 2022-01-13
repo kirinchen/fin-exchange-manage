@@ -21,6 +21,8 @@ from service.position_client_service import PositionClientService
 from service.trade_client_service import TradeClientService
 from utils import position_utils, comm_utils, direction_utils
 
+FUSE_BASE_TAG = 'FUSE'
+
 
 class PriceQty:
 
@@ -76,6 +78,7 @@ class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
 
     def init(self, dto: T, fuse_prepare_data=FusePrepareData()) -> object:
         self.dto = dto
+        self.dto.tags.append(FUSE_BASE_TAG)
         self.prepareData: FusePrepareData = fuse_prepare_data
         self.prepareData.position = self.positionClient.find_one(self.dto.prd_name, self.dto.positionSide)
         odp, ods = self.orderPackDao.last({
