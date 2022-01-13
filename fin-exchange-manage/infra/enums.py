@@ -5,6 +5,7 @@ class OrderStrategy(Enum):
     TAKE_PROFIT = 'TAKE_PROFIT'
     LIMIT = 'LIMIT'
     STOP_MARKET = 'STOP_MARKET'
+    FUSE_FIXED_STEP = 'FUSE_FIXED_STEP'
 
 
 class PositionSide:

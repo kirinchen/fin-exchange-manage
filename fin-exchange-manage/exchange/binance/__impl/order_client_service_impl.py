@@ -96,7 +96,7 @@ class BinanceOrderClientService(OrderClientService):
             positionSide=positionSide,
             stopPrice=price_str,
             quantity=quantity_str,
-            closePosition=True,
+            # closePosition=True,
             newClientOrderId=comm_utils.get_order_cid(tags)
         )
         return binance_utils.convert_order_dto(result)

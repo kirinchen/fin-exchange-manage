@@ -13,8 +13,9 @@ class FixedStepFuseDto(BaseFuseDto):
 
     def __init__(self, minCount: int, priceStep: float, rebuildByPriceStepRate: float, noLoseBaseCount: int,
                  proportionalRate: float,
-                 tags: List[str] = list(), **kwargs):
+                 tags: List[str] = list(), proportionalReverse: bool = False, **kwargs):
         super().__init__(**kwargs)
+        self.proportionalReverse: bool = proportionalReverse
         self.tags: List[str] = tags
         self.minCount: int = minCount
         self.priceStep: float = priceStep

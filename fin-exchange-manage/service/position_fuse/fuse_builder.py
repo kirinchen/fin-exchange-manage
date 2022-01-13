@@ -6,11 +6,14 @@ from typing import TypeVar, Generic, List
 
 from sqlalchemy.orm import Session
 
+import exchange
 from dto import order_dto
 from dto.fuse_dto import BaseFuseDto, FixedStepFuseDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
+from infra.enums import OrderStrategy
 from model import OrderPack
+from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
 from service.order_pack_dao import OrderPackDao
@@ -30,12 +33,16 @@ class FuseResultType(Enum):
     NO_POSITION = 'NO_POSITION'
     NO_CRITERIA = 'NO_CRITERIA'
     UP_TO_DATE = 'UP_TO_DATE'
+    EXECUTED = 'EXECUTED'
 
 
 class FuseResult:
 
-    def __init__(self, result_type: FuseResultType):
-        self.resultType = result_type
+    def __init__(self, result_type: FuseResultType, closeOrders: List[OrderDto] = list(),
+                 newOrders: List[OrderDto] = list()):
+        self.resultType = result_type.value
+        self.closeOrders: List[OrderDto] = closeOrders
+        self.newOrders: List[OrderDto] = newOrders
 
 
 class FusePrepareData:
@@ -67,19 +74,20 @@ class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
         self.tradeClient = self.get_ex_obj(TradeClientService)
         self.orderClient = self.get_ex_obj(OrderClientService)
 
-    def init(self, dto: T, fuse_prepare_data=FusePrepareData()):
+    def init(self, dto: T, fuse_prepare_data=FusePrepareData()) -> object:
         self.dto = dto
         self.prepareData: FusePrepareData = fuse_prepare_data
-        self.prepareData.position = self.positionClient.find_one(self.dto.symbol, self.dto.positionSide)
+        self.prepareData.position = self.positionClient.find_one(self.dto.prd_name, self.dto.positionSide)
         odp, ods = self.orderPackDao.last({
             "exchange": self.exchange_name,
             "positionSide": self.dto.positionSide,
-            "prd_name": self.prd_name,
+            "prd_name": self.dto.prd_name,
             "attach_name": self.get_attach_name()
         })
         self.prepareData.orderPack = odp
         self.prepareData.orders = [order_dto.convert_entity_to_dto(o) for o in ods]
         self.prepareData.currentPrice = self.tradeClient.get_last_price(self.dto.prd_name)
+        return self
 
     def fuse(self) -> FuseResult:
         if not self.has_position():
@@ -88,16 +96,17 @@ class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
             return FuseResult(result_type=FuseResultType.NO_CRITERIA)
         if self.is_up_to_date():
             return FuseResult(result_type=FuseResultType.UP_TO_DATE)
-        self.close_exist_orders()
-        self.post_fuse_orders()
+        close_orders = self.close_exist_orders()
+        new_orders = self.post_fuse_orders()
+        return FuseResult(result_type=FuseResultType.EXECUTED, closeOrders=close_orders, newOrders=new_orders)
 
     def has_position(self) -> bool:
-        return position_utils.get_abs_amt(self.position) > 0
+        return position_utils.get_abs_amt(self.prepareData.position) > 0
 
-    def close_exist_orders(self):
+    def close_exist_orders(self) -> List[OrderDto]:
         if not self.prepareData.orders:
-            return
-        self.orderClient.clean_orders(symbol=self.dto.prd_name, currentOds=self.prepareData.orders)
+            return list()
+        return self.orderClient.clean_orders(symbol=self.dto.prd_name, currentOds=self.prepareData.orders)
 
     @abc.abstractmethod
     def get_attach_name(self) -> str:
@@ -141,7 +150,9 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
             return False
         attach = self._get_attach()
         if not comm_utils.is_similar(attach.positionAmt,
-                                     position_utils.get_abs_amt(self.prepareData.position.positionAmt)):
+                                     position_utils.get_abs_amt(self.prepareData.position)):
+            return False
+        if self.is_manual_adjust_orders():
             return False
         if direction_utils.is_high_price(self.dto.positionSide, attach.currentTopPrice, self.prepareData.currentPrice):
             return True
@@ -151,14 +162,18 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
             return False
         return True
 
+    @abc.abstractmethod
+    def is_manual_adjust_orders(self) -> bool:
+        raise NotImplementedError('is_manual_adjust_orders')
+
     def post_fuse_orders(self) -> [OrderDto]:
         ans: List[OrderDto] = list()
         post_count = self._get_step_count()
         price_qty_list: List[PriceQty] = self._gen_price_qty_list(post_count)
         for pq in price_qty_list:
-            o_dto = self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=pq.price,
-                                                             quantity=pq.quantity,
-                                                             positionSide=self.dto.positionSide, tags=self.dto.tags)
+            o_dto = self.orderClient.post_stop_market(prd_name=self.dto.prd_name, price=pq.price,
+                                                      quantity=pq.quantity,
+                                                      positionSide=self.dto.positionSide, tags=self.dto.tags)
             ans.append(o_dto)
         self._record_pack_info(ans)
         return ans
@@ -173,7 +188,7 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
         od_pack_entity.market_price = self.prepareData.currentPrice
 
         attach = FixedStepAttach(currentTopPrice=self.prepareData.currentPrice,
-                                 positionAmt=position_utils.get_abs_amt(self.prepareData.position.positionAmt))
+                                 positionAmt=position_utils.get_abs_amt(self.prepareData.position))
 
         od_pack_entity.set_attach(attach.__dict__)
         od_pack_entity.attach_name = self.get_attach_name()
@@ -184,7 +199,7 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
 
     def _get_step_count(self):
         entryPrice = self.prepareData.position.entryPrice
-        if direction_utils.is_high_price(self.prepareData.currentPrice, entryPrice):
+        if direction_utils.is_high_price(self.dto.positionSide, self.prepareData.currentPrice, entryPrice):
             return self.dto.minCount
         dif_price = abs(self.prepareData.currentPrice - entryPrice)
         _count = math.ceil(dif_price / self.dto.priceStep)
@@ -193,13 +208,13 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
         return _count + self.dto.minCount
 
     def _gen_price_qty_list(self, count: int) -> List[PriceQty]:
-        part_qty: float = position_utils.get_abs_amt(self.prepareData.position.positionAmt)
+        part_qty: float = position_utils.get_abs_amt(self.prepareData.position)
         per_qty: float = comm_utils.calc_proportional_first(sum=part_qty, rate=self.dto.proportionalRate,
                                                             n=count)
         priceQtyList: List[PriceQty] = list()
-        for i in range(int(self.dto.size)):
+        for i in range(count):
             p = self._calc_fall_price(i)
-            q = self.calc_proportional_amt(per_qty, i)
+            q = self._calc_proportional_amt(per_qty, i)
             priceQtyList.append(PriceQty(
                 price=p,
                 quantity=q
@@ -216,3 +231,14 @@ class FixedStepFuseBuilder(BaseFuseBuilder[FixedStepFuseDto]):
     def _calc_fall_price(self, i):
         return direction_utils.plus_price_by_fixed(self.dto.positionSide, self.prepareData.currentPrice,
                                                    -self.dto.priceStep * (i + 1))
+
+
+def gen_fuse_builder(session: Session, payload: dict) -> BaseFuseBuilder:
+    strategy: str = payload.get('fuseStrategy')
+    strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
+    if strategy == OrderStrategy.FUSE_FIXED_STEP:
+        return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
+                                     clazz=FixedStepFuseBuilder, session=session).init(
+            FixedStepFuseDto(**payload))
+
+    raise NotImplementedError(f'not Implemented {strategy} ')
