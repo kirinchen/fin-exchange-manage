@@ -21,7 +21,7 @@ from service.position_client_service import PositionClientService
 from service.trade_client_service import TradeClientService
 from utils import position_utils, comm_utils, direction_utils
 
-FUSE_BASE_TAG = 'FUSE'
+FUSE_BASE_TAG = 'FS'
 
 
 class PriceQty:

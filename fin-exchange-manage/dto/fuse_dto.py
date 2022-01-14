@@ -3,7 +3,7 @@ from typing import List
 
 class BaseFuseDto:
 
-    def __init__(self, prd_name: str, positionSide: str, fuseStrategy: str, tags: List[str] = list(), **kwargs):
+    def __init__(self, prd_name: str, positionSide: str, fuseStrategy: str, tags: List[str], **kwargs):
         self.prd_name: str = prd_name
         self.positionSide: str = positionSide
         self.fuseStrategy: str = fuseStrategy
