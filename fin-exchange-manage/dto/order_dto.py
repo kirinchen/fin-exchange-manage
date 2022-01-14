@@ -74,4 +74,5 @@ class OrderPackQueryDto:
 def convert_entity_to_dto(e: Order) -> OrderDto:
     ans = OrderDto(**e.__dict__)
     ans.symbol = e.prd_name
+    ans.orderId = e.exchangeOrderId
     return ans

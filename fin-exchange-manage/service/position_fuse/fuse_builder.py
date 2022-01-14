@@ -99,14 +99,14 @@ class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
             return FuseResult(result_type=FuseResultType.NO_CRITERIA)
         if self.is_up_to_date():
             return FuseResult(result_type=FuseResultType.UP_TO_DATE)
-        close_orders = self.close_exist_orders()
+        close_orders = self.cancel_exist_orders()
         new_orders = self.post_fuse_orders()
         return FuseResult(result_type=FuseResultType.EXECUTED, closeOrders=close_orders, newOrders=new_orders)
 
     def has_position(self) -> bool:
         return position_utils.get_abs_amt(self.prepareData.position) > 0
 
-    def close_exist_orders(self) -> List[OrderDto]:
+    def cancel_exist_orders(self) -> List[OrderDto]:
         if not self.prepareData.orders:
             return list()
         return self.orderClient.clean_orders(symbol=self.dto.prd_name, currentOds=self.prepareData.orders)
