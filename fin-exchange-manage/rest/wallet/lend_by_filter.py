@@ -20,7 +20,7 @@ def run(payload: dict) -> dict:
             return comm_utils.to_dict(result)
     except Exception as e:  # work on python 3.x
         return {
-            'type': str(type(e)),
+            '__error_type': str(type(e)),
             'msg': str(e),
             'traceback': traceback.format_exc()
         }
