@@ -15,7 +15,15 @@ from service.order_dao import OrderDao
 from service.product_dao import ProductDao
 from utils import order_utils
 
-_last_order_sync_at: datetime = datetime.utcnow() + timedelta(hours=-8)
+_last_order_sync_at: datetime = datetime.utcnow()
+
+
+def _get_query_start_timestamp() -> int:
+    global _last_order_sync_at
+    dt: datetime = _last_order_sync_at + timedelta(hours=-48)
+    ans = int(dt.timestamp() * 1000)
+    _last_order_sync_at = datetime.utcnow()
+    return ans
 
 
 class SyncCron(BaseExchangeAbc, ABC):
@@ -39,7 +47,8 @@ class SyncCron(BaseExchangeAbc, ABC):
             self.sync_product(p, p_dao)
 
     def sync_orders(self, prd_name: str) -> dict:
-        st = int(_last_order_sync_at.timestamp() * 1000)
+
+        st = _get_query_start_timestamp()
         ods: List[OrderDto] = self.orderClientService.list_all_order(prd_name=prd_name,
                                                                      startTime=st)
         ex_id_list = [str(o.orderId) for o in ods]
@@ -55,7 +64,6 @@ class SyncCron(BaseExchangeAbc, ABC):
             else:
                 new_count += 1
                 self.orderDao.create(order_utils.convert_to_model(dto=od, exchange=self.exchange_name))
-        _set_last_order_sync_at_now()
         return {
             'exist': exist_count,
             'new': new_count
@@ -67,11 +75,6 @@ class SyncCron(BaseExchangeAbc, ABC):
 
     def get_abc_clazz(self) -> object:
         return SyncCron
-
-
-def _set_last_order_sync_at_now():
-    global _last_order_sync_at
-    _last_order_sync_at = datetime.utcnow()
 
 
 def init_bind_all():
