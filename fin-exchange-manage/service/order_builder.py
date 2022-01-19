@@ -32,8 +32,9 @@ from utils.wallet_utils import WalletFilter
 
 class PriceQty:
 
-    def __init__(self, price: float, quantity: float):
+    def __init__(self, price: float, quantity: float, priceOnMarket: bool = False):
         self.price: float = price
+        self.priceOnMarket: bool = priceOnMarket
         self.quantity: float = quantity
 
 
@@ -61,6 +62,9 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
         self.orderPackDao: OrderPackDao = None
         self.product: Product = None
         self.lastPrice: float = None
+
+    def is_price_on_market(self, idx: int) -> bool:
+        return idx == 0 and self.dto.priceBuffRate == 1 and self.dto.targetIdxShift == 0
 
     def init(self, dto: T) -> object:
         self.dto = dto
@@ -204,7 +208,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
             self._all_order_qty += qty
             priceQtyList.append(PriceQty(
                 price=p,
-                quantity=qty
+                quantity=qty,
+                priceOnMarket=self.is_price_on_market(i)
             ))
         return priceQtyList
 
