@@ -24,14 +24,14 @@ class BitfinexOrderClientService(OrderClientService):
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
         pass  # TODO
 
-    def post_limit(self, symbol: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+    def post_limit(self, prd_name: str,onMarketPrice: bool, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         pass  # TODO
 
-    def post_stop_market(self, symbol: str, price: float, quantity: float, positionSide: str,
+    def post_stop_market(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
         pass  # TODO
 
-    def post_take_profit(self, symbol: str, price: float, quantity: float, positionSide: str,
+    def post_take_profit(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
         pass  # TODO
 

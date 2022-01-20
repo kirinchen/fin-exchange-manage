@@ -63,7 +63,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
         raise NotImplementedError('not impl')
 
     @abc.abstractmethod
-    def post_limit(self, prd_name: str, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+    def post_limit(self, prd_name: str,onMarketPrice: bool, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_limit')
 
     @abc.abstractmethod

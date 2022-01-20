@@ -214,7 +214,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        return self.orderClientService.post_limit(prd_name=self.dto.symbol, price=pq.price, quantity=pq.quantity,
+        return self.orderClientService.post_limit(prd_name=self.dto.symbol, onMarketPrice=pq.priceOnMarket,
+                                                  price=pq.price, quantity=pq.quantity,
                                                   positionSide=self.dto.positionSide, tags=self.dto.tags)
 
     def get_stop_price(self) -> float:
@@ -232,7 +233,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         lose_tags = list(self.dto.tags)
         lose_tags.append('LSTM')
         return [self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=self.position.markPrice,
-                                                         quantity=abs( self.position.positionAmt),
+                                                         quantity=abs(self.position.positionAmt),
                                                          positionSide=self.dto.positionSide, tags=lose_tags)]
 
     def _post_stop_order(self) -> List[OrderDto]:
