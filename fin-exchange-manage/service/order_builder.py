@@ -227,11 +227,13 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
             return list()
         range_close = self.position.liquidationPrice - self.position.entryPrice
         lose_rate = self.position.unrealizedProfit / range_close
-        if self.dto.closeLoseThreshold > lose_rate:
+        if -self.dto.closeLoseThreshold < lose_rate:
             return list()
+        lose_tags = list(self.dto.tags)
+        lose_tags.append('LSTM')
         return [self.orderClientService.post_stop_market(prd_name=self.dto.symbol, price=self.position.markPrice,
-                                                         quantity=self.position.positionAmt,
-                                                         positionSide=self.dto.positionSide, tags=self.dto.tags)]
+                                                         quantity=abs( self.position.positionAmt),
+                                                         positionSide=self.dto.positionSide, tags=lose_tags)]
 
     def _post_stop_order(self) -> List[OrderDto]:
         stopPrice = self.get_stop_price()
