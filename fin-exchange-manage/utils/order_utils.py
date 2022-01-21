@@ -86,7 +86,7 @@ def get_price(od: OrderDto) -> float:
         return od.price
     if od.stopPrice > 0:
         return od.stopPrice
-    raise NotImplementedError(f'the {od} not support any price')
+    return -1
 
 
 def filter_order(oods: List[OrderDto], ft: OrderFilter) -> OrdersInfo:

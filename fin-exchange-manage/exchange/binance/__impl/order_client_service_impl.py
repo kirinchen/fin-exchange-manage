@@ -46,24 +46,26 @@ class BinanceOrderClientService(OrderClientService):
                                                           orderIdList=batch_ids))
         return results
 
-    def post_limit(self, prd_name: str,onMarketPrice: bool, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+    def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
+                   tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
         amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
         quantity = min(amt, quantity)
         price = ProductDao.fix_precision_price(product, price)
         if price <= 0:
             return None
-        price_str = str(price)
+        price_str = None if onMarketPrice else str(price)
         p_amt: float = ProductDao.fix_precision_amt(product, quantity)
         if p_amt == 0:
             return None
         quantity_str = str(p_amt)
         side = direction_utils.get_limit_order_side(positionSide)
         order_type = OrderType.MARKET if onMarketPrice else OrderType.LIMIT
+        time_in_force = TimeInForce.INVALID if onMarketPrice else TimeInForce.GTC
         ans = self.client.post_order(price=price_str,
                                      side=side,
                                      symbol=binance_utils.fix_usdt_symbol(prd_name),
-                                     timeInForce=TimeInForce.GTC,
+                                     timeInForce=time_in_force,
                                      ordertype=order_type,
                                      workingType=WorkingType.CONTRACT_PRICE,
                                      positionSide=positionSide,
