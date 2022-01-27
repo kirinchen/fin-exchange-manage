@@ -55,7 +55,9 @@ class OrderPackQueryDto:
         self.exchange: str = None
         self.order_strategy: str = None
         self.tags: List[str] = None
+        self.prd_name_IN: List[str] = None
         self.attach_name: str = None
+        self.attach_name_IN: List[str] = None
         self.side: str = None
         self.prd_name: str = None
         self.positionSide: str = None
@@ -66,7 +68,7 @@ class OrderPackQueryDto:
         for k, v in self.__dict__.items():
             if k.startswith('_'):
                 continue
-            if isinstance(v, str):
+            if isinstance(v, str) or isinstance(v, list):
                 ans[k] = v
         return ans
 

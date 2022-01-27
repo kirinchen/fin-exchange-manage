@@ -28,3 +28,7 @@ class MarketClientService(BaseExchangeAbc, ABC):
         for prd_name in prd_name_list:
             ans[prd_name] = self.get_candlestick_data(prd_name, interval, startTime, endTime, limit)
         return ans
+
+    # TODO: support
+    # def get_algo_orders_max_num(self,prd_name: str,positionSide:str)->int:
+    #     raise NotImplementedError('get_algo_orders_max_num')

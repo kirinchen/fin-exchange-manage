@@ -3,6 +3,7 @@ from abc import ABC
 from datetime import datetime, timezone
 from typing import TypeVar, Generic, Any
 
+from sqlalchemy import Column
 from sqlalchemy.orm import scoped_session, Session, Query
 
 import exchange
@@ -58,6 +59,13 @@ class BaseDao(BaseExchangeAbc, Generic[T], ABC):
 
     def gen_query(self) -> Query:
         return self.session.query(self.get_entity_clazz())
+
+    def get_column(self, name: str) -> Column:
+        column_names = self.get_entity_clazz().__table__.columns
+        for c in column_names:
+            if c.name == name:
+                return c
+        raise KeyError('not find ' + name)
 
     def refresh_all(self):
         pass

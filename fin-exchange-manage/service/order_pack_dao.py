@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import desc
+from sqlalchemy import desc, Column
 from sqlalchemy.orm import Session, Query
 
 from dto import order_dto
@@ -10,6 +10,8 @@ from model.order_pack import OrderPack
 from service.base_exchange_abc import BaseDao, BaseExchangeAbc
 from service.order_dao import OrderDao
 from utils import comm_utils, order_utils
+
+DTO_IN_FIELD_SUBFIX = '_IN'
 
 
 class OrderPackDao(BaseDao[OrderPack]):
@@ -30,7 +32,18 @@ class OrderPackDao(BaseDao[OrderPack]):
         return super(OrderPackDao, self).create(entity)
 
     def query_by_dict(self, d: dict) -> Query:
-        return self.gen_query().filter_by(**d)
+        in_map = dict()
+        for k, v in dict(d).items():
+            if k.endswith(DTO_IN_FIELD_SUBFIX):
+                del d[k]
+                in_map[k] = v
+        ans: Query = self.gen_query().filter_by(**d)
+        for ink, inv in in_map.items():
+            col_name: str = ink.replace(DTO_IN_FIELD_SUBFIX, '')
+            col:Column = self.get_column(col_name)
+            ans.filter(col.in_(inv))
+
+        return ans
 
     def last(self, d: dict) -> (OrderPack, List[Order]):
         entity: OrderPack = self.query_by_dict(d).order_by(desc(OrderPack.created_at)).first()
@@ -50,8 +63,6 @@ class OrderPackDao(BaseDao[OrderPack]):
                                                      order_strategy=od_pack_entity.order_strategy)
             od_entity.set_tags(od_pack_entity.tags)
             self.orderDao.create(od_entity)
-
-
 
     def get_entity_clazz(self) -> OrderPack:
         return OrderPack
