@@ -25,6 +25,7 @@ class OrderType:
     LIMIT = "LIMIT"
     STOP_MARKET = "STOP_MARKET"
     TAKE_PROFIT = "TAKE_PROFIT"
+    MARKET = 'MARKET'
     INVALID = None
 
 

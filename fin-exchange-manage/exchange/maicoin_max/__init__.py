@@ -3,4 +3,6 @@ from maicoin_max.client import Client
 
 
 def gen_request_client() -> Client:
-    return Client(config.env('maicoin-maicoin_max-api-key'), config.env('maicoin-maicoin_max-api-secret'))
+    key = config.env('maicoin-max-api-key')
+    secret = config.env('maicoin-max-api-secret')
+    return Client(key=key, secret=secret)
