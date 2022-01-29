@@ -40,8 +40,8 @@ class OrderPackDao(BaseDao[OrderPack]):
         ans: Query = self.gen_query().filter_by(**d)
         for ink, inv in in_map.items():
             col_name: str = ink.replace(DTO_IN_FIELD_SUBFIX, '')
-            col:Column = self.get_column(col_name)
-            ans.filter(col.in_(inv))
+            col: Column = self.get_column(col_name)
+            ans = ans.filter(col.in_(inv))
 
         return ans
 
