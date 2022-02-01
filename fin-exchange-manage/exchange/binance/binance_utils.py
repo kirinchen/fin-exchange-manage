@@ -1,6 +1,8 @@
 from datetime import datetime
+from enum import Enum
 
 import pytz
+from binance_f.exception.binanceapiexception import BinanceApiException
 from binance_f.model import Order, Trade, Position, Candlestick
 
 from dto.market_dto import CandlestickDto
@@ -50,3 +52,14 @@ def convert_candlestick_dto(ct: Candlestick) -> CandlestickDto:
     t_dict['highAt'] = None
     t_dict['lowAt'] = None
     return CandlestickDto(**t_dict)
+
+
+class ErrorCode(Enum):
+    LIMIT_PRICE_CAN_NOT_BE_HIGHER = 4016
+    ORDER_WOULD_IMMEDIATELY_TRIGGER = 2021
+
+
+def is_exception(code: ErrorCode, ex: BinanceApiException) -> bool:
+    code_str = f' -{code.value}'
+    msg = ex.error_message
+    return code_str in msg
