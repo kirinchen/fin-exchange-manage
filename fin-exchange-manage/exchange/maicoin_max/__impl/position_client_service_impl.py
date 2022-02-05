@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from dto.position_dto import PositionDto
 from exchange.binance import gen_request_client, binance_utils
+from service.order_client_service import OrderClientService
 from service.position_client_service import PositionClientService
 
 
@@ -14,6 +15,10 @@ class MaxPositionClientService(PositionClientService):
     def __init__(self, exchange_name: str, session: Session = None):
         super(MaxPositionClientService, self).__init__(exchange_name, session)
         self.client: RequestClient = gen_request_client()
+        self.orderClient: OrderClientService = None
+
+    def after_init(self):
+        self.orderClient = self.get_ex_obj(OrderClientService)
 
     def list_all(self) -> List[PositionDto]:
         result: List[Position] = self.client.get_position()

@@ -22,6 +22,7 @@ class Order(Base, TimestampMixin):
     exchange_update_at = Column(DateTime, default=datetime.utcnow)
     positionSide = Column(String(50), nullable=False)
     tags = Column(Text, nullable=True)
+    origQty = Column(Float, nullable=False)
 
     def set_tags(self, tags: List[str]):
         if tags is None:

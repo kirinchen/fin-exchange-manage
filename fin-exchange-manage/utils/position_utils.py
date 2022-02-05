@@ -1,6 +1,8 @@
 from typing import List
 
+from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto, PositionFilter
+from dto.wallet_dto import WalletDto
 
 
 def find_position_one(ps: List[PositionDto],  symbol: str, positionSide: str) -> PositionDto:
@@ -19,7 +21,8 @@ def filter_position(ps: List[PositionDto], ft: PositionFilter) -> List[PositionD
         ans.append(p)
     return ans
 
-
+def get_by_orders(wallet:WalletDto,orders:List[OrderDto])->PositionDto:
+    pass
 
 
 def get_abs_amt(p: PositionDto) -> float:
