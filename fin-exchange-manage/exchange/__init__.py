@@ -57,7 +57,7 @@ def _load_exchange_by_service_names(exchange_name: str, service_filenames: List[
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
         service_clazz: BaseExchangeAbc = foo.get_impl_clazz()
-        service_instance: BaseExchangeAbc = service_clazz(exchange_name, None)
+        service_instance: BaseExchangeAbc = service_clazz(exchange_name=exchange_name, session=None)
         this_dict = _impl_obj_map[exchange_name]
         this_dict[service_instance.get_abc_clazz()] = service_clazz
 
@@ -65,8 +65,8 @@ def _load_exchange_by_service_names(exchange_name: str, service_filenames: List[
 S = TypeVar("S", bound=BaseExchangeAbc)
 
 
-def gen_impl_obj(exchange_name: str, clazz: S, session: Session) -> S:
+def gen_impl_obj(exchange_name: str, clazz: S, session: Session,**kwargs) -> S:
     service_clazz = _impl_obj_map[exchange_name][clazz]
-    ans = service_clazz(exchange_name, session)
+    ans = service_clazz(exchange_name=exchange_name, session=session)
     ans.after_init()
     return ans

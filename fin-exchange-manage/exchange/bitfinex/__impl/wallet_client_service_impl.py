@@ -31,8 +31,8 @@ class LendPrams:
 
 class BitfinexWalletClientService(WalletClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BitfinexWalletClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BitfinexWalletClientService, self).__init__(**kwargs)
         (self.client, self.expandClient) = gen_request_client()
 
     def list_all(self) -> List[WalletDto]:

@@ -11,8 +11,8 @@ from service.order_client_service import OrderClientService
 
 class BitfinexOrderClientService(OrderClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BitfinexOrderClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BitfinexOrderClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def list_all_order(self, prd_name: str, orderId: int = None, startTime: int = None, endTime: int = None,

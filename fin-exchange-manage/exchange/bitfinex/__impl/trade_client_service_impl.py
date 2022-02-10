@@ -11,8 +11,8 @@ from service.trade_client_service import TradeClientService
 
 class BitfinexTradeClientService(TradeClientService):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super(BitfinexTradeClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BitfinexTradeClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def fetch_recent_list(self, symbol: str, limit: int) -> List[TradeDto]:

@@ -10,8 +10,8 @@ from utils import comm_utils
 
 class BinanceLimitOrderBuilder(LimitOrderBuilder):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super(BinanceLimitOrderBuilder, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinanceLimitOrderBuilder, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     # def post_one(self, pq: PriceQty) -> OrderDto:

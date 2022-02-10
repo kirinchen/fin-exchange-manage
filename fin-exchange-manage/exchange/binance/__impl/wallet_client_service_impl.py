@@ -12,8 +12,8 @@ from service.wallet_client_service import WalletClientService
 
 class BinanceWalletClientService(WalletClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BinanceWalletClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinanceWalletClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def list_all(self) -> List[WalletDto]:

@@ -61,8 +61,8 @@ T = TypeVar('T', bound=BaseFuseDto)
 
 class BaseFuseBuilder(BaseExchangeAbc, Generic[T], ABC):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super().__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.prepareData: FusePrepareData = None
         self.dto: T = None
         self.positionClient: PositionClientService = None

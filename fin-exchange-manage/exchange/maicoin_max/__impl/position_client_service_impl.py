@@ -12,8 +12,8 @@ from service.position_client_service import PositionClientService
 
 class MaxPositionClientService(PositionClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(MaxPositionClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(MaxPositionClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
         # self.orderClient: OrderClientService = None
 

@@ -16,8 +16,8 @@ class CandlestickDto:
 
 class BinanceMarketClientService(MarketClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BinanceMarketClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinanceMarketClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def get_candlestick_data(self, prd_name: str, interval: CandlestickInterval, startTime: datetime = None,

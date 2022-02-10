@@ -13,8 +13,8 @@ from utils import direction_utils, comm_utils
 
 class BinancePositionClientService(PositionClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BinancePositionClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinancePositionClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def list_all(self) -> List[PositionDto]:

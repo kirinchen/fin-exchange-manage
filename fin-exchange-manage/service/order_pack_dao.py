@@ -16,8 +16,8 @@ DTO_IN_FIELD_SUBFIX = '_IN'
 
 class OrderPackDao(BaseDao[OrderPack]):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(OrderPackDao, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(OrderPackDao, self).__init__(**kwargs)
         self.orderDao: OrderDao = None
 
     def after_init(self):

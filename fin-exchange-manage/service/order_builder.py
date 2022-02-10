@@ -50,8 +50,8 @@ T = TypeVar('T', bound=BasePostOrderDto)
 
 class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BaseOrderBuilder, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BaseOrderBuilder, self).__init__(**kwargs)
         self.dto: T = None
         self.tradeClientService: TradeClientService = None
         self.positionClientService: PositionClientService = None
@@ -158,8 +158,8 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
 class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super(LimitOrderBuilder, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(LimitOrderBuilder, self).__init__(**kwargs)
         # self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
@@ -253,8 +253,8 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
 class TakeProfitOrderBuilder(BaseOrderBuilder[PostTakeStopProfitDto], ABC):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super().__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.position_quantity: float = None
         self.position: PositionDto = None
 

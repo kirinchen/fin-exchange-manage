@@ -28,8 +28,8 @@ def _get_query_start_timestamp() -> int:
 
 class SyncCron(BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super().__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.orderDao: OrderDao = None
         self.orderClientService: OrderClientService = None
 

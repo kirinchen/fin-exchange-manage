@@ -10,8 +10,8 @@ from utils import comm_utils
 
 class BinanceStopMarketOrderBuilder(StopMarketOrderBuilder):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super(BinanceStopMarketOrderBuilder, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinanceStopMarketOrderBuilder, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     # def post_one(self, pq: PriceQty) -> OrderDto:

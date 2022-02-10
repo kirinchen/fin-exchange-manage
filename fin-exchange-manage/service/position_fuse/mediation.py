@@ -31,8 +31,8 @@ class StopMediationDto:
 
 class StopMediation(BaseExchangeAbc):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(StopMediation, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(StopMediation, self).__init__(**kwargs)
         self.dto: StopMediationDto = None
         self.stopLoss: StopLoss = None
         self.stopTrailing: StopTrailing = None

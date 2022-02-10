@@ -27,8 +27,8 @@ T = TypeVar('T', bound=dtos.StopDto)
 
 class Stoper(Generic[T], BaseExchangeAbc, metaclass=abc.ABCMeta):
 
-    def __init__(self, state: dtos.StopState, exchange_name: str, session: Session):
-        super(Stoper, self).__init__(exchange_name, session)
+    def __init__(self, state: dtos.StopState, **kwargs):
+        super(Stoper, self).__init__(**kwargs)
         self.dto: T = None
         self.state: dtos.StopState = state
         self.position_client: PositionClientService = None

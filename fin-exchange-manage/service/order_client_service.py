@@ -16,8 +16,8 @@ from utils.order_utils import OrderFilter, OrdersInfo
 
 class OrderClientService(BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(OrderClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(OrderClientService, self).__init__(**kwargs)
         self.productDao: ProductDao = None
         self.positionClient: PositionClientService = None
 

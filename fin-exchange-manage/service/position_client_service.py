@@ -12,8 +12,8 @@ from utils import position_utils
 
 class PositionClientService(BaseExchangeAbc, ABC):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super().__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.productDao: ProductDao = None
 
     def after_init(self):

@@ -18,8 +18,8 @@ MAX_BATCH_COUNT = 7
 
 class BinanceOrderClientService(OrderClientService):
 
-    def __init__(self, exchange_name: str, session: Session = None):
-        super(BinanceOrderClientService, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BinanceOrderClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     def list_all_order(self, prd_name: str, orderId: int = None, startTime: int = None, endTime: int = None,

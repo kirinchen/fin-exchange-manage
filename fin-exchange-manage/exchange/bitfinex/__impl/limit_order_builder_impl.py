@@ -7,8 +7,8 @@ from service.order_builder import LimitOrderBuilder
 
 class BitfinexLimitOrderBuilder(LimitOrderBuilder):
 
-    def __init__(self, exchange_name: str, session: Session):
-        super(BitfinexLimitOrderBuilder, self).__init__(exchange_name, session)
+    def __init__(self, **kwargs):
+        super(BitfinexLimitOrderBuilder, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
     # def post_one(self, pq: PriceQty) -> OrderDto:
