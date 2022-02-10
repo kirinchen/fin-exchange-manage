@@ -7,10 +7,10 @@ from bfxapi.models import Notification
 import config
 
 
-async def _gen_client():
+async def _gen_client(account_name: str = ''):
     bfx = Client(
-        API_KEY=config.env('bitfinex-api-key'),
-        API_SECRET=config.env('bitfinex-api-secret')
+        API_KEY=config.env(f'bitfinex-api-key{account_name}'),
+        API_SECRET=config.env(f'bitfinex-api-secret{account_name}')
     )
     return bfx
 
@@ -30,8 +30,8 @@ class BitfinexExpandClient:
         return Notification.from_raw_notification(raw_notification)
 
 
-def gen_request_client() -> (Client, BitfinexExpandClient):
+def gen_request_client(account_name: str = '') -> (Client, BitfinexExpandClient):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result: Client = loop.run_until_complete(_gen_client())
+    result: Client = loop.run_until_complete(_gen_client(account_name))
     return result, BitfinexExpandClient(result)

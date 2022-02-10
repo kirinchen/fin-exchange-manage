@@ -19,6 +19,13 @@ from utils import comm_utils
 api_key = config.env('api-key')
 
 
+class PayloadExKey(Enum):
+    exchange_account = 'exchange_account'
+
+    def get_val(self, payload: dict, _default=None) -> Any:
+        return payload.get(self.value, _default)
+
+
 class PayloadReqKey(Enum):
     name = 'name'
     exchange = 'exchange'

@@ -65,8 +65,8 @@ def _load_exchange_by_service_names(exchange_name: str, service_filenames: List[
 S = TypeVar("S", bound=BaseExchangeAbc)
 
 
-def gen_impl_obj(exchange_name: str, clazz: S, session: Session,**kwargs) -> S:
+def gen_impl_obj(exchange_name: str, clazz: S, session: Session, **kwargs) -> S:
     service_clazz = _impl_obj_map[exchange_name][clazz]
-    ans = service_clazz(exchange_name=exchange_name, session=session)
+    ans = service_clazz(exchange_name=exchange_name, session=session, **kwargs)
     ans.after_init()
     return ans

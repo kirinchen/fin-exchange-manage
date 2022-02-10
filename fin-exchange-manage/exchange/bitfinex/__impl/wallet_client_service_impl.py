@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from dto.wallet_dto import WalletDto
 from exchange.bitfinex import gen_request_client, bitfinex_utils
+from rest.proxy_controller import PayloadExKey
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 
@@ -33,7 +34,7 @@ class BitfinexWalletClientService(WalletClientService):
 
     def __init__(self, **kwargs):
         super(BitfinexWalletClientService, self).__init__(**kwargs)
-        (self.client, self.expandClient) = gen_request_client()
+        (self.client, self.expandClient) = gen_request_client(PayloadExKey.exchange_account.get_val(self.payload))
 
     def list_all(self) -> List[WalletDto]:
         result: List[Wallet] = bitfinex_utils.call(self.client.rest.get_wallets())
