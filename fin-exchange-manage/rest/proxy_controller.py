@@ -23,6 +23,7 @@ class PayloadReqKey(Enum):
     name = 'name'
     exchange = 'exchange'
     apiKey = '__bzk_api_key'
+    exchange_account = 'exchange_account'  # 如果沒有指定就是 load default 各自 impl 要各自實作
 
     @classmethod
     def values(cls):
@@ -32,7 +33,8 @@ class PayloadReqKey(Enum):
     @classmethod
     def clean_default_keys(cls, payload: dict):
         for k in PayloadReqKey.values():
-            del payload[k.value]
+            if k.value in payload:
+                del payload[k.value]
 
     def get_val(self, payload: dict) -> Any:
         return payload.get(self.value)
