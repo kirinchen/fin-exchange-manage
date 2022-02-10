@@ -14,7 +14,7 @@ def run(payload: dict) -> dict:
             w_filter: WalletFilter = WalletFilter(**payload)
             walletClient: WalletClientService = exchange.gen_impl_obj(
                 exchange_name=PayloadReqKey.exchange.get_val(payload),
-                clazz=WalletClientService, session=session)
+                clazz=WalletClientService, session=session,**payload)
             result = walletClient.lend_by_filter(w_filter, **payload)
             return comm_utils.to_dict(result)
     except Exception as e:  # work on python 3.x

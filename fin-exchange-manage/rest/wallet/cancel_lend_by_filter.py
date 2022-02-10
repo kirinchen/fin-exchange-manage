@@ -12,6 +12,6 @@ def run(payload: dict) -> AccountDto:
         w_filter: WalletFilter = WalletFilter(**payload)
         walletClient: WalletClientService = exchange.gen_impl_obj(
             exchange_name=PayloadReqKey.exchange.get_val(payload),
-            clazz=WalletClientService, session=session)
+            clazz=WalletClientService, session=session,**payload)
         result = walletClient.cancel_lend_by_filter(w_filter, **payload)
         return comm_utils.to_dict(result)

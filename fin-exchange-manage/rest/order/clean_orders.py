@@ -23,7 +23,7 @@ class CleanOdsDto:
 def run(payload: dict) -> dict:
     with database.session_scope() as session:
         order_client: OrderClientService = exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                                                 clazz=OrderClientService, session=session)
+                                                                 clazz=OrderClientService, session=session,**payload)
         clean_ods_dto = CleanOdsDto(**payload)
         result = order_client.clean_orders(clean_ods_dto.symbol, clean_ods_dto.get_current_ods_dto())
         return comm_utils.to_dict(result)

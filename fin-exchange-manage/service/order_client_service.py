@@ -22,7 +22,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
         self.positionClient: PositionClientService = None
 
     def after_init(self):
-        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
+        self.productDao: ProductDao = self.get_ex_obj(ProductDao)
         self.positionClient: PositionClientService = self.get_ex_obj(PositionClientService)
 
     def get_abc_clazz(self) -> object:
@@ -63,7 +63,8 @@ class OrderClientService(BaseExchangeAbc, ABC):
         raise NotImplementedError('not impl')
 
     @abc.abstractmethod
-    def post_limit(self, prd_name: str,onMarketPrice: bool, price: float, quantity: float, positionSide: str, tags: List[str]) -> OrderDto:
+    def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
+                   tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_limit')
 
     @abc.abstractmethod

@@ -27,6 +27,6 @@ def run(payload: dict) -> dict:
         parms_dto = ParmsDto(**payload)
         marketClient: MarketClientService = exchange.gen_impl_obj(
             exchange_name=PayloadReqKey.exchange.get_val(payload),
-            clazz=MarketClientService, session=session)
+            clazz=MarketClientService, session=session,**payload)
         result = marketClient.get_multiple_candlestick_data(**parms_dto.__dict__)
         return comm_utils.to_dict(result)

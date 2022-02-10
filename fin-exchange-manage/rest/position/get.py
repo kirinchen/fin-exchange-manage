@@ -12,6 +12,6 @@ def run(payload: dict) -> AccountDto:
         pf = PositionFilter(**payload)
         positionClient: PositionClientService = exchange.gen_impl_obj(
             exchange_name=PayloadReqKey.exchange.get_val(payload),
-            clazz=PositionClientService, session=session)
+            clazz=PositionClientService, session=session,**payload)
         result = positionClient.query(pf)
         return comm_utils.to_dict(result)

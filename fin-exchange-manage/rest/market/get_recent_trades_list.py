@@ -12,6 +12,6 @@ def run(payload: dict) -> dict:
         timeMaped: bool = payload.get('timeMaped', False)
         tradeClient: TradeClientService = exchange.gen_impl_obj(
             exchange_name=PayloadReqKey.exchange.get_val(payload),
-            clazz=TradeClientService, session=session)
+            clazz=TradeClientService, session=session,**payload)
         result = tradeClient.fetch_recent_set(symbol=sbl, limit=limit, time_maped=timeMaped)
         return comm_utils.to_dict(result)

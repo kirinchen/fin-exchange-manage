@@ -10,7 +10,7 @@ def run(payload: dict) -> dict:
     try:
         with database.session_scope() as session:
             stopMediation: StopMediation = exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                                                 clazz=StopMediation, session=session)
+                                                                 clazz=StopMediation, session=session, **payload)
             dto = StopMediationDto(**payload)
             dto.tags.append(DEFAULT_TAG)
             stopMediation.init(dto)

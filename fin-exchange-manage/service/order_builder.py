@@ -68,14 +68,10 @@ class BaseOrderBuilder(Generic[T], BaseExchangeAbc, ABC):
 
     def init(self, dto: T) -> object:
         self.dto = dto
-        self.tradeClientService: TradeClientService = exchange.gen_impl_obj(self.exchange_name, TradeClientService,
-                                                                            self.session)
-        self.positionClientService: PositionClientService = exchange.gen_impl_obj(self.exchange_name,
-                                                                                  PositionClientService,
-                                                                                  self.session)
-        self.orderClientService: OrderClientService = exchange.gen_impl_obj(self.exchange_name, OrderClientService,
-                                                                            self.session)
-        self.productDao: ProductDao = exchange.gen_impl_obj(self.exchange_name, ProductDao, self.session)
+        self.tradeClientService: TradeClientService = self.get_ex_obj(TradeClientService)
+        self.positionClientService: PositionClientService = self.get_ex_obj(PositionClientService)
+        self.orderClientService: OrderClientService = self.get_ex_obj(OrderClientService)
+        self.productDao: ProductDao = self.get_ex_obj(ProductDao)
         self.walletClientService: WalletClientService = self.get_ex_obj(WalletClientService)
         self.orderDao: OrderDao = self.get_ex_obj(OrderDao)
         self.orderPackDao: OrderPackDao = self.get_ex_obj(OrderPackDao)
@@ -319,14 +315,14 @@ def gen_order_builder(session: Session, payload: dict) -> BaseOrderBuilder:
     strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
     if strategy == OrderStrategy.TAKE_PROFIT:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                     clazz=TakeProfitOrderBuilder, session=session).init(
+                                     clazz=TakeProfitOrderBuilder, session=session, **payload).init(
             PostTakeStopProfitDto(**payload))
     if strategy == OrderStrategy.STOP_MARKET:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                     clazz=StopMarketOrderBuilder, session=session).init(
+                                     clazz=StopMarketOrderBuilder, session=session, **payload).init(
             PostTakeStopProfitDto(**payload))
     if strategy == OrderStrategy.LIMIT:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                     clazz=LimitOrderBuilder, session=session).init(
+                                     clazz=LimitOrderBuilder, session=session, **payload).init(
             PostLimitOrderDto(**payload))
     raise NotImplementedError(f'not Implemented {strategy} ')

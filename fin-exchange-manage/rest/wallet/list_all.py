@@ -10,6 +10,6 @@ def run(payload: dict) -> AccountDto:
     with database.session_scope() as session:
         walletClient: WalletClientService = exchange.gen_impl_obj(
             exchange_name=PayloadReqKey.exchange.get_val(payload),
-            clazz=WalletClientService, session=session)
+            clazz=WalletClientService, session=session,**payload)
         result = walletClient.list_all()
         return comm_utils.to_dict(result)

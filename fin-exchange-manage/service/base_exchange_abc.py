@@ -28,7 +28,7 @@ class BaseExchangeAbc(ABC):
 
     def get_ex_obj(self, ex: EX) -> EX:
         return exchange.gen_impl_obj(self.exchange_name, ex,
-                                     self.session)
+                                     self.session, **self.payload)
 
 
 T = TypeVar('T')

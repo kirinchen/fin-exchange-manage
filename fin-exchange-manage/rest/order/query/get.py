@@ -12,7 +12,7 @@ def run(payload: dict) -> dict:
     with database.session_scope() as session:
         ex = PayloadReqKey.exchange.get_val(payload)
         order_service: OrderClientService = exchange.gen_impl_obj(exchange_name=ex, session=session,
-                                                                  clazz=OrderClientService)
+                                                                  clazz=OrderClientService,**payload)
         order_filter: OrderFilter = OrderFilter(**payload)
         info: OrdersInfo = order_service.query_order(order_filter)
         return info.to_struct()

@@ -241,7 +241,7 @@ def gen_fuse_builder(session: Session, payload: dict) -> BaseFuseBuilder:
     strategy: OrderStrategy = comm_utils.value_of_enum(OrderStrategy, strategy)
     if strategy == OrderStrategy.FUSE_FIXED_STEP:
         return exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                     clazz=FixedStepFuseBuilder, session=session).init(
+                                     clazz=FixedStepFuseBuilder, session=session, **payload).init(
             FixedStepFuseDto(**payload))
 
     raise NotImplementedError(f'not Implemented {strategy} ')

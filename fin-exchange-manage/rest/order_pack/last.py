@@ -10,7 +10,7 @@ def run(payload: dict) -> dict:
     with database.session_scope() as session:
         ex = PayloadReqKey.exchange.get_val(payload)
         order_pack_dao: OrderPackDao = exchange.gen_impl_obj(exchange_name=ex, session=session,
-                                                             clazz=OrderPackDao)
+                                                             clazz=OrderPackDao,**payload)
         PayloadReqKey.clean_default_keys(payload)
         filter_map: dict = payload.get('filter_map')
         ans = dict()
