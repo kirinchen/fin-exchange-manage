@@ -14,10 +14,10 @@ EX = TypeVar('E')
 
 class BaseExchangeAbc(ABC):
 
-    def __init__(self, exchange_name: str, session: Session,payload:dict):
+    def __init__(self, exchange_name: str, session: Session, **kwargs):
         self.exchange_name = exchange_name
         self.session: Session = session
-        self.payload = payload
+        self.payload = kwargs
 
     def after_init(self):
         pass
