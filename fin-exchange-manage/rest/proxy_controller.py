@@ -23,12 +23,16 @@ class PayloadReqKey(Enum):
     name = 'name'
     exchange = 'exchange'
     apiKey = '__bzk_api_key'
-    exchange_account = 'exchange_account'  # 如果沒有指定就是 load default 各自 impl 要各自實作
 
     @classmethod
     def values(cls):
         ans = [e for e in PayloadReqKey]
         return ans
+
+    @classmethod
+    def clean_sensitive_keys(cls, payload: dict):
+        if cls.apiKey.value in payload:
+            del payload[cls.apiKey.value]
 
     @classmethod
     def clean_default_keys(cls, payload: dict):
@@ -70,6 +74,7 @@ def proxy():
     rh_api_key = PayloadReqKey.apiKey.get_val(payload)
     if not rh_api_key == api_key:
         raise ConnectionAbortedError('API BYE')
+    PayloadReqKey.clean_sensitive_keys(payload)
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
     spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{PayloadReqKey.name.get_val(payload)}.py")
