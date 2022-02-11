@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 
 REST_DIR = 'rest'
 EXCHANGE_IMPL_FILE_SUFFIX = '_impl.py'

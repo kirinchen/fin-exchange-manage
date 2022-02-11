@@ -1,7 +1,7 @@
 import exchange
 from dto import order_dto
 from infra import database
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.order_pack_dao import OrderPackDao
 from utils import comm_utils
 

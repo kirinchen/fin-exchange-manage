@@ -1,7 +1,7 @@
 import exchange
 from infra import database
 
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.order_client_service import OrderClientService
 from utils import comm_utils
 from utils.order_utils import OrderFilter

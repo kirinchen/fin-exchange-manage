@@ -1,7 +1,7 @@
 from cron import cron_settings
 from cron.lend_funding_job import LendFundingJob
 from dto.account_dto import AccountDto
-from rest.proxy_controller import PayloadReqKey, PayloadExKey
+from infra.enums import PayloadExKey, PayloadReqKey
 from utils import comm_utils
 
 

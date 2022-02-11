@@ -1,4 +1,4 @@
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 
 
 def test_clean_default_keys():

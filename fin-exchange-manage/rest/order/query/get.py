@@ -3,7 +3,7 @@ from typing import List
 import exchange
 from dto.order_dto import OrderDto
 from infra import database
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.order_client_service import OrderClientService
 from utils.order_utils import OrderFilter, OrdersInfo
 

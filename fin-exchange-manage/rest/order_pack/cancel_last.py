@@ -5,7 +5,7 @@ from dto import order_dto
 from dto.order_dto import OrderDto
 from infra import database
 from model import OrderPack
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.order_client_service import OrderClientService
 from service.order_pack_dao import OrderPackDao
 from utils import comm_utils

@@ -5,8 +5,7 @@ import dateutil.parser
 
 import exchange
 from infra import database
-from infra.enums import CandlestickInterval
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import CandlestickInterval, PayloadReqKey
 from service.market_client_sevice import MarketClientService
 from utils import comm_utils
 

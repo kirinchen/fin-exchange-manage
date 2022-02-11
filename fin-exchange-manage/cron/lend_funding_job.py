@@ -1,7 +1,7 @@
 import traceback
 from datetime import datetime
 
-from rest.proxy_controller import PayloadExKey
+from infra.enums import PayloadExKey
 from rest.wallet import cancel_lend_by_filter, lend_by_filter
 
 funding_currency_list = [

@@ -2,54 +2,20 @@ import json
 import os
 from contextlib import contextmanager
 from datetime import datetime
-from enum import Enum
-import logging
-from typing import Any
 
 from flask import Flask, Response
 from flask import request
 
 import config
-from binance_f import RequestClient, SubscriptionClient
+from binance_f import SubscriptionClient
 
 import importlib.util
 
+from cron import cron_settings
+from infra.enums import PayloadReqKey
 from utils import comm_utils
 
 api_key = config.env('api-key')
-
-
-class PayloadExKey(Enum):
-    exchange_account = 'exchange_account'
-
-    def get_val(self, payload: dict, _default=None) -> Any:
-        return payload.get(self.value, _default)
-
-
-class PayloadReqKey(Enum):
-    name = 'name'
-    exchange = 'exchange'
-    apiKey = '__bzk_api_key'
-
-    @classmethod
-    def values(cls):
-        ans = [e for e in PayloadReqKey]
-        return ans
-
-    @classmethod
-    def clean_sensitive_keys(cls, payload: dict):
-        if cls.apiKey.value in payload:
-            del payload[cls.apiKey.value]
-
-    @classmethod
-    def clean_default_keys(cls, payload: dict):
-        for k in PayloadReqKey.values():
-            if k.value in payload:
-                del payload[k.value]
-
-    def get_val(self, payload: dict) -> Any:
-        return payload.get(self.value)
-
 
 app = Flask(__name__)
 
@@ -81,6 +47,7 @@ def proxy():
     rh_api_key = PayloadReqKey.apiKey.get_val(payload)
     if not rh_api_key == api_key:
         raise ConnectionAbortedError('API BYE')
+    cron_settings.bzk_flow_off_restart.notify_new_request()
     PayloadReqKey.clean_sensitive_keys(payload)
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)

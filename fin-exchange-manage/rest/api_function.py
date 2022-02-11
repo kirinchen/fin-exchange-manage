@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Any
 
 import exchange
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 
 T = TypeVar("T")
 

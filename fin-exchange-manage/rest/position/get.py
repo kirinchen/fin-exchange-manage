@@ -2,7 +2,7 @@ import exchange
 from dto.account_dto import AccountDto
 from dto.position_dto import PositionFilter
 from infra import database
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.position_client_service import PositionClientService
 from utils import comm_utils
 

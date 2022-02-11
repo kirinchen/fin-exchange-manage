@@ -2,7 +2,7 @@ import traceback
 
 import exchange
 from infra import database
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 from utils.wallet_utils import WalletFilter

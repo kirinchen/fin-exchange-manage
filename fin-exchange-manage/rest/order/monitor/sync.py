@@ -1,6 +1,6 @@
 import exchange
 from infra import database
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.sync_cron import SyncCron
 
 

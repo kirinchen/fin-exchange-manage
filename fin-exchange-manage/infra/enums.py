@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any
 
 
 class OrderStrategy(Enum):
@@ -56,3 +57,35 @@ class CandlestickInterval:
     WEEK1 = "1w"
     MON1 = "1m"
     INVALID = None
+
+
+class PayloadExKey(Enum):
+    exchange_account = 'exchange_account'
+
+    def get_val(self, payload: dict, _default=None) -> Any:
+        return payload.get(self.value, _default)
+
+
+class PayloadReqKey(Enum):
+    name = 'name'
+    exchange = 'exchange'
+    apiKey = '__bzk_api_key'
+
+    @classmethod
+    def values(cls):
+        ans = [e for e in PayloadReqKey]
+        return ans
+
+    @classmethod
+    def clean_sensitive_keys(cls, payload: dict):
+        if cls.apiKey.value in payload:
+            del payload[cls.apiKey.value]
+
+    @classmethod
+    def clean_default_keys(cls, payload: dict):
+        for k in PayloadReqKey.values():
+            if k.value in payload:
+                del payload[k.value]
+
+    def get_val(self, payload: dict) -> Any:
+        return payload.get(self.value)

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from dto.wallet_dto import WalletDto
 from exchange.bitfinex import gen_request_client, bitfinex_utils
-from rest.proxy_controller import PayloadExKey
+from infra.enums import PayloadExKey
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 

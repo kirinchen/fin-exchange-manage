@@ -11,9 +11,8 @@ from dto import order_dto
 from dto.fuse_dto import BaseFuseDto, FixedStepFuseDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
-from infra.enums import OrderStrategy
+from infra.enums import OrderStrategy, PayloadReqKey
 from model import OrderPack
-from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
 from service.order_pack_dao import OrderPackDao

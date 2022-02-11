@@ -1,7 +1,7 @@
 import exchange
 from infra import database
 from rest.position.fuse import DEFAULT_TAG
-from rest.proxy_controller import PayloadReqKey
+from infra.enums import PayloadReqKey
 from service.position_fuse.mediation import StopMediation, StopMediationDto
 from utils import comm_utils
 

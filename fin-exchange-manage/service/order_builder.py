@@ -12,12 +12,11 @@ from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.post_order_dto import BasePostOrderDto, PostLimitOrderDto, PostTakeStopProfitDto
 from dto.wallet_dto import WalletDto
-from infra.enums import OrderStrategy
+from infra.enums import OrderStrategy, PayloadReqKey
 from model import Product
 from model.init_data import init_item
 from model.order_pack import OrderPack
 from rest import account
-from rest.proxy_controller import PayloadReqKey
 from service.base_exchange_abc import BaseExchangeAbc
 from service.order_client_service import OrderClientService
 from service.order_dao import OrderDao
