@@ -9,8 +9,10 @@ import config
 class BzkFlowOffRestart:
 
     def __init__(self):
-        self.lastRequestAt = datetime.now()
-        self.lastRestartAt = datetime.now()
+        self.lastRequestAt = None
+        self.lastBecauseRequestAt = None
+        self.lastRestartAt = None
+        self.lastCheckAt = None
         self.restartCount = 0
         self.checkCount = 0
         self.lastException: dict = None
@@ -21,11 +23,16 @@ class BzkFlowOffRestart:
 
     def check_and_restart(self):
         self.checkCount += 1
+        self.lastCheckAt = datetime.now()
+        if not self.lastRequestAt:
+            return
+        if not self.lastRestartAt:
+            return
         dif_restart = datetime.now() - self.lastRestartAt
-        if dif_restart.seconds < 11 * 60:
+        if dif_restart.seconds < 17 * 60:
             return
         dif_request = datetime.now() - self.lastRequestAt
-        if dif_request.seconds < 7 * 60:
+        if dif_request.seconds < 12 * 60:
             return
         self.restart()
 
@@ -34,6 +41,7 @@ class BzkFlowOffRestart:
             print('restart')
             restart_url = config.env('bzk-flow-restart-url')
             resp = requests.get(url=restart_url)
+            self.lastBecauseRequestAt = self.lastRequestAt.isoformat()
             self.lastRestartResp = resp.text
             self.lastRestartAt = datetime.now()
             self.restartCount += 1
