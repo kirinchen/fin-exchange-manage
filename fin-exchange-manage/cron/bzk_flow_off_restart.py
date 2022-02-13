@@ -25,6 +25,7 @@ class BzkFlowOffRestart:
         dif_request = datetime.now() - self.lastRequestAt
         if dif_request.seconds < 7 * 60:
             return
+        self.restart()
 
     def restart(self):
         try:
