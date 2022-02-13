@@ -12,6 +12,7 @@ bzk_flow_off_restart = BzkFlowOffRestart()
 
 
 def start_all():
+    # bzk_flow_off_restart.check_and_restart()
     scheduler.add_job(func=bzk_flow_off_restart.check_and_restart, trigger="interval", seconds=2 * 60)
     scheduler.add_job(func=lend_funding_job.lend, trigger="interval", seconds=25 * 60)
     scheduler.add_job(func=lend_funding_job_tom.lend, trigger="interval", seconds=37 * 60)
