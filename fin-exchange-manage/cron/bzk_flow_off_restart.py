@@ -12,6 +12,7 @@ class BzkFlowOffRestart:
         self.lastRequestAt = datetime.now()
         self.lastRestartAt = datetime.now()
         self.restartCount = 0
+        self.checkCount = 0
         self.lastException: dict = None
         self.lastRestartResp: str = None
 
@@ -19,6 +20,7 @@ class BzkFlowOffRestart:
         self.lastRequestAt = datetime.now()
 
     def check_and_restart(self):
+        self.checkCount += 1
         dif_restart = datetime.now() - self.lastRestartAt
         if dif_restart.seconds < 11 * 60:
             return
