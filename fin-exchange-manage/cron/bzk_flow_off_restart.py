@@ -33,9 +33,9 @@ class BzkFlowOffRestart:
             return
         dif_request = datetime.now() - self.lastRequestAt
         if dif_request.seconds > 12 * 60:
-            self.restart()
+            self._trigger_restart()
 
-    def restart(self):
+    def _trigger_restart(self):
         try:
             print('restart')
             restart_url = config.env('bzk-flow-restart-url')
