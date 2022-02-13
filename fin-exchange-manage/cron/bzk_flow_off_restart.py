@@ -4,6 +4,7 @@ from datetime import datetime
 import requests
 
 import config
+from infra.enums import PayloadReqKey
 
 
 class BzkFlowOffRestart:
@@ -18,7 +19,10 @@ class BzkFlowOffRestart:
         self.lastException: dict = None
         self.lastRestartResp: str = None
 
-    def notify_new_request(self):
+    def notify_new_request(self, payload: dict):
+        path: str = PayloadReqKey.name.get_val(payload)
+        if 'flow_off_restart_info' in path:
+            return
         self.lastRequestAt = datetime.now()
 
     def check_and_restart(self):
@@ -28,19 +32,18 @@ class BzkFlowOffRestart:
         if dif_restart.seconds < 17 * 60:
             return
         dif_request = datetime.now() - self.lastRequestAt
-        if dif_request.seconds < 12 * 60:
-            return
-        self.restart()
+        if dif_request.seconds > 12 * 60:
+            self.restart()
 
     def restart(self):
         try:
             print('restart')
             restart_url = config.env('bzk-flow-restart-url')
-            resp = requests.get(url=restart_url)
             self.lastBecauseRequestAt = self.lastRequestAt.isoformat()
-            self.lastRestartResp = resp.text
             self.lastRestartAt = datetime.now()
             self.restartCount += 1
+            resp = requests.get(url=restart_url)
+            self.lastRestartResp = resp.text
             print('restart end')
         except Exception as e:  # work on python 3.x
             self.lastException = {
