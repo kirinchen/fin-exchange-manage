@@ -20,6 +20,8 @@ class BzkFlowOffRestart:
         self.dif_request_seconds = 0
         self.lastException: dict = None
         self.lastRestartResp: str = None
+        self.restart_time_check: bool = False
+        self.request_time_check: bool = False
 
     def notify_new_request(self, payload: dict):
         path: str = PayloadReqKey.name.get_val(payload)
@@ -34,9 +36,9 @@ class BzkFlowOffRestart:
         dif_request = datetime.now() - self.lastRequestAt
         self.dif_restart_seconds = dif_restart.seconds
         self.dif_request_seconds = dif_request.seconds
-        restart_time_check: bool = self.dif_restart_seconds > 17 * 60
-        request_time_check: bool = self.dif_request_seconds > 12 * 60
-        if restart_time_check and request_time_check:
+        self.restart_time_check = self.dif_restart_seconds > 17 * 60
+        self.request_time_check = self.dif_request_seconds > 12 * 60
+        if self.restart_time_check and self.request_time_check:
             self._trigger_restart()
 
     def _trigger_restart(self):
@@ -46,8 +48,8 @@ class BzkFlowOffRestart:
             self.lastBecauseRequestAt = self.lastRequestAt.isoformat()
             self.lastRestartAt = datetime.now()
             self.restartCount += 1
-            resp = requests.get(url=restart_url)
-            self.lastRestartResp = resp.text
+            requests.get(url=restart_url)
+            self.lastRestartResp = "restarted"
             print('restart end')
         except Exception as e:  # work on python 3.x
             self.lastException = {
@@ -58,3 +60,10 @@ class BzkFlowOffRestart:
 
     def get_info(self):
         return self.__dict__
+
+
+instance = BzkFlowOffRestart()
+
+
+def check():
+    instance.check_and_restart()
