@@ -1,9 +1,5 @@
 # main.py
 
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
 import config
 import exchange
 from cron import cron_settings
@@ -12,7 +8,6 @@ from model import init_data
 
 from rest.proxy_controller import get_flask_app
 from service import sync_cron
-from service.product_dao import ProductDao
 
 app = get_flask_app()
 
