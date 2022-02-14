@@ -18,7 +18,7 @@ sync_cron.init_bind_all()
 cron_settings.start_all()
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=config.env_bool('debug'), port=9282, threaded=True)
+    app.run(host='0.0.0.0', debug=config.env_bool('debug'), port=9282, use_reloader=False, threaded=True)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 

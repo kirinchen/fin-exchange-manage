@@ -69,4 +69,5 @@ def _trigger_restart():
 
 
 def check():
+    print('check='+ str(data.checkCount))
     check_and_restart()
