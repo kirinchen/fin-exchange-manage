@@ -44,8 +44,8 @@ def check_and_restart():
     dif_request = datetime.now() - data.lastRequestAt
     data.dif_restart_seconds = dif_restart.seconds
     data.dif_request_seconds = dif_request.seconds
-    data.restart_time_check = data.dif_restart_seconds > 15 * 60
-    data.request_time_check = data.dif_request_seconds > 11 * 60
+    data.restart_time_check = data.dif_restart_seconds > 17 * 60
+    data.request_time_check = data.dif_request_seconds > 12 * 60
     if data.restart_time_check and data.request_time_check:
         _trigger_restart()
 
