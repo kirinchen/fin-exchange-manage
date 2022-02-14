@@ -45,7 +45,7 @@ def proxy():
     rh_api_key = PayloadReqKey.apiKey.get_val(payload)
     if not rh_api_key == api_key:
         raise ConnectionAbortedError('API BYE')
-    bzk_flow_off_restart_job.instance.notify_new_request(payload)
+    bzk_flow_off_restart_job.notify_new_request(payload)
     PayloadReqKey.clean_sensitive_keys(payload)
     # client = _gen_request_client(payload)
     wd_path = os.path.dirname(__file__)
