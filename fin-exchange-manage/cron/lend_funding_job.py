@@ -20,9 +20,9 @@ lend_by_filter_payload = {
     "name": "wallet/lend_by_filter",
     "symbol_list": funding_currency_list,
     "rowAmount": 100,
-    "bottomWeight": 1.01,
-    "topWeight": 1.01,
-    "middleWeight": 0.28,
+    "bottomWeight": 1.0,
+    "topWeight": 1.0,
+    "middleWeight": 0.1,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
