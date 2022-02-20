@@ -13,7 +13,7 @@ class InitProduct(DataInit[Product]):
                                    item=item.btc.name,
                                    prd_name=item.btc.symbol,
                                    valuation_item=item.usdt.name,
-                                   precision_price=2,
+                                   precision_price=1,
                                    precision_amount=3
                                    )
         self.bch_binance = Product(exchange=_exchange.binance.name,
