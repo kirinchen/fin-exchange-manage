@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Any
 
 from binance_f import RequestClient
 from binance_f.model import Candlestick
-from sqlalchemy.orm import Session
 
 from exchange.binance import gen_request_client, binance_utils
 from infra.enums import CandlestickInterval
@@ -29,6 +28,9 @@ class BinanceMarketClientService(MarketClientService):
                                                                      startTime=start_int,
                                                                      endTime=end_int, limit=limit)
         return [binance_utils.convert_candlestick_dto(r) for r in result]
+
+    def get_exchange_info(self) -> Any:
+        return self.client.get_exchange_information()
 
 
 def get_impl_clazz() -> BinanceMarketClientService:

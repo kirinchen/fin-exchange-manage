@@ -1,9 +1,11 @@
+import math
 from datetime import datetime
 from enum import Enum
 
 import pytz
 from binance_f.exception.binanceapiexception import BinanceApiException
 from binance_f.model import Order, Trade, Position, Candlestick
+from binance_f.model.exchangeinformation import Symbol
 
 from dto.market_dto import CandlestickDto
 from dto.order_dto import OrderDto
@@ -11,6 +13,7 @@ from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
 from model import Product
 from service.order_client_service import OrderClientService
+from utils import reflection_util
 
 
 def fix_usdt_symbol(symbol: str) -> str:
@@ -63,3 +66,73 @@ def is_exception(code: ErrorCode, ex: BinanceApiException) -> bool:
     code_str = f' -{code.value}'
     msg = ex.error_message
     return code_str in msg
+
+
+class FilterInfo:
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            if reflection_util.has_key(self, k):
+                reflection_util.setval(self, k, float(v))
+
+
+class PriceInfo(FilterInfo):
+
+    def __init__(self, **kwargs):
+        self.minPrice: float = -1
+        self.maxPrice: float = -1
+        self.tickSize: float = -1
+        super(PriceInfo, self).__init__(**kwargs)
+
+
+class AmtInfo(FilterInfo):
+
+    def __init__(self, **kwargs):
+        self.stepSize: float = -1
+        self.maxQty: float = -1
+        self.minQty: float = -1
+        super(AmtInfo, self).__init__(**kwargs)
+
+
+_PRECISION = 1000000.0
+
+
+class SymbolHelper:
+
+    def __init__(self, symbol: Symbol):
+        self.symbol: Symbol = symbol
+
+    def _get_filter(self, filterType: str) -> dict:
+        return [f for f in self.symbol.filters if f.get('filterType') == filterType][0]
+
+    def get_price_info(self) -> PriceInfo:
+        info = self._get_filter('PRICE_FILTER')
+        ans = PriceInfo(**info)
+        return ans
+
+    def get_amt_info(self) -> AmtInfo:
+        info = self._get_filter('MARKET_LOT_SIZE')
+        ans = AmtInfo(**info)
+        return ans
+
+    def fix_precision_price(self, price: float) -> float:
+        pi = self.get_price_info()
+        count = int(math.floor(price / pi.tickSize))
+        ans = math.floor(count * pi.tickSize * _PRECISION) / _PRECISION
+        return ans
+
+    def fix_precision_amt(self, amt: float) -> float:
+        a = self.get_amt_info()
+        count = math.floor(amt / a.stepSize)
+        ans = math.floor(count * a.stepSize * _PRECISION) / _PRECISION
+        return ans
+    
+    def get_min_amt(self) -> float:
+        a = self.get_amt_info()
+        return a.minQty
+
+
+def convert_symbol_helper(product: Product) -> SymbolHelper:
+    cfg = product.get_config()
+    sbl: Symbol = reflection_util.merge(cfg, Symbol())
+    return SymbolHelper(sbl)

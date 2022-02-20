@@ -1,7 +1,7 @@
 import abc
 from abc import ABC
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from binance_f.model import Candlestick
 
@@ -29,6 +29,6 @@ class MarketClientService(BaseExchangeAbc, ABC):
             ans[prd_name] = self.get_candlestick_data(prd_name, interval, startTime, endTime, limit)
         return ans
 
-    # TODO: support
-    # def get_algo_orders_max_num(self,prd_name: str,positionSide:str)->int:
-    #     raise NotImplementedError('get_algo_orders_max_num')
+    @abc.abstractmethod
+    def get_exchange_info(self) -> Any:
+        raise NotImplementedError('get_exchange_info')

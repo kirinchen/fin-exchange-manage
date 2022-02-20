@@ -36,21 +36,13 @@ class ProductDao(BaseDao):
             .filter(Product.exchange == self.exchange_name) \
             .one()
 
-    @classmethod
-    def fix_precision_price(cls, product: Product, price: float) -> float:
-        fstr = str(product.precision_price) + 'f'
-        return float(('{:.' + fstr + '}').format(price))
-
-    @classmethod
-    def fix_precision_amt(cls, product: Product, amt: float) -> float:
-        fstr = str(product.precision_amount) + 'f'
-        return float(('{:.' + fstr + '}').format(amt))
-
+    @abc.abstractmethod
     def get_min_valuation_item_amount(self, product: Product, price: float) -> float:
-        if product.min_item and product.min_valuation_item:
-            return max(price * product.min_item, product.min_valuation_item)
-        if product.min_item:
-            return price * product.min_item
-        if product.min_valuation_item:
-            return product.min_valuation_item
-        return 0
+        raise NotImplementedError('get_min_valuation_item_amount')
+        # if product.min_item and product.min_valuation_item:
+        #     return max(price * product.min_item, product.min_valuation_item)
+        # if product.min_item:
+        #     return price * product.min_item
+        # if product.min_valuation_item:
+        #     return product.min_valuation_item
+        # return 0

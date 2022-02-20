@@ -51,13 +51,14 @@ class BinanceOrderClientService(OrderClientService):
     def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
                    tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
+        binance_symbol = binance_utils.convert_symbol_helper(product)
         amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
         quantity = min(amt, quantity)
-        price = ProductDao.fix_precision_price(product, price)
+        price = binance_symbol.fix_precision_price( price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
+        p_amt: float = binance_symbol.fix_precision_amt( quantity)
         if p_amt == 0:
             return None
         quantity_str = str(p_amt)
@@ -104,12 +105,13 @@ class BinanceOrderClientService(OrderClientService):
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price = ProductDao.fix_precision_price(product, price)
+        binance_symbol = binance_utils.convert_symbol_helper(product)
+        price = binance_symbol.fix_precision_price( price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
-        p_amt = p_amt if p_amt > 0 else product.min_item
+        p_amt: float = binance_symbol.fix_precision_amt( quantity)
+        p_amt = p_amt if p_amt > 0 else binance_symbol.get_min_amt()
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)
 
@@ -139,12 +141,13 @@ class BinanceOrderClientService(OrderClientService):
         if quantity == 0:
             return None
         product = self.productDao.get_by_prd_name(prd_name)
-        price = ProductDao.fix_precision_price(product, price)
+        binance_symbol = binance_utils.convert_symbol_helper(product)
+        price = binance_symbol.fix_precision_price( price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = ProductDao.fix_precision_amt(product, quantity)
-        p_amt = p_amt if p_amt > 0 else product.min_item
+        p_amt: float = binance_symbol.fix_precision_amt( quantity)
+        p_amt = p_amt if p_amt > 0 else binance_symbol.get_min_amt()
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)
         result = self.client.post_order(

@@ -38,13 +38,7 @@ class SyncCron(BaseExchangeAbc, ABC):
         self.orderClientService = self.get_ex_obj(OrderClientService)
 
     def init_bind_load(self):
-        self.sync_all_product()
-
-    def sync_all_product(self):
-        p_dao: ProductDao = self.get_ex_obj(ProductDao)
-        ps: List[Product] = p_dao.list_by_this_exchange()
-        for p in ps:
-            self.sync_product(p, p_dao)
+        pass
 
     def sync_orders(self, prd_name: str) -> dict:
 

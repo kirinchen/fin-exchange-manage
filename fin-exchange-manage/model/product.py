@@ -1,5 +1,7 @@
+import json
+
 from infra.database import Base
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Text
 
 from utils import comm_utils
 
@@ -11,28 +13,21 @@ class Product(Base):
     prd_name = Column(String(150), nullable=False)  # ex NSDAQUSD USDTWD ... but U本位幣安例外 BTC ETH ...
     item = Column(String(50), nullable=False)
     valuation_item = Column(String(50), nullable=False)
-    precision_price = Column(Integer, nullable=True)
-    precision_amount = Column(Integer, nullable=True)
-    max_item = Column(Float, nullable=True)
-    min_item = Column(Float, nullable=True)
-    max_valuation_item = Column(Float, nullable=True)
-    min_valuation_item = Column(Float, nullable=True)
+    config = Column(Text, nullable=False)
 
-    def __init__(self, exchange: str, item: str, valuation_item: str, prd_name: str, precision_price: int = None,
-                 precision_amount: int = None,
-                 max_valuation_item: float = None, min_valuation_item: float = None, max_item: float = None,
-                 min_item: float = None):
+    def __init__(self, exchange: str, item: str, valuation_item: str, prd_name: str, config: dict = None):
         self.exchange: str = exchange
         self.item: str = item
         self.prd_name: str = prd_name
         self.valuation_item: str = valuation_item
-        self.uid = get_uid(exchange, item, valuation_item)[:32]
-        self.precision_price: int = precision_price
-        self.precision_amount: int = precision_amount
-        self.max_valuation_item: float = max_valuation_item  # price
-        self.min_valuation_item: float = min_valuation_item  # price
-        self.max_item: float = max_item
-        self.min_item: float = min_item
+        self.uid: str = get_uid(exchange, item, valuation_item)[:32]
+        self.set_config(config)
+
+    def set_config(self, cfg: dict):
+        self.config = json.dumps(cfg)
+
+    def get_config(self) -> dict:
+        return json.loads(self.config)
 
 
 def get_uid(exchange: str, item: str, valuation_item: str) -> str:
