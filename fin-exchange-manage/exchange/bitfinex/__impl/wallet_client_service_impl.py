@@ -23,10 +23,9 @@ class LendAmtRateSet:
 
 class LendPrams:
 
-    def __init__(self, rowAmount: float, bottomWeight: float, topWeight: float, middleWeight: float, **kwargs):
+    def __init__(self, rowAmount: float, minMaxDiffRate: float,  middleWeight: float, **kwargs):
         self.rowAmount: float = rowAmount
-        self.bottomWeight: float = bottomWeight
-        self.topWeight: float = topWeight
+        self.minMaxDiffRate:float = minMaxDiffRate
         self.middleWeight: float = middleWeight
 
 
@@ -60,13 +59,12 @@ class BitfinexWalletClientService(WalletClientService):
         result: List[list] = bitfinex_utils.call(
             self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
         rate_list: List[float] = [a[0] for a in result]
-        mx = max(rate_list)
+        max_rate = max(rate_list)
         min_rate = min(rate_list)
-        min_rate *= lp.bottomWeight
-        mx *= lp.topWeight
-        middle_rate = (mx + min_rate) * lp.middleWeight
 
-        dr = mx - middle_rate
+        middle_rate = (max_rate + min_rate) * lp.middleWeight
+
+        dr = (max_rate - middle_rate) * lp.minMaxDiffRate
 
         cusd = w.balance_available
         cusd = cusd - LEND_MIN_AMOUNT
@@ -81,7 +79,7 @@ class BitfinexWalletClientService(WalletClientService):
             batchList.append(LendAmtRateSet(rate=middle_rate + ((i + 1) * rp), day=i + 2, amount=lp.rowAmount))
 
         lasta = cusd + LEND_MIN_AMOUNT - (spcount * lp.rowAmount)
-        batchList.append(LendAmtRateSet(rate=mx, day=5, amount=lasta))
+        batchList.append(LendAmtRateSet(rate=max_rate, day=5, amount=lasta))
         return batchList
 
 
