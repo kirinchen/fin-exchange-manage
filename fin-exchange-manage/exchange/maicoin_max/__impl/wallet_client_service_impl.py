@@ -2,7 +2,9 @@ from typing import List
 
 from maicoin_max.client import Client
 
+from dto.wallet_dto import WalletDto
 from exchange.maicoin_max import gen_request_client
+from service.wallet_client_service import WalletClientService
 
 
 class MaxWalletClientService(WalletClientService):
@@ -12,14 +14,7 @@ class MaxWalletClientService(WalletClientService):
         self.client: Client = gen_request_client()
 
     def list_all(self) -> List[WalletDto]:
-        u_w: AccountDto = account.info.get.invoke(self.exchange_name)
-        ans = WalletDto()
-        ans.wallet_type = 'U'
-        ans.symbol = 'USDT'
-        ans.uid = 'U_USDT'
-        ans.balance = u_w.totalWalletBalance
-        ans.balance_available = u_w.maxWithdrawAmount
-        return [ans]
+        raise NotImplementedError("list_all")
 
     def cancel_lend_all(self, w: WalletDto):
         pass
