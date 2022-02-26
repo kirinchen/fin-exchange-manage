@@ -5,9 +5,11 @@ import pytz
 from maicoin_max.client import Client
 from maicoin_max.dto.order import Order
 from maicoin_max.dto.position import Position
+from maicoin_max.dto.wallet import Wallet
 
 from dto.account_dto import AccountDto
 from dto.order_dto import OrderDto
+from dto.wallet_dto import WalletDto
 from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
 
 
@@ -27,17 +29,17 @@ def convert_order_dto(o: Order) -> OrderDto:
     ans = OrderDto(
         clientOrderId=o.client_oid
         , cumQuote=None
-        , executedQty=float( o.executed_volume) if o.executed_volume else -1
+        , executedQty=float(o.executed_volume) if o.executed_volume else -1
         , orderId=o.id
-        , origQty=float( o.volume) if o.volume else -1
-        , price= float(o.price) if o.price else -1
+        , origQty=float(o.volume) if o.volume else -1
+        , price=float(o.price) if o.price else -1
         , side=convert_order_side(o.side)
         , status=convert_status(o.state)
         , stopPrice=float(o.stop_price) if o.stop_price else -1
         , symbol=o.market
         , type=convert_order_type(o.ord_type)
         , updateTime=o.updated_at_in_ms
-        , avgPrice=float( o.avg_price) if o.avg_price else -1
+        , avgPrice=float(o.avg_price) if o.avg_price else -1
         , origType=convert_order_type(o.ord_type)
         , positionSide=PositionSide.LONG
         , activatePrice=float(o.price) if o.price else -1
@@ -73,3 +75,13 @@ def convert_status(state: str) -> OrderStatus:
         'failed': OrderStatus.REJECTED,
         'convert': OrderStatus.NEW
     }.get(state)
+
+
+def convert_wallet(wallet: Wallet) -> WalletDto:
+    ans = WalletDto()
+    ans.wallet_type = wallet.type
+    ans.symbol = wallet.currency
+    ans.uid = wallet.type + wallet.currency
+    ans.balance = wallet.balance
+    ans.balance_available = wallet.balance - wallet.locked
+    return ans

@@ -11,6 +11,10 @@ class InitItem(DataInit[Item]):
             name='Tether',
             symbol='USDT'
         )
+        self.twd = Item(
+            name='TaiwanDollar',
+            symbol='TWD'
+        )
         self.btc = Item(
             name='Bitcoin',
             symbol='BTC'

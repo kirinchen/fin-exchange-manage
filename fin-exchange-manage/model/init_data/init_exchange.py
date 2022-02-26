@@ -8,6 +8,7 @@ class InitExchange(DataInit[Exchange]):
 
     def __init__(self):
         self.binance = Exchange(name='binance')
+        self.maicoin_max = Exchange(name='maicoin_max')
 
     def get_clazz(self) -> Exchange:
         return Exchange

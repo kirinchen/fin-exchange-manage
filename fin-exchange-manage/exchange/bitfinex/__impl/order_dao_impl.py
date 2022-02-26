@@ -3,9 +3,9 @@ from service.order_dao import OrderDao
 from service.product_dao import ProductDao
 
 
-class BinanceOrderDao(OrderDao):
+class BitfinexOrderDao(OrderDao):
     pass
 
 
-def get_impl_clazz() -> BinanceOrderDao:
-    return BinanceOrderDao
+def get_impl_clazz() -> BitfinexOrderDao:
+    return BitfinexOrderDao

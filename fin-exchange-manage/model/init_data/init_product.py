@@ -9,6 +9,7 @@ class InitProduct(DataInit[Product]):
     def __init__(self):
         item = init_item.get_instance()
         _exchange = init_exchange.get_instance()
+        # --- binance start ---
         self.btc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.btc.name,
                                    prd_name=item.btc.symbol,
@@ -59,6 +60,29 @@ class InitProduct(DataInit[Product]):
                                    prd_name=item.ada.symbol,
                                    valuation_item=item.usdt.name,
                                    )
+        # --- binance end ---
+        # --- maicoin_max start ---
+        self.btc_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
+                                       item=item.btc.name,
+                                       prd_name=item.btc.symbol,
+                                       valuation_item=item.twd.name,
+                                       )
+        self.bch_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
+                                       item=item.bch.name,
+                                       prd_name=item.bch.symbol,
+                                       valuation_item=item.twd.name,
+                                       )
+        self.eth_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
+                                       item=item.eth.name,
+                                       prd_name=item.eth.symbol,
+                                       valuation_item=item.twd.name,
+                                       )
+        self.ltc_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
+                                       item=item.ltc.name,
+                                       prd_name=item.ltc.symbol,
+                                       valuation_item=item.twd.name,
+                                       )
+        # --- maicoin_max end ---
 
     def get_clazz(self) -> Product:
         return Product

@@ -5,7 +5,7 @@ from dto.position_dto import PositionDto, PositionFilter
 from dto.wallet_dto import WalletDto
 
 
-def find_position_one(ps: List[PositionDto],  symbol: str, positionSide: str) -> PositionDto:
+def find_position_one(ps: List[PositionDto], symbol: str, positionSide: str) -> PositionDto:
     pf = PositionFilter(symbol=symbol, positionSide=positionSide)
     return filter_position(ps, pf)[0]
 
@@ -21,8 +21,10 @@ def filter_position(ps: List[PositionDto], ft: PositionFilter) -> List[PositionD
         ans.append(p)
     return ans
 
-def get_by_orders(wallet:WalletDto,orders:List[OrderDto])->PositionDto:
-    pass
+
+def get_by_orders(amt: float, prd_name: str, orders: List[OrderDto]) -> PositionDto:
+    # TODO: support
+    raise NotImplementedError("get_by_orders")
 
 
 def get_abs_amt(p: PositionDto) -> float:
