@@ -19,10 +19,10 @@ lend_by_filter_payload = {
     "__bzk_api_key": '',
     "name": "wallet/lend_by_filter",
     "symbol_list": funding_currency_list,
-    "rowAmount": 100,
+    "rowAmount": 60,
     "bottomWeight": 1.0,
     "topWeight": 1.0,
-    "middleWeight": 0.1,
+    "middleWeight": 0.06,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }

@@ -15,6 +15,7 @@ def run(payload: dict) -> dict:
                 return comm_utils.to_dict(check_result)
             return comm_utils.to_dict(ob.post())
     except Exception as e:  # work on python 3.x
+        traceback.print_exc()
         return {
             '__error_type': str(type(e)),
             'msg': str(e),
