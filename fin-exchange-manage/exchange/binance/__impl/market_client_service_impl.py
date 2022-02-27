@@ -4,13 +4,10 @@ from typing import List, Any
 from binance_f import RequestClient
 from binance_f.model import Candlestick
 
+from dto.market_dto import CandlestickDto
 from exchange.binance import gen_request_client, binance_utils
 from infra.enums import CandlestickInterval
 from service.market_client_sevice import MarketClientService
-
-
-class CandlestickDto:
-    pass
 
 
 class BinanceMarketClientService(MarketClientService):
