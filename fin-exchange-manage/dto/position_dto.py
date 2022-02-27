@@ -4,7 +4,7 @@ class PositionDto:
                  liquidationPrice: float, markPrice: float, positionAmt: float, symbol: str, unrealizedProfit: float,
                  marginType: str, isolatedMargin: float, positionSide: str, **kwargs):
         self.entryPrice: float = entryPrice
-        self.isAutoAddMargin: bool = isAutoAddMargin
+        self.isAutoAddMargin: bool = isAutoAddMargin  # unused
         self.leverage: float = leverage
         self.maxNotionalValue: float = maxNotionalValue
         self.liquidationPrice: float = liquidationPrice
@@ -12,8 +12,8 @@ class PositionDto:
         self.positionAmt: float = positionAmt
         self.symbol: str = symbol
         self.unrealizedProfit: float = unrealizedProfit
-        self.marginType: str = marginType
-        self.isolatedMargin: float = isolatedMargin
+        self.marginType: str = marginType  # unused
+        self.isolatedMargin: float = isolatedMargin  # unused
         self.positionSide: str = positionSide
 
 

@@ -4,7 +4,7 @@ from typing import List, Any
 from maicoin_max.client import Client
 
 from dto.market_dto import CandlestickDto
-from exchange.maicoin_max import gen_request_client
+from exchange.maicoin_max import gen_request_client, max_utils
 from infra.enums import CandlestickInterval
 from service.market_client_sevice import MarketClientService
 
@@ -18,17 +18,19 @@ def _clac_limit_timestamp(period: int, startTime: datetime = None, endTime: date
     :param org_limit:
     :return: 1 : limit , 2: timestamp
     """
+    p_seconds = period * 60
     if org_limit is None:
         org_limit = 1
     if startTime is None and endTime is None:
-        return org_limit, datetime.now(tz=timezone.utc).timestamp()
+        return org_limit, int(datetime.now(tz=timezone.utc).timestamp()) - (p_seconds * org_limit)
     if endTime is None:
         endTime = datetime.now(tz=timezone.utc)
     if startTime is None:
-        return org_limit, endTime.timestamp()
+        return org_limit, int(endTime.timestamp()) - - (p_seconds * org_limit)
     diff = endTime - startTime
     diff_limit = (diff.total_seconds() / 60) / period
-    return min(org_limit, diff_limit), endTime.timestamp()
+    final_limit = min(org_limit, diff_limit)
+    return final_limit, int(endTime.timestamp()) - (p_seconds * final_limit)
 
 
 def _candlestick_interval_minute(interval: CandlestickInterval) -> int:
@@ -57,8 +59,9 @@ class MaxMarketClientService(MarketClientService):
                              endTime: datetime = None, limit: int = None) -> List[CandlestickDto]:
         period = _candlestick_interval_minute(interval)
         (limit, timestamp) = _clac_limit_timestamp(period=period, startTime=startTime, endTime=endTime, org_limit=limit)
-        k_result = self.client.get_public_k_line(pair=prd_name, limit=limit, timestamp=timestamp, period=period)
-        return k_result
+        k_result: List[List[float]] = self.client.get_public_k_line(pair=max_utils.unfix_symbol(prd_name), limit=limit,
+                                                                    timestamp=timestamp, period=period)
+        return [max_utils.convert_candlestick_dto(v_list) for v_list in k_result]
 
     def get_exchange_info(self) -> Any:
         return self.client.get_exchange_information()

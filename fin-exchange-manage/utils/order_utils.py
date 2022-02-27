@@ -147,7 +147,7 @@ def merge_dto_entity(dto: OrderDto, entity: Order) -> OrderDto:
     return entity
 
 
-def get_entry_price_by_orders(amt: float, market_price: float, orders: List[OrderDto]) -> float:
+def calc_entry_price_by_orders(amt: float, market_price: float, orders: List[OrderDto]) -> float:
     sumPrice = 0.0
     _sumAmt = 0.0
     for od in orders:

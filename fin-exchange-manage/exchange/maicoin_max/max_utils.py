@@ -8,6 +8,7 @@ from maicoin_max.dto.position import Position
 from maicoin_max.dto.wallet import Wallet
 
 from dto.account_dto import AccountDto
+from dto.market_dto import CandlestickDto
 from dto.order_dto import OrderDto
 from dto.wallet_dto import WalletDto
 from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
@@ -15,6 +16,12 @@ from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
 
 def fix_twd_prd_name(symbol: str) -> str:
     return f'{fix_symbol(symbol)}TWD'
+
+
+def trim_twd_prd_name(prd_name: str) -> str:
+    if not prd_name:
+        return None
+    return prd_name.replace('TWD', '')
 
 
 def fix_symbol(symbol: str) -> str:
@@ -88,4 +95,20 @@ def convert_wallet(wallet: Wallet) -> WalletDto:
     ans.uid = wallet.type + wallet.currency
     ans.balance = wallet.balance
     ans.balance_available = wallet.balance - wallet.locked
+    return ans
+
+
+def convert_candlestick_dto(v_list: List[float]) -> CandlestickDto:
+    """
+    [timestamp, open, high, low, close, volume]
+    :return:
+    """
+    ans = CandlestickDto()
+    ans.openAt = datetime.fromtimestamp(v_list[0])
+    ans.closeAt = datetime.fromtimestamp(v_list[0])
+    ans.open = v_list[1]
+    ans.high = v_list[2]
+    ans.low = v_list[3]
+    ans.close = v_list[4]
+    ans.volume = v_list[5]
     return ans
