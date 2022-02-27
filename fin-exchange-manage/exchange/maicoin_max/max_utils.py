@@ -13,12 +13,16 @@ from dto.wallet_dto import WalletDto
 from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
 
 
-def fix_usdt_symbol(symbol: str) -> str:
-    return f'{symbol}usdt'
+def fix_twd_prd_name(symbol: str) -> str:
+    return f'{fix_symbol(symbol)}TWD'
 
 
-def trim_usdt_symbol(symbol: str) -> str:
-    return symbol.replace('usdt', '')
+def fix_symbol(symbol: str) -> str:
+    return symbol.upper()
+
+
+def unfix_symbol(symbol: str) -> str:
+    return symbol.lower()
 
 
 def convert_account_dto(client: Client, positions: List[Position]) -> AccountDto:
@@ -36,7 +40,7 @@ def convert_order_dto(o: Order) -> OrderDto:
         , side=convert_order_side(o.side)
         , status=convert_status(o.state)
         , stopPrice=float(o.stop_price) if o.stop_price else -1
-        , symbol=o.market
+        , symbol=fix_symbol(o.market)
         , type=convert_order_type(o.ord_type)
         , updateTime=o.updated_at_in_ms
         , avgPrice=float(o.avg_price) if o.avg_price else -1
@@ -80,7 +84,7 @@ def convert_status(state: str) -> OrderStatus:
 def convert_wallet(wallet: Wallet) -> WalletDto:
     ans = WalletDto()
     ans.wallet_type = wallet.type
-    ans.symbol = wallet.currency
+    ans.symbol = fix_symbol(wallet.currency)
     ans.uid = wallet.type + wallet.currency
     ans.balance = wallet.balance
     ans.balance_available = wallet.balance - wallet.locked

@@ -5,7 +5,7 @@ import dateutil
 import pytz
 
 from dto.order_dto import OrderDto
-from infra.enums import OrderType, OrderStatus
+from infra.enums import OrderType, OrderStatus, OrderSide
 from model import Order
 from utils import comm_utils, direction_utils, entity_utils
 
@@ -145,3 +145,21 @@ def merge_dto_entity(dto: OrderDto, entity: Order) -> OrderDto:
     entity.price = get_price(dto)
     entity.status = dto.status
     return entity
+
+
+def get_entry_price_by_orders(amt: float, market_price: float, orders: List[OrderDto]) -> float:
+    sumPrice = 0.0
+    _sumAmt = 0.0
+    for od in orders:
+        if od.side == OrderSide.BUY:
+            sumPrice += od.price * od.executedQty
+            _sumAmt += od.executedQty
+        if od.side == OrderSide.SELL:
+            sumPrice -= od.price * od.executedQty
+            _sumAmt -= od.executedQty
+        if _sumAmt == amt:
+            break
+    if _sumAmt != amt:
+        d_amt = amt - _sumAmt
+        sumPrice += d_amt * market_price
+    return sumPrice / amt

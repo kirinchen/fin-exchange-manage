@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Any
 
 from maicoin_max.client import Client
@@ -9,34 +9,56 @@ from infra.enums import CandlestickInterval
 from service.market_client_sevice import MarketClientService
 
 
+def _clac_limit_timestamp(period: int, startTime: datetime = None, endTime: datetime = None,
+                          org_limit: int = None) -> (int, int):
+    """
+    :param period:
+    :param startTime:
+    :param endTime:
+    :param org_limit:
+    :return: 1 : limit , 2: timestamp
+    """
+    if org_limit is None:
+        org_limit = 1
+    if startTime is None and endTime is None:
+        return org_limit, datetime.now(tz=timezone.utc).timestamp()
+    if endTime is None:
+        endTime = datetime.now(tz=timezone.utc)
+    if startTime is None:
+        return org_limit, endTime.timestamp()
+    diff = endTime - startTime
+    diff_limit = (diff.total_seconds() / 60) / period
+    return min(org_limit, diff_limit), endTime.timestamp()
+
+
+def _candlestick_interval_minute(interval: CandlestickInterval) -> int:
+    return {
+        CandlestickInterval.MIN1: 1,
+        CandlestickInterval.MIN3: 3,
+        CandlestickInterval.MIN5: 5,
+        CandlestickInterval.HOUR1: 60,
+        CandlestickInterval.HOUR2: 60 * 2,
+        CandlestickInterval.HOUR4: 60 * 4,
+        CandlestickInterval.HOUR6: 60 * 6,
+        CandlestickInterval.HOUR8: 60 * 8,
+        CandlestickInterval.HOUR12: 60 * 12,
+        CandlestickInterval.DAY1: 60 * 24,
+        CandlestickInterval.DAY3: 60 * 24 * 3
+    }.get(interval)
+
+
 class MaxMarketClientService(MarketClientService):
 
     def __init__(self, **kwargs):
         super(MaxMarketClientService, self).__init__(**kwargs)
         self.client: Client = gen_request_client()
 
-    def _candlestick_interval_minute(self, interval: CandlestickInterval) -> int:
-        return {
-            CandlestickInterval.MIN1: 1,
-            CandlestickInterval.MIN3: 3,
-            CandlestickInterval.MIN5: 5,
-            CandlestickInterval.HOUR1: 60,
-            CandlestickInterval.HOUR2: 60 * 2,
-            CandlestickInterval.HOUR4: 60 * 4,
-            CandlestickInterval.HOUR6: 60 * 6,
-            CandlestickInterval.HOUR8: 60 * 8,
-            CandlestickInterval.HOUR12: 60 * 12,
-            CandlestickInterval.DAY1: 60 * 24,
-            CandlestickInterval.DAY3: 60 * 24 * 3
-        }.get(interval)
-
-    def _clac_limit(self, period:int,range_time:float,org_limit:int)->int:
-        TODO: support
-
     def get_candlestick_data(self, prd_name: str, interval: CandlestickInterval, startTime: datetime = None,
                              endTime: datetime = None, limit: int = None) -> List[CandlestickDto]:
-        self.client.get_public_k_line(pair=prd_name, limit=limit, startTime)
-        return [binance_utils.convert_candlestick_dto(r) for r in result]
+        period = _candlestick_interval_minute(interval)
+        (limit, timestamp) = _clac_limit_timestamp(period=period, startTime=startTime, endTime=endTime, org_limit=limit)
+        k_result = self.client.get_public_k_line(pair=prd_name, limit=limit, timestamp=timestamp, period=period)
+        return k_result
 
     def get_exchange_info(self) -> Any:
         return self.client.get_exchange_information()

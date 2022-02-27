@@ -16,7 +16,7 @@ class MaxOrderClientService(OrderClientService):
 
     def list_all_order(self, prd_name: str, orderId: int = None, startTime: int = None, endTime: int = None,
                        limit: int = None) -> List[OrderDto]:
-        oods: List[Any] = self.client.get_private_order_history(pair=prd_name, state=["done"])
+        oods: List[Any] = self.client.get_private_order_history(pair=max_utils.unfix_symbol(prd_name), state=["done"])
         return [max_utils.convert_order_dto(od) for od in oods]
 
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:

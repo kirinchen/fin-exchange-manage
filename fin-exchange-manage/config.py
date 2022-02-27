@@ -9,9 +9,9 @@ load_dotenv(verbose=True)
 # OR, explicitly providing path to '.env'
 from pathlib import Path  # Python 3.6+ only
 
-env_path = Path('.') / '.env'
+env_path = Path(__file__) / '.env'
 load_dotenv(dotenv_path=env_path, override=True)
-env_path = Path('.') / 'dev.env'
+env_path = Path(__file__) / 'dev.env'
 print(env_path)
 load_dotenv(dotenv_path=env_path, override=True)
 

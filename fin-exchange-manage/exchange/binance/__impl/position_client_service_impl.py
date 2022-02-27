@@ -17,12 +17,12 @@ class BinancePositionClientService(PositionClientService):
         super(BinancePositionClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
-    def list_all(self) -> List[PositionDto]:
+    def list_all(self, prd_name: str = None) -> List[PositionDto]:
         result: List[Position] = self.client.get_position()
-        return [binance_utils.convert_position_dto(op) for op in result]
+        return [binance_utils.convert_position_dto(op) for op in result if prd_name is None or
+                binance_utils.trim_usdt_symbol(op.symbol) == prd_name]
 
     def close(self, prd_name: str, positionSide: str, amount: float) -> any:
-
         product = self.productDao.get_by_prd_name(prd_name)
         p_amt: float = ProductDao.fix_precision_amt(product, amount)
         p_amt = p_amt if p_amt > 0 else product.min_item

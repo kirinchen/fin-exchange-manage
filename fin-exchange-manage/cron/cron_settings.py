@@ -1,5 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
+import config
 from cron import bzk_flow_off_restart_job
 from cron.lend_funding_job import LendFundingJob
 
@@ -8,6 +9,9 @@ lend_funding_job = LendFundingJob()
 
 
 def start_all():
+    cron_enable = config.env_bool('cron_enable')
+    if not cron_enable:
+        return
     scheduler = BackgroundScheduler()
     print(__file__ + ' start_all')
     scheduler.add_job(func=bzk_flow_off_restart_job.check, trigger="interval", seconds=2 * 60)

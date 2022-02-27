@@ -64,22 +64,22 @@ class InitProduct(DataInit[Product]):
         # --- maicoin_max start ---
         self.btc_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.btc.name,
-                                       prd_name=item.btc.symbol,
+                                       prd_name=f'{item.btc.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
                                        )
         self.bch_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.bch.name,
-                                       prd_name=item.bch.symbol,
+                                       prd_name=f'{item.bch.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
                                        )
         self.eth_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.eth.name,
-                                       prd_name=item.eth.symbol,
+                                       prd_name=f'{item.eth.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
                                        )
         self.ltc_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.ltc.name,
-                                       prd_name=item.ltc.symbol,
+                                       prd_name=f'{item.ltc.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
                                        )
         # --- maicoin_max end ---

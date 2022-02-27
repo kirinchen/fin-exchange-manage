@@ -2,8 +2,6 @@ import abc
 from abc import ABC
 from typing import List
 
-from sqlalchemy.orm import Session
-
 from dto.position_dto import PositionDto, PositionFilter
 from service.base_exchange_abc import BaseExchangeAbc
 from service.product_dao import ProductDao
@@ -23,14 +21,14 @@ class PositionClientService(BaseExchangeAbc, ABC):
         return PositionClientService
 
     @abc.abstractmethod
-    def list_all(self) -> List[PositionDto]:
+    def list_all(self, prd_name: str = None) -> List[PositionDto]:
         raise NotImplementedError('list_all')
 
     def query(self, position_filter: PositionFilter) -> List[PositionDto]:
-        return position_utils.filter_position(self.list_all(), position_filter)
+        return position_utils.filter_position(self.list_all(position_filter.symbol), position_filter)
 
     def find_one(self, symbol: str, positionSide: str) -> PositionDto:
-        return position_utils.find_position_one(self.list_all(), symbol, positionSide)
+        return position_utils.find_position_one(self.list_all(symbol), symbol, positionSide)
 
     def get_max_order_amt(self, symbol: str, positionSide: str, price: float) -> float:
         pos = self.find_one(symbol, positionSide)
