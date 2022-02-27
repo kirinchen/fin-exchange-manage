@@ -7,7 +7,7 @@ from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.wallet_dto import WalletDto
 from exchange.maicoin_max import gen_request_client, max_utils
-from infra.enums import CandlestickInterval
+from infra.enums import CandlestickInterval, PositionSide
 from model.init_data import init_item
 from service.market_client_sevice import MarketClientService
 from service.order_client_service import OrderClientService
@@ -49,10 +49,22 @@ class MaxPositionClientService(PositionClientService):
 
     def _calc_position(self, w_dto: WalletDto, orders: List[OrderDto]) -> PositionDto:
         k_data = self.marketClient.get_candlestick_data(prd_name=max_utils.fix_twd_prd_name(w_dto.symbol),
-                                                        interval=CandlestickInterval.MIN1)
-        this_ods = order_utils.filter_order(orders, OrderFilter(symbol=max_utils.fix_twd_prd_name(w_dto.symbol)))
-        entry_price = order_utils.calc_entry_price_by_orders(orders=this_ods, market_price=k_data.close,
+                                                        interval=CandlestickInterval.MIN1)[0]
+        markPrice = k_data.close
+        this_ods_info = order_utils.filter_order(orders, OrderFilter(symbol=max_utils.fix_twd_prd_name(w_dto.symbol)))
+        entry_price = order_utils.calc_entry_price_by_orders(orders=this_ods_info.orders, market_price=markPrice,
                                                              amt=w_dto.balance)
+        ans = PositionDto()
+        ans.symbol = max_utils.fix_twd_prd_name(w_dto.symbol)
+        ans.positionSide = PositionSide.LONG
+        ans.markPrice = markPrice
+        ans.positionAmt = w_dto.balance
+        ans.entryPrice = entry_price
+        ans.unrealizedProfit = (entry_price * w_dto.balance) - (markPrice * w_dto.balance)
+        ans.liquidationPrice = entry_price * 0.6  # TODO config
+        ans.leverage = 1
+        ans.maxNotionalValue = 99999999999
+        return ans
 
     def close(self, prd_name: str, positionSide: str, amount: float) -> any:
         pass
