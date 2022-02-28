@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from typing import List, Any
 
 from maicoin_max.client import Client
+from maicoin_max.dto.market import Candlestick
 
 from dto.market_dto import CandlestickDto
 from exchange.maicoin_max import gen_request_client, max_utils
@@ -59,9 +60,9 @@ class MaxMarketClientService(MarketClientService):
                              endTime: datetime = None, limit: int = None) -> List[CandlestickDto]:
         period = _candlestick_interval_minute(interval)
         (limit, timestamp) = _clac_limit_timestamp(period=period, startTime=startTime, endTime=endTime, org_limit=limit)
-        k_result: List[List[float]] = self.client.get_public_k_line(pair=max_utils.unfix_symbol(prd_name), limit=limit,
+        k_result: List[Candlestick] = self.client.get_public_k_line(pair=max_utils.unfix_symbol(prd_name), limit=limit,
                                                                     timestamp=timestamp, period=period)
-        return [max_utils.convert_candlestick_dto(v_list) for v_list in k_result]
+        return [max_utils.convert_candlestick_dto(kd) for kd in k_result]
 
     def get_exchange_info(self) -> Any:
         return self.client.get_exchange_information()

@@ -15,8 +15,8 @@ class BitfinexTradeClientService(TradeClientService):
         super(BitfinexTradeClientService, self).__init__(**kwargs)
         self.client: RequestClient = gen_request_client()
 
-    def fetch_recent_list(self, symbol: str, limit: int) -> List[TradeDto]:
-        org_list: List[Trade] = self.client.get_recent_trades_list(symbol=binance_utils.fix_usdt_symbol(symbol),
+    def fetch_recent_list(self, prd_name: str, limit: int) -> List[TradeDto]:
+        org_list: List[Trade] = self.client.get_recent_trades_list(symbol=binance_utils.fix_usdt_symbol(prd_name),
                                                                    limit=limit)
         return [binance_utils.convert_trade_dto(ot) for ot in org_list]
 

@@ -3,6 +3,7 @@ from typing import List
 
 import pytz
 from maicoin_max.client import Client
+from maicoin_max.dto.market import Candlestick, Trade
 from maicoin_max.dto.order import Order
 from maicoin_max.dto.position import Position
 from maicoin_max.dto.wallet import Wallet
@@ -10,6 +11,7 @@ from maicoin_max.dto.wallet import Wallet
 from dto.account_dto import AccountDto
 from dto.market_dto import CandlestickDto
 from dto.order_dto import OrderDto
+from dto.trade_dto import TradeDto
 from dto.wallet_dto import WalletDto
 from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
 
@@ -98,17 +100,15 @@ def convert_wallet(wallet: Wallet) -> WalletDto:
     return ans
 
 
-def convert_candlestick_dto(v_list: List[float]) -> CandlestickDto:
+def convert_candlestick_dto(kd: Candlestick) -> CandlestickDto:
     """
     [timestamp, open, high, low, close, volume]
     :return:
     """
-    ans = CandlestickDto()
-    ans.openAt = datetime.fromtimestamp(v_list[0])
-    ans.closeAt = datetime.fromtimestamp(v_list[0])
-    ans.open = v_list[1]
-    ans.high = v_list[2]
-    ans.low = v_list[3]
-    ans.close = v_list[4]
-    ans.volume = v_list[5]
+    ans = CandlestickDto(**kd.__dict__)
     return ans
+
+
+def convert_trade(t: Trade) -> TradeDto:
+    return TradeDto(price=t.price, isBuyerMaker=t.side == 'bid', qty=t.volume, quoteQty=t.volume * t.price,
+                    time=datetime.fromtimestamp(t.created_at))

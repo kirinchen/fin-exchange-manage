@@ -13,7 +13,7 @@ class TradeClientService(BaseExchangeAbc, ABC):
         return TradeClientService
 
     @abc.abstractmethod
-    def fetch_recent_list(self, symbol: str, limit: int) -> List[TradeDto]:
+    def fetch_recent_list(self, prd_name: str, limit: int) -> List[TradeDto]:
         raise NotImplementedError('fetch_recent_list')
 
     def fetch_recent_set(self, symbol: str, limit: int, time_maped: bool = False) -> TradeSet:

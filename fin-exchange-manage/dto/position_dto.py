@@ -1,20 +1,22 @@
+from utils import reflection_util
+
+
 class PositionDto:
 
-    def __init__(self, entryPrice: float, isAutoAddMargin: bool, leverage: float, maxNotionalValue: float,
-                 liquidationPrice: float, markPrice: float, positionAmt: float, symbol: str, unrealizedProfit: float,
-                 marginType: str, isolatedMargin: float, positionSide: str, **kwargs):
-        self.entryPrice: float = entryPrice
-        self.isAutoAddMargin: bool = isAutoAddMargin  # unused
-        self.leverage: float = leverage
-        self.maxNotionalValue: float = maxNotionalValue
-        self.liquidationPrice: float = liquidationPrice
-        self.markPrice: float = markPrice
-        self.positionAmt: float = positionAmt
-        self.symbol: str = symbol
-        self.unrealizedProfit: float = unrealizedProfit
-        self.marginType: str = marginType  # unused
-        self.isolatedMargin: float = isolatedMargin  # unused
-        self.positionSide: str = positionSide
+    def __init__(self,  **kwargs):
+        self.entryPrice: float = None
+        self.isAutoAddMargin: bool = None  # unused
+        self.leverage: float = None
+        self.maxNotionalValue: float = None
+        self.liquidationPrice: float = None
+        self.markPrice: float = None
+        self.positionAmt: float = None
+        self.symbol: str = None
+        self.unrealizedProfit: float = None
+        self.marginType: str = None  # unused
+        self.isolatedMargin: float = None  # unused
+        self.positionSide: str = None
+        reflection_util.merge(kwargs, self)
 
 
 class PositionFilter:
