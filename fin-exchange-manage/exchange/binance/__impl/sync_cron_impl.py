@@ -16,6 +16,12 @@ def _get_symbol_info(prd_name: str, symbols: List[Symbol]) -> Symbol:
     return [sbl for sbl in symbols if sbl.symbol == symbol][0]
 
 
+def sync_product(p: Product, product_dao: ProductDao, symbols: List[Symbol]):
+    sbl_info = _get_symbol_info(p.prd_name, symbols)
+    p.set_config(comm_utils.to_dict(sbl_info))
+    product_dao.update(p)
+
+
 class BinanceSyncCron(SyncCron):
 
     def __init__(self, **kwargs):
@@ -31,12 +37,7 @@ class BinanceSyncCron(SyncCron):
         p_dao: ProductDao = self.get_ex_obj(ProductDao)
         ps: List[Product] = p_dao.list_by_this_exchange()
         for p in ps:
-            self.sync_product(p, p_dao, symbols)
-
-    def sync_product(self, p: Product, product_dao: ProductDao, symbols: List[Symbol]):
-        sbl_info = _get_symbol_info(p.prd_name, symbols)
-        p.set_config(comm_utils.to_dict(sbl_info))
-        product_dao.update(p)
+            sync_product(p, p_dao, symbols)
 
 
 def get_impl_clazz() -> BinanceSyncCron:

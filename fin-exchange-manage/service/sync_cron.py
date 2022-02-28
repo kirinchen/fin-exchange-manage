@@ -43,7 +43,7 @@ class SyncCron(BaseExchangeAbc, ABC):
     def sync_orders(self, prd_name: str) -> dict:
 
         st = _get_query_start_timestamp()
-        ods: List[OrderDto] = self.orderClientService.list_all_order(prd_name= prd_name,
+        ods: List[OrderDto] = self.orderClientService.list_all_order(prd_name=prd_name,
                                                                      startTime=st)
         ex_id_list = [str(o.orderId) for o in ods]
         exist_orders: List[Order] = self.orderDao.list_in_exchange_id_list(ex_id_list)
@@ -62,10 +62,6 @@ class SyncCron(BaseExchangeAbc, ABC):
             'exist': exist_count,
             'new': new_count
         }
-
-    @abc.abstractmethod
-    def sync_product(self, p: Product, product_dao: ProductDao):
-        raise NotImplementedError('sync_product')
 
     def get_abc_clazz(self) -> object:
         return SyncCron
