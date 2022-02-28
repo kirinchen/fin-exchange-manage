@@ -21,7 +21,7 @@ def _get_job(payload: dict) -> LendFundingJob:
 def update_job_payload(payload: dict):
     job = _get_job(payload)
     job.cancel_lend_by_filter_pyload = payload.get('cancel_lend_by_filter_pyload')
-    job.lend_by_filter_payload = payload.get('lend_by_filter_payload')
+    job.lend_by_filter_usd_payload = payload.get('lend_by_filter_payload')
 
 
 def get_current_info(payload: dict):

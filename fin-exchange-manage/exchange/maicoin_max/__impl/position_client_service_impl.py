@@ -39,13 +39,12 @@ class MaxPositionClientService(PositionClientService):
         wallet_dtos = self.walletClient.query(
             WalletFilter(amount_exist=True, symbol=max_utils.trim_twd_prd_name(prd_name),
                          not_symbol=init_item.get_instance().twd.symbol))
+        ans :List[PositionDto] = list()
         for w_dto in wallet_dtos:
-            self._calc_position(w_dto=w_dto, orders=order_dtos)
+            p_dto= self._calc_position(w_dto=w_dto, orders=order_dtos)
+            ans.append(p_dto)
 
-        # order_utils.get_entry_price_by_orders()
-        return None
-        # result: List[Position] = self.client.get_position()
-        # return [binance_utils.convert_position_dto(op) for op in result]
+        return ans
 
     def _calc_position(self, w_dto: WalletDto, orders: List[OrderDto]) -> PositionDto:
         k_data = self.marketClient.get_candlestick_data(prd_name=max_utils.fix_twd_prd_name(w_dto.symbol),
