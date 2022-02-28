@@ -77,9 +77,9 @@ def value_of_enum(e: E, v: Any) -> E:
     raise KeyError('Not find :' + v)
 
 
-def fix_precision(p: int, fv: float):
-    fstr = str(p) + 'f'
-    ans = float(('{:.' + fstr + '}').format(fv))
+def fix_precision(precision: int, tar_val: float) -> float:
+    fstr = str(precision) + 'f'
+    ans = float(('{:.' + fstr + '}').format(tar_val))
     return str(ans)
 
 
