@@ -3,7 +3,7 @@ from typing import List
 
 import pytz
 from maicoin_max.client import Client
-from maicoin_max.dto.market import Candlestick, Trade
+from maicoin_max.dto.market import Candlestick, Trade, MarketInfo
 from maicoin_max.dto.order import Order
 from maicoin_max.dto.position import Position
 from maicoin_max.dto.wallet import Wallet
@@ -14,6 +14,7 @@ from dto.order_dto import OrderDto
 from dto.trade_dto import TradeDto
 from dto.wallet_dto import WalletDto
 from infra.enums import PositionSide, OrderStatus, OrderSide, OrderType
+from utils import comm_utils
 
 
 def fix_twd_prd_name(symbol: str) -> str:
@@ -112,3 +113,12 @@ def convert_candlestick_dto(kd: Candlestick) -> CandlestickDto:
 def convert_trade(t: Trade) -> TradeDto:
     return TradeDto(price=t.price, isBuyerMaker=t.side == 'bid', qty=t.volume, quoteQty=t.volume * t.price,
                     time=datetime.fromtimestamp(t.created_at))
+
+
+def fix_amount(m_info: MarketInfo, amt: float, curPrice: float) -> float:
+    valuation_min = float(m_info.min_quote_amount)
+    base_min: float = m_info.min_base_amount
+    valuation_min_to_amt: float = valuation_min / curPrice
+    max_ans = max(base_min, amt)
+    max_ans = max(max_ans, valuation_min_to_amt)
+    return comm_utils.fix_precision(m_info.base_unit_precision, max_ans)

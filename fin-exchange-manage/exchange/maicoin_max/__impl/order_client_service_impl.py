@@ -29,13 +29,18 @@ class MaxOrderClientService(OrderClientService):
         product = self.productDao.get_by_prd_name(prd_name)
         pair = max_utils.unfix_symbol(prd_name)
         m_info = MarketInfo(**product.get_config())
+        amt = max_utils.fix_amount(m_info=m_info, amt=quantity, curPrice=price)
+        if amt <= 0:
+            return None
         side = 'buy' if positionSide == PositionSide.LONG else 'sell'
-        price_str = '' if onMarketPrice else comm_utils.fix_precision(m_info.quote_unit_precision, price)
+        fixed_price = '' if onMarketPrice else comm_utils.fix_precision(m_info.quote_unit_precision, price)
         order_type: str = 'market' if onMarketPrice else 'limit'
         client_uid = comm_utils.get_order_cid(tags=tags)
-        self.client.set_private_create_order(pair=pair, side=side, amount=str(0.001),
-                                             price=price_str,
-                                             _type=order_type, client_id=client_uid)
+
+        o = self.client.set_private_create_order(pair=pair, side=side, amount=amt,
+                                                 price=fixed_price,
+                                                 _type=order_type, client_id=client_uid)
+        return max_utils.convert_order_dto(o)
 
     def post_stop_market(self, prd_name: str, price: float, quantity: float, positionSide: str,
                          tags: List[str]) -> OrderDto:
