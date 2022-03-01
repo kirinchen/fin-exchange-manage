@@ -80,7 +80,7 @@ def value_of_enum(e: E, v: Any) -> E:
 def fix_precision(precision: int, tar_val: float) -> float:
     fstr = str(precision) + 'f'
     ans = float(('{:.' + fstr + '}').format(tar_val))
-    return str(ans)
+    return ans
 
 
 def to_dict(obj, classkey=None) -> dict:
