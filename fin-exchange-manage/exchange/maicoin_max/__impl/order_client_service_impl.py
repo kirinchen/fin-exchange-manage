@@ -82,12 +82,12 @@ class MaxOrderClientService(OrderClientService):
             return None
         side = 'sell' if positionSide == PositionSide.LONG else 'buy'
         fixed_price = comm_utils.fix_precision(m_info.quote_unit_precision, price)
-        order_type: str = 'stop_market'
+        order_type: str = 'post_only'
         client_uid = comm_utils.get_order_cid(tags=tags)
 
         try:
             o = self.client.set_private_create_order(pair=pair, side=side, amount=amt,
-                                                     price='', stop=fixed_price,
+                                                     price=fixed_price,
                                                      _type=order_type, client_id=client_uid)
             return max_utils.convert_order_dto(o)
         except Exception as e:  # work on python 3.x
