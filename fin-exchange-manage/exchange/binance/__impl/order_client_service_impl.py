@@ -1,3 +1,4 @@
+import math
 from typing import List
 
 from binance_f.exception.binanceapiexception import BinanceApiException
@@ -54,11 +55,11 @@ class BinanceOrderClientService(OrderClientService):
         binance_symbol = binance_utils.convert_symbol_helper(product)
         amt = self.positionClient.get_max_order_amt(symbol=prd_name, positionSide=positionSide, price=price)
         quantity = min(amt, quantity)
-        price = binance_symbol.fix_precision_price( price)
+        price = binance_symbol.fix_precision_price(price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = binance_symbol.fix_precision_amt( quantity)
+        p_amt: float = binance_symbol.fix_precision_amt(quantity)
         if p_amt == 0:
             return None
         quantity_str = str(p_amt)
@@ -106,11 +107,11 @@ class BinanceOrderClientService(OrderClientService):
             return None
         product = self.productDao.get_by_prd_name(prd_name)
         binance_symbol = binance_utils.convert_symbol_helper(product)
-        price = binance_symbol.fix_precision_price( price)
+        price = binance_symbol.fix_precision_price(price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = binance_symbol.fix_precision_amt( quantity)
+        p_amt: float = binance_symbol.fix_precision_amt(quantity, math.ceil)
         p_amt = p_amt if p_amt > 0 else binance_symbol.get_min_amt()
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)
@@ -142,11 +143,11 @@ class BinanceOrderClientService(OrderClientService):
             return None
         product = self.productDao.get_by_prd_name(prd_name)
         binance_symbol = binance_utils.convert_symbol_helper(product)
-        price = binance_symbol.fix_precision_price( price)
+        price = binance_symbol.fix_precision_price(price)
         if price <= 0:
             return None
         price_str = str(price)
-        p_amt: float = binance_symbol.fix_precision_amt( quantity)
+        p_amt: float = binance_symbol.fix_precision_amt(quantity)
         p_amt = p_amt if p_amt > 0 else binance_symbol.get_min_amt()
         quantity_str = str(p_amt)
         side = direction_utils.get_stop_order_side(positionSide)

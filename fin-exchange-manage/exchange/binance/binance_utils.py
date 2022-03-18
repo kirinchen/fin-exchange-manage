@@ -121,12 +121,12 @@ class SymbolHelper:
         ans = math.floor(count * pi.tickSize * _PRECISION) / _PRECISION
         return ans
 
-    def fix_precision_amt(self, amt: float) -> float:
+    def fix_precision_amt(self, amt: float, to_int_func=math.floor) -> float:
         a = self.get_amt_info()
-        count = math.floor(amt / a.stepSize)
+        count = to_int_func(amt / a.stepSize)
         ans = math.floor(count * a.stepSize * _PRECISION) / _PRECISION
         return ans
-    
+
     def get_min_amt(self) -> float:
         a = self.get_amt_info()
         return a.minQty
