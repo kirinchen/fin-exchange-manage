@@ -24,7 +24,8 @@ class MaxOrderClientService(OrderClientService):
         return [max_utils.convert_order_dto(od) for od in oods]
 
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
-        pass  # TODO
+        for od in currentOds:
+            self.client.set_private_cancel_order(od.orderId)
 
     def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
                    tags: List[str]) -> OrderDto:
