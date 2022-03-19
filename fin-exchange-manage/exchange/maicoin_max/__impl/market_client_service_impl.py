@@ -24,14 +24,15 @@ def _clac_limit_timestamp(period: int, startTime: datetime = None, endTime: date
         org_limit = 1
     if startTime is None and endTime is None:
         return org_limit, int(datetime.now(tz=timezone.utc).timestamp()) - (p_seconds * org_limit)
+
+    if startTime is None:
+        return org_limit, int(endTime.timestamp())  - (p_seconds * org_limit)
     if endTime is None:
         endTime = datetime.now(tz=timezone.utc)
-    if startTime is None:
-        return org_limit, int(endTime.timestamp()) - - (p_seconds * org_limit)
     diff = endTime - startTime
     diff_limit = (diff.total_seconds() / 60) / period
     final_limit = min(org_limit, diff_limit)
-    return final_limit, int(endTime.timestamp()) - (p_seconds * final_limit)
+    return final_limit, int(startTime.timestamp()) + (p_seconds * final_limit)
 
 
 def _candlestick_interval_minute(interval: CandlestickInterval) -> int:
