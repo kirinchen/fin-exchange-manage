@@ -82,6 +82,11 @@ class InitProduct(DataInit[Product]):
                                        prd_name=f'{item.ltc.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
                                        )
+        self.xrp_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
+                                       item=item.xrp.name,
+                                       prd_name=f'{item.xrp.symbol}{item.twd.symbol}',
+                                       valuation_item=item.twd.name,
+                                       )
         # --- maicoin_max end ---
 
     def get_clazz(self) -> Product:
