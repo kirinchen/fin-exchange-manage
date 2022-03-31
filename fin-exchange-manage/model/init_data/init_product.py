@@ -14,51 +14,71 @@ class InitProduct(DataInit[Product]):
                                    item=item.btc.name,
                                    prd_name=item.btc.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=True,
+                                   track=True
                                    )
         self.bch_binance = Product(exchange=_exchange.binance.name,
                                    item=item.bch.name,
                                    prd_name=item.bch.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=True,
+                                   track=True
                                    )
         self.eth_binance = Product(exchange=_exchange.binance.name,
                                    item=item.eth.name,
                                    prd_name=item.eth.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=True,
+                                   track=True
                                    )
         self.etc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.etc.name,
                                    prd_name=item.etc.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=False,
+                                   track=False
                                    )
         self.ltc_binance = Product(exchange=_exchange.binance.name,
                                    item=item.ltc.name,
                                    prd_name=item.ltc.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=True,
+                                   track=True
                                    )
         self.xrp_binance = Product(exchange=_exchange.binance.name,
                                    item=item.xrp.name,
                                    prd_name=item.xrp.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=True,
+                                   track=True
                                    )
         self.eos_binance = Product(exchange=_exchange.binance.name,
                                    item=item.eos.name,
                                    prd_name=item.eos.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=False,
+                                   track=False
                                    )
         self.bnb_binance = Product(exchange=_exchange.binance.name,
                                    item=item.bnb.name,
                                    prd_name=item.bnb.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=False,
+                                   track=True
                                    )
         self.dot_binance = Product(exchange=_exchange.binance.name,
                                    item=item.dot.name,
                                    prd_name=item.dot.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=False,
+                                   track=True
                                    )
         self.ada_binance = Product(exchange=_exchange.binance.name,
                                    item=item.ada.name,
                                    prd_name=item.ada.symbol,
                                    valuation_item=item.usdt.name,
+                                   ordered=False,
+                                   track=True
                                    )
         # --- binance end ---
         # --- maicoin_max start ---
@@ -66,26 +86,36 @@ class InitProduct(DataInit[Product]):
                                        item=item.btc.name,
                                        prd_name=f'{item.btc.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
+                                       ordered=True,
+                                       track=True
                                        )
         self.bch_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.bch.name,
                                        prd_name=f'{item.bch.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
+                                       ordered=True,
+                                       track=False
                                        )
         self.eth_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.eth.name,
                                        prd_name=f'{item.eth.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
+                                       ordered=True,
+                                       track=True
                                        )
         self.ltc_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.ltc.name,
                                        prd_name=f'{item.ltc.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
+                                       ordered=True,
+                                       track=False
                                        )
         self.xrp_maicoin_max = Product(exchange=_exchange.maicoin_max.name,
                                        item=item.xrp.name,
                                        prd_name=f'{item.xrp.symbol}{item.twd.symbol}',
                                        valuation_item=item.twd.name,
+                                       ordered=True,
+                                       track=False
                                        )
         # --- maicoin_max end ---
 

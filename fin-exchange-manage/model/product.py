@@ -1,7 +1,7 @@
 import json
 
 from infra.database import Base
-from sqlalchemy import Column, Integer, String, Float, Text
+from sqlalchemy import Column, Integer, String, Float, Text, Boolean
 
 from utils import comm_utils
 
@@ -14,12 +14,17 @@ class Product(Base):
     item = Column(String(50), nullable=False)
     valuation_item = Column(String(50), nullable=False)
     config = Column(Text, nullable=False)
+    ordered = Column(Boolean, nullable=False, default=False)
+    track = Column(Boolean, nullable=False, default=False)
 
-    def __init__(self, exchange: str, item: str, valuation_item: str, prd_name: str, config: dict = None):
+    def __init__(self, exchange: str, item: str, valuation_item: str, prd_name: str, ordered: bool, track: bool,
+                 config: dict = None):
         self.exchange: str = exchange
         self.item: str = item
         self.prd_name: str = prd_name
         self.valuation_item: str = valuation_item
+        self.ordered = ordered
+        self.track = track
         self.uid: str = get_uid(exchange, item, valuation_item)[:32]
         self.set_config(config)
 
