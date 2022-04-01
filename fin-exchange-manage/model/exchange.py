@@ -17,3 +17,12 @@ class Exchange(Base):
     def set_allow_sides(self, sides: List[str]):
         txt = json.dumps(sides)
         self.allowSides = txt
+
+    def get_allow_sides(self) -> List[str]:
+        return json.loads(self.allowSides)
+
+    def get_dict(self) -> dict:
+        return {
+            'allowSides': self.get_allow_sides(),
+            'name': self.name
+        }

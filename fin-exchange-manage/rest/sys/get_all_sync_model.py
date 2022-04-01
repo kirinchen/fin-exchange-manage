@@ -12,7 +12,7 @@ class Result:
     def __init__(self, items: List[Item], products: List[Product], exchanges: List[Exchange]):
         self.items: List[Item] = items
         self.products: List[Product] = products
-        self.exchanges: List[Exchange] = exchanges
+        self.exchanges: List[dict] = [e.get_dict() for e in exchanges]
 
 
 def run(payload: dict) -> dict:
