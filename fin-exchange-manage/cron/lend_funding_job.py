@@ -40,19 +40,13 @@ lend_by_filter_usdt_payload = {
 
 class LendFundingJob:
 
-    def __init__(self, account_name: str = ''):
+    def __init__(self, mege_cfg: dict = {}):
         self.cancel_lend_by_filter_pyload = dict(cancel_lend_by_filter_pyload)
         self.lend_by_filter_usd_payload = dict(lend_by_filter_usd_payload)
         self.lend_by_filter_usdt_payload = dict(lend_by_filter_usdt_payload)
-        self.cancel_lend_by_filter_pyload.update({
-            PayloadExKey.exchange_account.value: account_name
-        })
-        self.lend_by_filter_usd_payload.update({
-            PayloadExKey.exchange_account.value: account_name
-        })
-        self.lend_by_filter_usdt_payload.update({
-            PayloadExKey.exchange_account.value: account_name
-        })
+        self.cancel_lend_by_filter_pyload.update(mege_cfg)
+        self.lend_by_filter_usd_payload.update(mege_cfg)
+        self.lend_by_filter_usdt_payload.update(mege_cfg)
         self.lendCount = 0
         self.lastAt = datetime.now()
         self.lastException: dict = None
