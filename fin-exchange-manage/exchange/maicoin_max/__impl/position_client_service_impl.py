@@ -37,11 +37,13 @@ class MaxPositionClientService(PositionClientService):
         order_entitys = self.orderDao.list_filled()
         order_dtos = [order_dto.convert_entity_to_dto(e) for e in order_entitys]
         wallet_dtos = self.walletClient.query(
-            WalletFilter(amount_exist=True, symbol=max_utils.trim_twd_prd_name(prd_name),
+            WalletFilter(amount_exist=False, symbol=max_utils.trim_twd_prd_name(prd_name),
                          not_symbol=init_item.get_instance().twd.symbol))
-        ans :List[PositionDto] = list()
+
+        ans: List[PositionDto] = list()
         for w_dto in wallet_dtos:
-            p_dto= self._calc_position(w_dto=w_dto, orders=order_dtos)
+            _order_dtos = order_dtos if w_dto.balance > 0 else []
+            p_dto = self._calc_position(w_dto=w_dto, orders=order_dtos)
             ans.append(p_dto)
 
         return ans
