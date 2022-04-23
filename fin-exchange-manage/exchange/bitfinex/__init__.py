@@ -8,9 +8,14 @@ import config
 
 
 async def _gen_client(account_name: str = ''):
+    account_name = account_name if account_name else ''
+    key_key = f'bitfinex-api-key{account_name}'
+    secret_key = f'bitfinex-api-secret{account_name}'
+    key = config.env(key_key)
+    secret = config.env(secret_key)
     bfx = Client(
-        API_KEY=config.env(f'bitfinex-api-key{account_name}'),
-        API_SECRET=config.env(f'bitfinex-api-secret{account_name}')
+        API_KEY=key,
+        API_SECRET=secret
     )
     return bfx
 
