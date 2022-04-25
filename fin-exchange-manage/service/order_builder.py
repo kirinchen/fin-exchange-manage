@@ -155,7 +155,6 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
 
     def __init__(self, **kwargs):
         super(LimitOrderBuilder, self).__init__(**kwargs)
-        # self.account: AccountDto = None
         self.position: PositionDto = None
         self.amount: float = None
         self._all_order_qty = 0
@@ -171,9 +170,10 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         wallet: WalletDto = self.walletClientService.get_one(WalletFilter(prd_name=self.dto.symbol))
         self.amount = wallet.balance_available * self.dto.withdrawAmountRate
         self.amount += self._get_martingale_amt()
-        self.lastPrice = self.tradeClientService.get_last_fall_price(symbol=self.dto.symbol,
-                                                                     positionSide=self.dto.positionSide,
-                                                                     buffRate=self.dto.priceBuffRate)
+        self.lastPrice = self.dto.startPrice if self.dto.startPrice > 0 else self.tradeClientService.get_last_fall_price(
+            symbol=self.dto.symbol,
+            positionSide=self.dto.positionSide,
+            buffRate=self.dto.priceBuffRate)
         minUsdAmt: float = self.productDao.get_min_valuation_item_amount(product=self.product,
                                                                          price=self.lastPrice)
         leverage_amt: float = self.amount * self.position.leverage

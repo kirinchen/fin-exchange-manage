@@ -34,10 +34,11 @@ class BasePostOrderDto:
 class PostLimitOrderDto(BasePostOrderDto):
 
     def __init__(self, withdrawAmountRate: float, stopPrice: float = None, martingaleRate: float = 0,
-                 closeLoseThreshold: float = -1,
+                 closeLoseThreshold: float = -1, startPrice: float = -1,
                  **kwargs):
         super(PostLimitOrderDto, self).__init__(**kwargs)
         self.withdrawAmountRate: float = withdrawAmountRate
+        self.startPrice: float = startPrice
         self.stopPrice: float = stopPrice
         self.martingaleRate: float = martingaleRate
         self.closeLoseThreshold: float = closeLoseThreshold
