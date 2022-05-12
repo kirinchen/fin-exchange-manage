@@ -29,7 +29,7 @@ lend_by_filter_usd_payload = {
 lend_by_filter_usdt_payload = {
     "__bzk_api_key": '',
     "name": "wallet/lend_by_filter",
-    "symbol": "UST",
+    "symbol": "BTC",
     "rowAmount": 100,
     "minMaxDiffRate": 0.33,
     "middleWeight": 0.45,

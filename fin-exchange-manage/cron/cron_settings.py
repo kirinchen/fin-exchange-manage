@@ -9,7 +9,7 @@ lend_funding_job_tom = LendFundingJob({PayloadExKey.exchange_account.value: '-to
 lend_funding_job = LendFundingJob()
 lend_funding_job_ftx = LendFundingJob({
     "symbol_list": [
-        "USDT", "USD"
+         "USD"
     ],
     "wallet_type": None,
     "symbol": None,
@@ -24,7 +24,7 @@ def start_all():
     print(__file__ + ' start_all')
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=bzk_flow_off_restart_job.check, trigger="interval", seconds=2 * 60)
-    #scheduler.add_job(func=lend_funding_job.lend, trigger="interval", seconds=25 * 60)
+    scheduler.add_job(func=lend_funding_job.lend, trigger="interval", seconds=25 * 60)
     scheduler.add_job(func=lend_funding_job_tom.lend, trigger="interval", seconds=25 * 60)
-    #scheduler.add_job(func=lend_funding_job_ftx.lend, trigger="interval", seconds=1.01 * 60 * 60)
+    scheduler.add_job(func=lend_funding_job_ftx.lend, trigger="interval", seconds=1.01 * 60 * 60)
     scheduler.start()
