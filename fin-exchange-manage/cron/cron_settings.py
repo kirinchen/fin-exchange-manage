@@ -9,7 +9,7 @@ lend_funding_job_tom = LendFundingJob({PayloadExKey.exchange_account.value: '-to
 lend_funding_job = LendFundingJob()
 lend_funding_job_ftx = LendFundingJob({
     "symbol_list": [
-         "USD","USDT"
+        "USDT", "USD"
     ],
     "wallet_type": None,
     "symbol": None,
