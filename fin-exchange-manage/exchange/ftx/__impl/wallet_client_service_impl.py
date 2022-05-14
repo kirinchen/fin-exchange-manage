@@ -41,7 +41,7 @@ class FTXWalletClientService(WalletClientService):
 
     def lend_one(self, w: WalletDto, **kwargs) -> object:
         balance = self.client.get_private_wallet_single_balance(w.symbol)['total']
-        r = self._get_rate_by_wallet(w)
+        r = self._get_rate_by_wallet(w) * 0.7
         return self.client.set_private_margin_lending_offer(w.symbol, balance, r)
 
     def _get_rate_by_wallet(self, w: WalletDto) -> float:
