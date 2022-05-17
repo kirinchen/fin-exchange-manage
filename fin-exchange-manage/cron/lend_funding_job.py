@@ -32,7 +32,7 @@ lend_by_filter_usdt_payload = {
     "symbol": "UST",
     "rowAmount": 100,
     "minMaxDiffRate": 0.33,
-    "middleWeight": 0.45,
+    "middleWeight": 0.35,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
