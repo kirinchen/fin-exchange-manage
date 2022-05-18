@@ -30,7 +30,7 @@ lend_by_filter_usdt_payload = {
     "__bzk_api_key": '',
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
-    "rowAmount": 150,
+    "rowAmount": 160,
     "minMaxDiffRate": 0.33,
     "middleWeight": 0.35,
     "wallet_type": "funding",
