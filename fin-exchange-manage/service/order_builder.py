@@ -159,6 +159,12 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         self.amount: float = None
         self._all_order_qty = 0
 
+    def is_price_on_market(self, idx: int) -> bool:
+        super_ans = super().is_price_on_market(idx)
+        if not super_ans:
+            return False
+        return self.dto.startPrice < 0
+
     def get_abc_clazz(self) -> object:
         return LimitOrderBuilder
 
