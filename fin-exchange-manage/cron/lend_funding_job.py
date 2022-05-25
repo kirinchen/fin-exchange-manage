@@ -20,8 +20,8 @@ lend_by_filter_usd_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "USD",
     "rowAmount": 150,
-    "minMaxDiffRate": 1.2,
-    "middleWeight": 0.6,
+    "minMaxDiffRate": 1.5,
+    "middleWeight": 0.7,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
@@ -31,8 +31,8 @@ lend_by_filter_usdt_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
     "rowAmount": 160,
-    "minMaxDiffRate": 0.33,
-    "middleWeight": 0.35,
+    "minMaxDiffRate": 0.46,
+    "middleWeight": 0.4,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
