@@ -10,7 +10,7 @@ from infra.enums import PayloadExKey
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 
-LEND_MIN_AMOUNT = 50
+LEND_MIN_AMOUNT = 151
 
 
 class LendAmtRateSet:

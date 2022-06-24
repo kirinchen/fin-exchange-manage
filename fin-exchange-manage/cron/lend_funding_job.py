@@ -19,9 +19,9 @@ lend_by_filter_usd_payload = {
     "__bzk_api_key": '',
     "name": "wallet/lend_by_filter",
     "symbol": "USD",
-    "rowAmount": 150,
-    "minMaxDiffRate": 1.6,
-    "middleWeight": 0.86,
+    "rowAmount": 152,
+    "minMaxDiffRate": 1.8,
+    "middleWeight": 0.926,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
