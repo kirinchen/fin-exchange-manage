@@ -13,10 +13,10 @@ services:
   db:
     image: postgres
     environment:
-       - POSTGRES_USER=root
-       - POSTGRES_PASSWORD=root
+       - POSTGRES_USER=${db_username}
+       - POSTGRES_PASSWORD=${db_password}
     ports: 
-      - "5432:5432"
+      - "22011:5432"
     
   
         
