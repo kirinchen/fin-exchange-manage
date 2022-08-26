@@ -5,6 +5,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 import exchange
+from dto.order_create_dto import OrderCreateDto
 from dto.order_dto import OrderDto
 from infra.enums import OrderStatus
 from service.base_exchange_abc import BaseExchangeAbc
@@ -52,6 +53,9 @@ class OrderClientService(BaseExchangeAbc, ABC):
             return currentOds
         except Exception as e:  # work on python 3.x
             print('Failed to upload to ftp: ' + str(e))
+
+    def new_order(self, dto: OrderCreateDto) -> OrderDto:
+        return dto.call(service=self)
 
     @abc.abstractmethod
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
