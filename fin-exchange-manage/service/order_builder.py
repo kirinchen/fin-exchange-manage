@@ -215,7 +215,7 @@ class LimitOrderBuilder(BaseOrderBuilder[PostLimitOrderDto], ABC):
         return priceQtyList
 
     def post_one(self, pq: PriceQty) -> OrderDto:
-        return self.orderClientService.post_limit(prd_name=self.dto.symbol, onMarketPrice=pq.priceOnMarket,
+        return self.orderClientService.post_limit(prd_name=self.dto.symbol, marketed=pq.priceOnMarket,
                                                   price=pq.price, quantity=pq.quantity,
                                                   positionSide=self.dto.positionSide, tags=self.dto.tags)
 

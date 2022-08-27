@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 import exchange
 from dto.order_create_dto import OrderCreateDto
 from dto.order_dto import OrderDto
-from infra.enums import OrderStatus
+from infra.enums import OrderStatus, OrderType
 from service.base_exchange_abc import BaseExchangeAbc
 from service.position_client_service import PositionClientService
 from service.product_dao import ProductDao
@@ -55,7 +55,29 @@ class OrderClientService(BaseExchangeAbc, ABC):
             print('Failed to upload to ftp: ' + str(e))
 
     def new_order(self, dto: OrderCreateDto) -> OrderDto:
-        return dto.call(service=self)
+        if dto.ordertype == OrderType.LIMIT:
+            return self.post_limit(prd_name=dto.prd_name,
+                                   marketed=dto.marketed,
+                                   price=dto.price,
+                                   quantity=dto.quantity,
+                                   positionSide=dto.positionSide,
+                                   tags=dto.tags
+                                   )
+        if dto.ordertype == OrderType.STOP_MARKET:
+            return self.post_stop_market(prd_name=dto.prd_name,
+                                         quantity=dto.quantity,
+                                         positionSide=dto.positionSide,
+                                         tags=dto.tags,
+                                         price=dto.price
+                                         )
+        if dto.ordertype == OrderType.TAKE_PROFIT:
+            return self.post_take_profit(prd_name=dto.prd_name,
+                                         quantity=dto.quantity,
+                                         price=dto.price,
+                                         positionSide=dto.positionSide,
+                                         tags=dto.tags
+                                         )
+        raise NotImplementedError(dto.ordertype + ' : not impl ')
 
     @abc.abstractmethod
     def cancel_list_orders(self, symbol: str, currentOds: List[OrderDto]) -> List[OrderDto]:
@@ -67,7 +89,7 @@ class OrderClientService(BaseExchangeAbc, ABC):
         raise NotImplementedError('not impl')
 
     @abc.abstractmethod
-    def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
+    def post_limit(self, prd_name: str, marketed: bool, price: float, quantity: float, positionSide: str,
                    tags: List[str]) -> OrderDto:
         raise NotImplementedError('post_limit')
 

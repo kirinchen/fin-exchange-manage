@@ -1,19 +1,21 @@
 import traceback
 
+import exchange
+from dto.order_create_dto import OrderCreateDto
 from infra import database
-from service import order_builder
-from service.order_builder import BaseOrderBuilder, LoadDataCheck
+from infra.enums import PayloadReqKey
+from service.order_client_service import OrderClientService
 from utils import comm_utils
 
 
 def run(payload: dict) -> dict:
     try:
         with database.session_scope() as session:
-            ob: BaseOrderBuilder = order_builder.gen_order_builder(session, payload)
-            check_result: LoadDataCheck = ob.load_data()
-            if not check_result.success:
-                return comm_utils.to_dict(check_result)
-            return comm_utils.to_dict(ob.post())
+            order_client: OrderClientService = exchange.gen_impl_obj(
+                exchange_name=PayloadReqKey.exchange.get_val(payload),
+                clazz=OrderClientService, session=session, **payload)
+            dto = OrderCreateDto(**payload)
+            return comm_utils.to_dict(order_client.new_order(dto))
     except Exception as e:  # work on python 3.x
         traceback.print_exc()
         return {

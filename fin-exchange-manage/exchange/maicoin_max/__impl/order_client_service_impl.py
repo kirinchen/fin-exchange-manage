@@ -27,7 +27,7 @@ class MaxOrderClientService(OrderClientService):
         for od in currentOds:
             self.client.set_private_cancel_order(od.orderId)
 
-    def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
+    def post_limit(self, prd_name: str, marketed: bool, price: float, quantity: float, positionSide: str,
                    tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
         pair = max_utils.unfix_symbol(prd_name)
@@ -36,8 +36,8 @@ class MaxOrderClientService(OrderClientService):
         if amt <= 0:
             return None
         side = 'buy' if positionSide == PositionSide.LONG else 'sell'
-        fixed_price = '' if onMarketPrice else comm_utils.fix_precision(m_info.quote_unit_precision, price)
-        order_type: str = 'market' if onMarketPrice else 'limit'
+        fixed_price = '' if marketed else comm_utils.fix_precision(m_info.quote_unit_precision, price)
+        order_type: str = 'market' if marketed else 'limit'
         client_uid = comm_utils.get_order_cid(tags=tags)
 
         try:

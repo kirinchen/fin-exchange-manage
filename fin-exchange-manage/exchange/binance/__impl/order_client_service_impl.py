@@ -49,7 +49,7 @@ class BinanceOrderClientService(OrderClientService):
                                                           orderIdList=batch_ids))
         return results
 
-    def post_limit(self, prd_name: str, onMarketPrice: bool, price: float, quantity: float, positionSide: str,
+    def post_limit(self, prd_name: str, marketed: bool, price: float, quantity: float, positionSide: str,
                    tags: List[str]) -> OrderDto:
         product = self.productDao.get_by_prd_name(prd_name)
         binance_symbol = binance_utils.convert_symbol_helper(product)
@@ -64,7 +64,7 @@ class BinanceOrderClientService(OrderClientService):
             return None
         quantity_str = str(p_amt)
         side = direction_utils.get_limit_order_side(positionSide)
-        if onMarketPrice:
+        if marketed:
             return self._post_on_market(side=side, prd_name=prd_name, positionSide=positionSide,
                                         quantity_str=quantity_str, tags=tags)
         try:
