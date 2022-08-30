@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from dto.order_dto import OrderDto
 from infra.enums import OrderType
@@ -19,3 +19,10 @@ class OrderCreateDto:
         reflection_util.merge(kwargs, self)
 
 
+class OrderCreateBatchDto:
+
+    def __init__(self, body: Dict[str, dict], **kwargs):
+        reflection_util.merge(kwargs, self)
+        self.body: Dict[str, OrderCreateDto] = dict()
+        for key, value in body.items():
+            self.body[key] = OrderCreateDto(**value)
