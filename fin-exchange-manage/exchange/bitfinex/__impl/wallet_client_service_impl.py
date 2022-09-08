@@ -23,9 +23,9 @@ class LendAmtRateSet:
 
 class LendPrams:
 
-    def __init__(self, rowAmount: float, minMaxDiffRate: float,  middleWeight: float, **kwargs):
+    def __init__(self, rowAmount: float, minMaxDiffRate: float, middleWeight: float, **kwargs):
         self.rowAmount: float = rowAmount
-        self.minMaxDiffRate:float = minMaxDiffRate
+        self.minMaxDiffRate: float = minMaxDiffRate
         self.middleWeight: float = middleWeight
 
 
@@ -65,7 +65,7 @@ class BitfinexWalletClientService(WalletClientService):
         middle_rate = (max_rate + min_rate) * lp.middleWeight
 
         dr = (max_rate - middle_rate) * lp.minMaxDiffRate
-
+        dr = abs(dr)
         cusd = w.balance_available
         cusd = cusd - LEND_MIN_AMOUNT
 
