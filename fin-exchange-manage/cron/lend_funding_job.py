@@ -21,7 +21,7 @@ lend_by_filter_usd_payload = {
     "symbol": "USD",
     "rowAmount": 152,
     "minMaxDiffRate": 2,
-    "middleWeight": 1.5,
+    "middleWeight": 1.02,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
