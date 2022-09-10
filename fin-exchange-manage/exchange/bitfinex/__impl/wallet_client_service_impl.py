@@ -2,11 +2,12 @@ import math
 from typing import List
 
 from bfxapi import Wallet
-from sqlalchemy.orm import Session
 
+from dto.market_dto import CandlestickDto
 from dto.wallet_dto import WalletDto
 from exchange.bitfinex import gen_request_client, bitfinex_utils
-from infra.enums import PayloadExKey
+from infra.enums import PayloadExKey, CandlestickInterval
+from service.market_client_sevice import MarketClientService
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 
@@ -56,11 +57,13 @@ class BitfinexWalletClientService(WalletClientService):
         return ans
 
     def gen_lend_price_set(self, w: WalletDto, lp: LendPrams) -> List[LendAmtRateSet]:
-        result: List[list] = bitfinex_utils.call(
-            self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
-        rate_list: List[float] = [a[0] for a in result]
-        max_rate = max(rate_list)
-        min_rate = min(rate_list)
+        mService: MarketClientService = self.get_ex_obj(MarketClientService)
+        # result: List[list] = bitfinex_utils.call(
+        #     self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
+        latest_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30'
+                                                      , interval=CandlestickInterval.HOUR1)[0]
+        max_rate = latest_candle.high
+        min_rate = (latest_candle.open + latest_candle.close) / 2
 
         middle_rate = (max_rate + min_rate) * lp.middleWeight
 
