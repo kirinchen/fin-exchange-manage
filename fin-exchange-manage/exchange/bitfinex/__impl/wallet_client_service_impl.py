@@ -11,7 +11,7 @@ from service.market_client_sevice import MarketClientService
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 
-LEND_MIN_AMOUNT = 151
+LEND_MIN_AMOUNT = 160
 
 
 class LendAmtRateSet:
@@ -60,7 +60,7 @@ class BitfinexWalletClientService(WalletClientService):
         mService: MarketClientService = self.get_ex_obj(MarketClientService)
         # result: List[list] = bitfinex_utils.call(
         #     self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
-        latest_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30'
+        latest_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30',limit=1
                                                       , interval=CandlestickInterval.HOUR1)[0]
         max_rate = latest_candle.high
         min_rate = (latest_candle.open + latest_candle.close) / 2
