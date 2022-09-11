@@ -79,7 +79,7 @@ class BitfinexWalletClientService(WalletClientService):
 
         spcount = math.floor(cusd / lp.rowAmount)
 
-        rp = dr / spcount
+        rp = dr / spcount if spcount > 0 else dr
 
         batchList: List[LendAmtRateSet] = list()
 
