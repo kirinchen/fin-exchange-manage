@@ -48,6 +48,9 @@ class LendFundingJob:
         self.lend_by_filter_usd_payload.update(mege_cfg)
         self.lend_by_filter_usdt_payload.update(mege_cfg)
         self.lendCount = 0
+        self.lendedCount = 0
+        self.cancelCount = 0
+        self.canceledCount = 0
         self.lastAt = datetime.now()
         self.lastException: dict = None
 
@@ -58,7 +61,9 @@ class LendFundingJob:
     def cancel_current_books(self):
         try:
             print('cancel_current_books start')
+            self.cancelCount += 1
             cancel_lend_by_filter.run(self.cancel_lend_by_filter_pyload)
+            self.canceledCount += 1
             print('cancel_current_books end')
         except Exception as e:  # work on python 3.x
             self.lastException = {
@@ -74,6 +79,7 @@ class LendFundingJob:
             self.lendCount += 1
             lend_by_filter.run(self.lend_by_filter_usd_payload)
             lend_by_filter.run(self.lend_by_filter_usdt_payload)
+            self.lendedCount += 1
             print('lend_funding end')
         except Exception as e:  # work on python 3.x
             self.lastException = {
