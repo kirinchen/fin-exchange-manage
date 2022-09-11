@@ -18,13 +18,17 @@ lend_funding_job_ftx = LendFundingJob({
 
 
 def start_all():
+    # lend_funding_job.cancel_current_books()
+    # lend_funding_job.lend()
     cron_enable = config.env_bool('cron_enable')
     if not cron_enable:
         return
     print(__file__ + ' start_all')
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=bzk_flow_off_restart_job.check, trigger="interval", seconds=2 * 60)
+    scheduler.add_job(func=lend_funding_job.cancel_current_books(), trigger="interval", seconds=2 * 60 * 60)
+    scheduler.add_job(func=lend_funding_job_tom.cancel_current_books(), trigger="interval", seconds=2 * 60 * 60)
     scheduler.add_job(func=lend_funding_job.lend, trigger="interval", seconds=25 * 60)
     scheduler.add_job(func=lend_funding_job_tom.lend, trigger="interval", seconds=25 * 60)
-    scheduler.add_job(func=lend_funding_job_ftx.lend, trigger="interval", seconds=1.01 * 60 * 60)
+    scheduler.add_job(func=lend_funding_job_ftx.lend_and_cancel(), trigger="interval", seconds=1.01 * 60 * 60)
     scheduler.start()

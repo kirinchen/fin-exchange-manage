@@ -31,7 +31,7 @@ lend_by_filter_usdt_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
     "rowAmount": 160,
-    "minMaxDiffRate": 1.1,
+    "minMaxDiffRate": 1,
     "middleWeight": 0.5,
     "wallet_type": "funding",
     "exchange": "bitfinex"
@@ -51,12 +51,27 @@ class LendFundingJob:
         self.lastAt = datetime.now()
         self.lastException: dict = None
 
+    def lend_and_cancel(self):
+        self.cancel_current_books()
+        self.lend()
+
+    def cancel_current_books(self):
+        try:
+            print('cancel_current_books start')
+            cancel_lend_by_filter.run(self.cancel_lend_by_filter_pyload)
+            print('cancel_current_books end')
+        except Exception as e:  # work on python 3.x
+            self.lastException = {
+                '__error_type': str(type(e)),
+                'msg': str(e),
+                'traceback': traceback.format_exc()
+            }
+
     def lend(self):
         try:
             print('lend_funding start')
             self.lastAt = datetime.now()
             self.lendCount += 1
-            cancel_lend_by_filter.run(self.cancel_lend_by_filter_pyload)
             lend_by_filter.run(self.lend_by_filter_usd_payload)
             lend_by_filter.run(self.lend_by_filter_usdt_payload)
             print('lend_funding end')
