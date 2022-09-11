@@ -60,10 +60,15 @@ class BitfinexWalletClientService(WalletClientService):
         mService: MarketClientService = self.get_ex_obj(MarketClientService)
         # result: List[list] = bitfinex_utils.call(
         #     self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
-        latest_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30', limit=1
-                                                      , interval='1D')[0]
-        max_rate = latest_candle.high * lp.minMaxDiffRate
-        min_rate = (latest_candle.open + latest_candle.close + latest_candle.low) / 3
+        p2_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p2', limit=1
+                                                  , interval=CandlestickInterval.HOUR1)[0]
+        p30_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30', limit=1
+                                                   , interval=CandlestickInterval.HOUR1)[0]
+
+        max_rate = avg_val([p30_candle.high, p2_candle.high]) * lp.minMaxDiffRate
+        min_rate = avg_val([
+            p30_candle.low, p30_candle.close, p30_candle.open, p2_candle.low, p2_candle.close, p2_candle.open
+        ])
 
         middle_rate = (max_rate + min_rate) * lp.middleWeight
 
@@ -84,6 +89,11 @@ class BitfinexWalletClientService(WalletClientService):
         lasta = cusd + LEND_MIN_AMOUNT - (spcount * lp.rowAmount)
         batchList.append(LendAmtRateSet(rate=max_rate, day=5, amount=lasta))
         return batchList
+
+
+def avg_val(fl: List[float]) -> float:
+    _sum = sum(fl)
+    return _sum / len(fl)
 
 
 def get_impl_clazz() -> BitfinexWalletClientService:
