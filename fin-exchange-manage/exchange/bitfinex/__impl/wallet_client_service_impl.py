@@ -61,9 +61,9 @@ class BitfinexWalletClientService(WalletClientService):
         # result: List[list] = bitfinex_utils.call(
         #     self.client.rest.get_public_books(symbol='f' + w.symbol, precision='P1', length=100))
         p2_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p2', limit=1
-                                                  , interval=CandlestickInterval.HOUR1)[0]
+                                                  , interval='1D')[0]
         p30_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30', limit=1
-                                                   , interval=CandlestickInterval.HOUR1)[0]
+                                                   , interval='1D')[0]
 
         max_rate = avg_val([p30_candle.high, p2_candle.high]) * lp.maxRateMultiple
         min_rate = avg_val([
