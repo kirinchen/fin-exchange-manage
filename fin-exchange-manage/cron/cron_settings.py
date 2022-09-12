@@ -20,6 +20,7 @@ lend_funding_job_ftx = LendFundingJob({
 def start_all():
     # lend_funding_job.cancel_current_books()
     # lend_funding_job.lend()
+    # lend_funding_job.lend_and_cancel()
     cron_enable = config.env_bool('cron_enable')
     if not cron_enable:
         return

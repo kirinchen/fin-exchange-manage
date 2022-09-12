@@ -1,5 +1,6 @@
 import traceback
 from datetime import datetime
+import time
 
 from infra.enums import PayloadExKey
 from rest.wallet import cancel_lend_by_filter, lend_by_filter
@@ -20,8 +21,8 @@ lend_by_filter_usd_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "USD",
     "rowAmount": 152,
-    "minMaxDiffRate": 1.1,
-    "middleWeight": 0.5,
+    "maxRateMultiple": 1.1,
+    "minRateMultiple": 0.5,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
@@ -31,8 +32,8 @@ lend_by_filter_usdt_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
     "rowAmount": 160,
-    "minMaxDiffRate": 1,
-    "middleWeight": 0.5,
+    "maxRateMultiple": 1,
+    "minRateMultiple": 0.5,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
@@ -56,6 +57,7 @@ class LendFundingJob:
 
     def lend_and_cancel(self):
         self.cancel_current_books()
+        time.sleep(3)
         self.lend()
 
     def cancel_current_books(self):

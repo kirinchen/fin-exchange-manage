@@ -24,10 +24,10 @@ class LendAmtRateSet:
 
 class LendPrams:
 
-    def __init__(self, rowAmount: float, minMaxDiffRate: float, middleWeight: float, **kwargs):
+    def __init__(self, rowAmount: float, minRateMultiple: float, maxRateMultiple: float, **kwargs):
         self.rowAmount: float = rowAmount
-        self.minMaxDiffRate: float = minMaxDiffRate
-        self.middleWeight: float = middleWeight
+        self.minRateMultiple: float = minRateMultiple
+        self.maxRateMultiple: float = maxRateMultiple
 
 
 class BitfinexWalletClientService(WalletClientService):
@@ -65,12 +65,12 @@ class BitfinexWalletClientService(WalletClientService):
         p30_candle = mService.get_candlestick_data(prd_name='f' + w.symbol + ':p30', limit=1
                                                    , interval=CandlestickInterval.HOUR1)[0]
 
-        max_rate = avg_val([p30_candle.high, p2_candle.high]) * lp.minMaxDiffRate
+        max_rate = avg_val([p30_candle.high, p2_candle.high]) * lp.maxRateMultiple
         min_rate = avg_val([
-            p30_candle.low, p30_candle.close, p30_candle.open, p2_candle.low, p2_candle.close, p2_candle.open
+            p30_candle.low, p2_candle.low
         ])
 
-        middle_rate = (max_rate + min_rate) * lp.middleWeight
+        middle_rate = ((max_rate + min_rate) / 2) * lp.minRateMultiple
 
         dr = (max_rate - middle_rate)
         dr = abs(dr)
@@ -84,7 +84,7 @@ class BitfinexWalletClientService(WalletClientService):
         batchList: List[LendAmtRateSet] = list()
 
         for i in range(spcount):
-            batchList.append(LendAmtRateSet(rate=max_rate - ((i + 1) * rp), day=(spcount - i) + 5, amount=lp.rowAmount))
+            batchList.append(LendAmtRateSet(rate=max_rate - (i * rp), day=(spcount - i) + 5, amount=lp.rowAmount))
 
         lasta = cusd + LEND_MIN_AMOUNT - (spcount * lp.rowAmount)
         batchList.append(LendAmtRateSet(rate=max_rate, day=5, amount=lasta))

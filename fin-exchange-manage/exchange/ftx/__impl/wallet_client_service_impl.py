@@ -11,22 +11,6 @@ from service.wallet_client_service import WalletClientService
 LEND_MIN_AMOUNT = 50
 
 
-class LendAmtRateSet:
-
-    def __init__(self, rate: float, day: int, amount: float):
-        self.rate: float = rate
-        self.day: int = day
-        self.amount: float = amount
-
-
-class LendPrams:
-
-    def __init__(self, rowAmount: float, minMaxDiffRate: float, middleWeight: float, **kwargs):
-        self.rowAmount: float = rowAmount
-        self.minMaxDiffRate: float = minMaxDiffRate
-        self.middleWeight: float = middleWeight
-
-
 class FTXWalletClientService(WalletClientService):
 
     def __init__(self, **kwargs):
@@ -34,7 +18,7 @@ class FTXWalletClientService(WalletClientService):
         self.client = gen_client()
 
     def list_all(self) -> List[WalletDto]:
-        return [WalletDto(symbol='USDT'), WalletDto(symbol='USD')] # TODO impl Wallet list_all
+        return [WalletDto(symbol='USDT'), WalletDto(symbol='USD')]  # TODO impl Wallet list_all
 
     def cancel_lend_all(self, w: WalletDto):
         pass
