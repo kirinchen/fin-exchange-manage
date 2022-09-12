@@ -11,7 +11,7 @@ from service.market_client_sevice import MarketClientService
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils
 
-LEND_MIN_AMOUNT = 160
+# LEND_MIN_AMOUNT = 160
 
 
 class LendAmtRateSet:
@@ -24,10 +24,10 @@ class LendAmtRateSet:
 
 class LendPrams:
 
-    def __init__(self, rowAmount: float, minRateMultiple: float, maxRateMultiple: float, **kwargs):
+    def __init__(self, rowAmount: float, rangeRate: float, maxRateMultiple: float, **kwargs):
         self.rowAmount: float = rowAmount
-        self.minRateMultiple: float = minRateMultiple
         self.maxRateMultiple: float = maxRateMultiple
+        self.rangeRate: float = rangeRate
 
 
 class BitfinexWalletClientService(WalletClientService):
@@ -45,7 +45,7 @@ class BitfinexWalletClientService(WalletClientService):
 
     def lend_one(self, w: WalletDto, **kwargs) -> object:
         lend_prams = LendPrams(**kwargs)
-        if w.balance_available < LEND_MIN_AMOUNT:
+        if w.balance_available < lend_prams.rowAmount:
             return f'no enough {comm_utils.to_dict(w)}'
         lend_amt_rate_set = self.gen_lend_price_set(w, lend_prams)
         ans = list()
@@ -70,12 +70,10 @@ class BitfinexWalletClientService(WalletClientService):
             p30_candle.low, p2_candle.low
         ])
 
-        middle_rate = ((max_rate + min_rate) / 2) * lp.minRateMultiple
-
-        dr = (max_rate - middle_rate)
+        dr = (max_rate - min_rate) * lp.rangeRate
         dr = abs(dr)
         cusd = w.balance_available
-        cusd = cusd - LEND_MIN_AMOUNT
+        cusd = cusd - lp.rowAmount
 
         spcount = math.floor(cusd / lp.rowAmount)
 
@@ -86,7 +84,7 @@ class BitfinexWalletClientService(WalletClientService):
         for i in range(spcount):
             batchList.append(LendAmtRateSet(rate=max_rate - (i * rp), day=(spcount - i) + 5, amount=lp.rowAmount))
 
-        lasta = cusd + LEND_MIN_AMOUNT - (spcount * lp.rowAmount)
+        lasta = cusd + lp.rowAmount - (spcount * lp.rowAmount)
         batchList.append(LendAmtRateSet(rate=max_rate, day=5, amount=lasta))
         return batchList
 
