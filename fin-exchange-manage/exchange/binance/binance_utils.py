@@ -12,8 +12,10 @@ from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
 from model import Product
-from service.order_client_service import OrderClientService
 from utils import reflection_util
+
+STRING_CONVERT_FLOAT_FIELDS = ["open", "high", "low", "close", "volume", "quoteAssetVolume", "takerBuyBaseAssetVolume",
+                               "takerBuyQuoteAssetVolume", "ignore"]
 
 
 def fix_usdt_symbol(symbol: str) -> str:
@@ -54,6 +56,8 @@ def convert_candlestick_dto(ct: Candlestick) -> CandlestickDto:
     t_dict['closeAt'] = cl_time
     t_dict['highAt'] = None
     t_dict['lowAt'] = None
+    for fix_filed in STRING_CONVERT_FLOAT_FIELDS:
+        t_dict[fix_filed] = float(t_dict[fix_filed])
     return CandlestickDto(**t_dict)
 
 
