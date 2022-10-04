@@ -21,8 +21,8 @@ lend_by_filter_usd_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "USD",
     "rowAmount": 152,
-    "maxRateMultiple": 1.1,
-    "rangeRate": 0.5,
+    "maxRateMultiple": 1.05,
+    "rangeRate": 0.4,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
