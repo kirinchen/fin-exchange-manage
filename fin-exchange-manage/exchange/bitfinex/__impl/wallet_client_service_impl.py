@@ -82,7 +82,7 @@ class BitfinexWalletClientService(WalletClientService):
         batchList: List[LendAmtRateSet] = list()
 
         for i in range(spcount):
-            batchList.append(LendAmtRateSet(rate=max_rate - (i * rp), day=(spcount - i) + 5, amount=lp.rowAmount))
+            batchList.append(LendAmtRateSet(rate=max_rate - (i * rp), day=(spcount - i) + 2, amount=lp.rowAmount))
 
         lasta = cusd + lp.rowAmount - (spcount * lp.rowAmount)
         batchList.append(LendAmtRateSet(rate=max_rate, day=5, amount=lasta))
