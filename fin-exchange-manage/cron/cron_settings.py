@@ -27,7 +27,7 @@ def start_all():
     print(__file__ + ' start_all')
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=bzk_flow_off_restart_job.check, trigger="interval", seconds=2 * 60)
-    scheduler.add_job(func=lend_funding_job.lend_and_cancel, trigger="interval", seconds=53 * 60)
+    scheduler.add_job(func=lend_funding_job.lend_and_cancel, trigger="interval", seconds=47 * 60)
     scheduler.add_job(func=lend_funding_job.lend, trigger="interval", seconds=19 * 60)
     scheduler.add_job(func=lend_funding_job_tom.lend_and_cancel, trigger="interval", seconds=149 * 60)
     scheduler.add_job(func=lend_funding_job_tom.lend, trigger="interval", seconds=23 * 60)
