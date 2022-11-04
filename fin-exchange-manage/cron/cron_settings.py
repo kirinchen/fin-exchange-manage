@@ -5,7 +5,7 @@ from cron import bzk_flow_off_restart_job
 from cron.lend_funding_job import LendFundingJob
 from infra.enums import PayloadExKey
 
-lend_funding_job_tom = LendFundingJob({PayloadExKey.exchange_account.value: '-tom'})
+# lend_funding_job_tom = LendFundingJob({PayloadExKey.exchange_account.value: '-tom'})
 lend_funding_job = LendFundingJob()
 lend_funding_job_ftx = LendFundingJob({
     "symbol_list": [
