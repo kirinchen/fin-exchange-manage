@@ -21,14 +21,14 @@ class InitProduct(DataInit[Product]):
                                    item=item.bch.name,
                                    prd_name=item.bch.symbol,
                                    valuation_item=item.usdt.name,
-                                   ordered=True,
+                                   ordered=False,
                                    track=True
                                    )
         self.eth_binance = Product(exchange=_exchange.binance.name,
                                    item=item.eth.name,
                                    prd_name=item.eth.symbol,
                                    valuation_item=item.usdt.name,
-                                   ordered=True,
+                                   ordered=False,
                                    track=True
                                    )
         self.etc_binance = Product(exchange=_exchange.binance.name,
@@ -42,14 +42,14 @@ class InitProduct(DataInit[Product]):
                                    item=item.ltc.name,
                                    prd_name=item.ltc.symbol,
                                    valuation_item=item.usdt.name,
-                                   ordered=True,
+                                   ordered=False,
                                    track=True
                                    )
         self.xrp_binance = Product(exchange=_exchange.binance.name,
                                    item=item.xrp.name,
                                    prd_name=item.xrp.symbol,
                                    valuation_item=item.usdt.name,
-                                   ordered=True,
+                                   ordered=False,
                                    track=True
                                    )
         self.eos_binance = Product(exchange=_exchange.binance.name,
