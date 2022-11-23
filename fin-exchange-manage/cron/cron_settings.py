@@ -32,4 +32,4 @@ def start_all():
     # scheduler.add_job(func=lend_funding_job_tom.lend_and_cancel, trigger="interval", seconds=149 * 60)
     # scheduler.add_job(func=lend_funding_job_tom.lend, trigger="interval", seconds=23 * 60)
     # scheduler.add_job(func=lend_funding_job_ftx.lend_and_cancel, trigger="interval", seconds=1 * 60 * 60)
-    # scheduler.start()
+    scheduler.start()
