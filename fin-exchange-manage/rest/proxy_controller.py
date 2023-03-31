@@ -1,3 +1,4 @@
+import contextvars
 import importlib.util
 import json
 import os
@@ -39,6 +40,9 @@ def test():
     }
 
 
+exchange_account_context = contextvars.ContextVar(PayloadReqKey.exchange_account.value, default=None)
+
+
 @app.route('/proxy', methods=['POST'])
 def proxy():
     payload = request.json
@@ -47,7 +51,9 @@ def proxy():
         raise ConnectionAbortedError('API BYE')
     bzk_flow_off_restart_job.notify_new_request(payload)
     PayloadReqKey.clean_sensitive_keys(payload)
+    exchange_account_context.set(payload.get(PayloadReqKey.exchange_account.value, None))
     # client = _gen_request_client(payload)
+
     wd_path = os.path.dirname(__file__)
     spec = importlib.util.spec_from_file_location("action", f"{wd_path}/{PayloadReqKey.name.get_val(payload)}.py")
     foo = importlib.util.module_from_spec(spec)

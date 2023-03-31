@@ -70,6 +70,7 @@ class PayloadReqKey(Enum):
     name = 'name'
     exchange = 'exchange'
     apiKey = '__bzk_api_key'
+    exchange_account = 'exchange_account'
 
     @classmethod
     def values(cls):
