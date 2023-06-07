@@ -10,7 +10,7 @@ username = config.env('db_username')
 password = config.env('db_password')
 port = config.env('db_port')
 host = config.env('db_host')
-engine = create_engine(f'postgresql+psycopg2://{username}:{password}@{host}:{port}/postgres', convert_unicode=True)
+engine = create_engine(f'postgresql+psycopg2://{username}:{password}@{host}:{port}/postgres?client_encoding=utf8')
 
 
 def _generate_session_maker() -> sessionmaker:
