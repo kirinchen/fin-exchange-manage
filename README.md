@@ -12,7 +12,8 @@
 ### init fin-exchange-manage python project
 1. cd fin-exchange-manage
 2. https://github.com/kirinchen/max-exchange-api-python3.git
-
+3. mv max-exchange-api-python3 max_exchange_api_python3
+4. ``` git checkout https://github.com/ftexchange/ftx.git ```
 
 ## 參考文獻
 

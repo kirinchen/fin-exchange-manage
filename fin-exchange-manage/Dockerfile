@@ -1,4 +1,4 @@
-FROM python:3.11.4
+FROM python:3.9.2
 RUN pip install pipenv
 COPY ./fin-exchange-manage /myapp
 ADD ./max-exchange-api-python3 /max-exchange-api-python3
