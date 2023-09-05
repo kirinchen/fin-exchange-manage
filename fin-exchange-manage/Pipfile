@@ -12,6 +12,7 @@ max-exchange-api-python3 = {editable = true, path = "./../max-exchange-api-pytho
 bitfinex-api-py = "*"
 apscheduler = "*"
 requests = "*"
+flask = "*"
 
 [dev-packages]
 

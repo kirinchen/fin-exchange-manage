@@ -1,7 +1,6 @@
 from typing import List
 
 from binance_f import RequestClient
-from sqlalchemy.orm import Session
 
 from dto.account_dto import AccountDto
 from dto.wallet_dto import WalletDto

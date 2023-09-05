@@ -1,4 +1,4 @@
-# app.py
+# main.py
 
 import config
 import exchange

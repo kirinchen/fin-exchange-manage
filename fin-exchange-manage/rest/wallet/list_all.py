@@ -1,6 +1,5 @@
 import exchange
 from dto.account_dto import AccountDto
-from infra import database
 from infra.enums import PayloadReqKey
 from service.wallet_client_service import WalletClientService
 from utils import comm_utils

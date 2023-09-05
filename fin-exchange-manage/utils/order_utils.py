@@ -6,8 +6,7 @@ import pytz
 
 from dto.order_dto import OrderDto
 from infra.enums import OrderType, OrderStatus, OrderSide
-from model import Order
-from utils import comm_utils, direction_utils, entity_utils
+from utils import comm_utils, direction_utils
 
 
 class OrderFilter:
@@ -129,13 +128,6 @@ def get_current_new_stop_orders(oods: List[OrderDto], symbol: str, positionSide:
     return filter_order(oods, of)
 
 
-def convert_to_model(dto: OrderDto, exchange: str, order_strategy: str = None, pack_uid: str = None) -> Order:
-    ans: Order = entity_utils.gen_entity_from_obj(dto, Order)
-    ans.order_strategy = order_strategy
-    ans.exchange = exchange
-    ans.pack_uid = pack_uid
-    merge_dto_entity(dto, ans)
-    return ans
 
 
 def merge_dto_entity(dto: OrderDto, entity: Order) -> OrderDto:

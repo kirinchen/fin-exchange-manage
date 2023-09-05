@@ -1,9 +1,8 @@
 from typing import List
 
-from sqlalchemy.orm import Session
-
 from binance_f import RequestClient
 from binance_f.model import Trade
+
 from dto.trade_dto import TradeDto
 from exchange.binance import gen_request_client, binance_utils
 from service.trade_client_service import TradeClientService
