@@ -1,8 +1,7 @@
+import time
 import traceback
 from datetime import datetime
-import time
 
-from infra.enums import PayloadExKey
 from rest.wallet import cancel_lend_by_filter, lend_by_filter
 
 funding_currency_list = [
@@ -21,7 +20,7 @@ lend_by_filter_usd_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "USD",
     "rowAmount": 152,
-    "maxRateMultiple": 1.05,
+    "maxRateMultiple": 1.2,
     "rangeRate": 0.5,
     "wallet_type": "funding",
     "exchange": "bitfinex"
@@ -32,7 +31,7 @@ lend_by_filter_usdt_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
     "rowAmount": 160,
-    "maxRateMultiple": 1,
+    "maxRateMultiple": 1.2,
     "rangeRate": 0.5,
     "wallet_type": "funding",
     "exchange": "bitfinex"

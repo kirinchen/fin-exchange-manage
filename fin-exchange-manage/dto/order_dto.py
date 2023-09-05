@@ -1,7 +1,7 @@
 from typing import List
 
-from model import Order
-from utils import reflection_util, entity_utils
+
+from utils import reflection_util
 
 
 class OrderDto:
@@ -73,8 +73,4 @@ class OrderPackQueryDto:
         return ans
 
 
-def convert_entity_to_dto(e: Order) -> OrderDto:
-    ans = OrderDto(**e.__dict__)
-    ans.symbol = e.prd_name
-    ans.orderId = e.exchangeOrderId
-    return ans
+

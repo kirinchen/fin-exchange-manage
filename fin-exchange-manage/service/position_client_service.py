@@ -4,7 +4,6 @@ from typing import List
 
 from dto.position_dto import PositionDto, PositionFilter
 from service.base_exchange_abc import BaseExchangeAbc
-from service.product_dao import ProductDao
 from utils import position_utils
 
 
@@ -12,10 +11,8 @@ class PositionClientService(BaseExchangeAbc, ABC):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.productDao: ProductDao = None
 
-    def after_init(self):
-        self.productDao = self.get_ex_obj(ProductDao)
+
 
     def get_abc_clazz(self) -> object:
         return PositionClientService

@@ -11,7 +11,6 @@ from dto.market_dto import CandlestickDto
 from dto.order_dto import OrderDto
 from dto.position_dto import PositionDto
 from dto.trade_dto import TradeDto
-from model import Product
 from utils import reflection_util
 
 STRING_CONVERT_FLOAT_FIELDS = ["open", "high", "low", "close", "volume", "quoteAssetVolume", "takerBuyBaseAssetVolume",
@@ -134,9 +133,3 @@ class SymbolHelper:
     def get_min_amt(self) -> float:
         a = self.get_amt_info()
         return a.minQty
-
-
-def convert_symbol_helper(product: Product) -> SymbolHelper:
-    cfg = product.get_config()
-    sbl: Symbol = reflection_util.merge(cfg, Symbol())
-    return SymbolHelper(sbl)

@@ -1,5 +1,4 @@
 import exchange
-from infra import database
 
 from infra.enums import PayloadReqKey
 from service.order_client_service import OrderClientService
@@ -8,9 +7,8 @@ from utils.order_utils import OrderFilter
 
 
 def run(payload: dict) -> dict:
-    with database.session_scope() as session:
-        order_client: OrderClientService = exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
-                                                                 clazz=OrderClientService, session=session,**payload)
-        order_filter = OrderFilter(**payload)
-        result = order_client.cancel_orders_by(order_filter)
-        return comm_utils.to_dict(result)
+    order_client: OrderClientService = exchange.gen_impl_obj(exchange_name=PayloadReqKey.exchange.get_val(payload),
+                                                             clazz=OrderClientService, **payload)
+    order_filter = OrderFilter(**payload)
+    result = order_client.cancel_orders_by(order_filter)
+    return comm_utils.to_dict(result)

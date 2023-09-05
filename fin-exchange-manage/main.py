@@ -3,18 +3,12 @@
 import config
 import exchange
 from cron import cron_settings
-from infra import database
-from model import init_data
 
 from rest.proxy_controller import get_flask_app
-from service import sync_cron
 
 app = get_flask_app()
 
-database.init_db()
-init_data.init_all_data()
 exchange.load_all_service()
-sync_cron.init_bind_all()
 cron_settings.start_all()
 
 if __name__ == "__main__":
