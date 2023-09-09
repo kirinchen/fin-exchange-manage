@@ -31,8 +31,8 @@ lend_by_filter_usdt_payload = {
     "name": "wallet/lend_by_filter",
     "symbol": "UST",
     "rowAmount": 160,
-    "maxRateMultiple": 1.01,
-    "rangeRate": 0.5,
+    "maxRateMultiple": 1.2,
+    "rangeRate": 0.3,
     "wallet_type": "funding",
     "exchange": "bitfinex"
 }
